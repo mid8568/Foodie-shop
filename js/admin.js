@@ -21,13 +21,13 @@ SUPABASE_KEY
 
 
 
+
 // =========================
 // 上传图片
 // =========================
 
 
 async function uploadImage(){
-
 
 
 const file =
@@ -54,13 +54,16 @@ return null;
 
 
 
-
 const fileName =
 
 Date.now()
+
 +
+
 "_"
+
 +
+
 file.name;
 
 
@@ -93,7 +96,6 @@ file
 
 
 
-
 if(error){
 
 
@@ -101,7 +103,7 @@ console.log(error);
 
 
 alert(
-"图片上传失败"
+"图片上传失败："+error.message
 );
 
 
@@ -114,17 +116,17 @@ return null;
 
 
 
-
-
 const imageUrl =
 
 
 SUPABASE_URL
 
 +
+
 "/storage/v1/object/public/product-images/"
 
 +
+
 fileName;
 
 
@@ -154,9 +156,7 @@ async function addProduct(){
 
 
 
-
-
-let message =
+const message =
 
 document.getElementById(
 "message"
@@ -165,17 +165,16 @@ document.getElementById(
 
 
 
-
 message.innerHTML =
-"正在保存...";
+"正在保存商品...";
 
 
 
 
 
 
+// 上传主图片
 
-// 上传图片
 
 const imageUrl =
 
@@ -187,9 +186,7 @@ await uploadImage();
 
 if(!imageUrl){
 
-
 return;
-
 
 }
 
@@ -199,10 +196,10 @@ return;
 
 
 
+// 商品数据
+
 
 const product = {
-
-
 
 
 
@@ -236,6 +233,7 @@ document.getElementById(
 image:
 
 imageUrl,
+
 
 
 
@@ -353,11 +351,13 @@ document.getElementById(
 
 
 
+
 supplier_contact:
 
 document.getElementById(
 "supplier_contact"
 ).value,
+
 
 
 
@@ -376,6 +376,7 @@ document.getElementById(
 
 
 
+
 ebay_url:
 
 document.getElementById(
@@ -387,11 +388,14 @@ document.getElementById(
 
 
 
+
+
 ebay_title:
 
 document.getElementById(
 "ebay_title"
 ).value,
+
 
 
 
@@ -410,11 +414,13 @@ document.getElementById(
 
 
 
+
 seo_title:
 
 document.getElementById(
 "seo_title"
 ).value,
+
 
 
 
@@ -451,10 +457,14 @@ document.getElementById(
 
 
 
-// 写入Supabase
+// =========================
+// 保存商品
+// =========================
 
 
 const {
+
+data,
 
 error
 
@@ -464,10 +474,10 @@ error
 .from("products")
 
 
-.insert(product);
+.insert(product)
 
 
-
+.select();
 
 
 
@@ -480,9 +490,10 @@ if(error){
 console.log(error);
 
 
+
 message.innerHTML =
 
-"保存失败：" + error.message;
+"保存失败："+error.message;
 
 
 return;
@@ -496,9 +507,100 @@ return;
 
 
 
-message.innerHTML =
 
-"商品添加成功";
+// 获取新增商品ID
+
+
+const productId =
+
+data[0].id;
+
+
+
+
+
+
+// 自动生成详情页地址
+
+
+const detailUrl =
+
+window.location.origin
+
++
+
+"/product.html?id="
+
++
+
+productId;
+
+
+
+
+
+
+
+message.innerHTML = `
+
+
+<h3>
+
+商品添加成功！
+
+</h3>
+
+
+<p>
+
+商品详情页：
+
+</p>
+
+
+
+<input
+
+value="${detailUrl}"
+
+readonly
+
+style="width:100%;padding:8px;">
+
+
+
+
+
+<p>
+
+Facebook分享链接：
+
+</p>
+
+
+
+<input
+
+value="${detailUrl}"
+
+readonly
+
+style="width:100%;padding:8px;">
+
+
+
+
+
+<p>
+
+复制链接即可发布到Facebook
+
+</p>
+
+
+`;
+
+
 
 
 
@@ -506,13 +608,22 @@ message.innerHTML =
 
 // 清空表单
 
+
+const form =
+
 document.querySelector(
 ".admin-box"
-)
-
-.reset?.();
+);
 
 
+
+if(form && form.reset){
+
+
+form.reset();
+
+
+}
 
 
 
