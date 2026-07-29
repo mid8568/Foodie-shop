@@ -195,8 +195,13 @@ onclick="changeStatus(${item.id},'下架')">
 </button>
 
 
+<button
 
+onclick="editProduct(${item.id})">
 
+编辑
+
+</button>
 
 
 
@@ -391,8 +396,12 @@ alert(
 
 }
 
+function editProduct(id){
 
+location.href =
+"admin-edit.html?id="+id;
 
+}
 
 
 
