@@ -15,7 +15,128 @@ SUPABASE_KEY
 
 
 
+// 上传图片
+
+async function uploadImage(){
+
+
+const file =
+
+document
+
+.getElementById("imageFile")
+
+.files[0];
+
+
+
+if(!file){
+
+alert("请选择图片");
+
+return null;
+
+}
+
+
+
+const fileName =
+
+Date.now()
++
+"-"
++
+file.name;
+
+
+
+
+const {
+
+data,
+
+error
+
+}=await client
+
+.storage
+
+.from("product-images")
+
+.upload(
+
+fileName,
+
+file
+
+);
+
+
+
+if(error){
+
+
+alert(
+"图片上传失败"
+);
+
+
+console.log(error);
+
+
+return null;
+
+
+}
+
+
+
+
+
+const url =
+
+SUPABASE_URL
+
++
+"/storage/v1/object/public/product-images/"
+
++
+fileName;
+
+
+
+return url;
+
+
+}
+
+
+
+
+
+
+
+
+// 添加商品
+
 async function addProduct(){
+
+
+
+let imageUrl =
+
+await uploadImage();
+
+
+
+if(!imageUrl){
+
+return;
+
+}
+
+
+
 
 
 
@@ -39,7 +160,8 @@ document.getElementById("category").value,
 
 image:
 
-document.getElementById("image").value,
+imageUrl,
+
 
 
 price:
@@ -47,6 +169,7 @@ price:
 Number(
 document.getElementById("price").value
 ),
+
 
 
 cost_price:
@@ -62,11 +185,9 @@ supplier:
 document.getElementById("supplier").value,
 
 
-
 supplier_url:
 
 document.getElementById("supplier_url").value,
-
 
 
 ebay_url:
@@ -74,17 +195,14 @@ ebay_url:
 document.getElementById("ebay_url").value,
 
 
-
 description_en:
 
 document.getElementById("description_en").value,
 
 
-
 stock_status:
 
 document.getElementById("stock_status").value
-
 
 
 };
@@ -93,13 +211,13 @@ document.getElementById("stock_status").value
 
 
 
-const {
 
-data,
+
+const {
 
 error
 
-}= await client
+}=await client
 
 .from("products")
 
@@ -113,7 +231,7 @@ if(error){
 
 
 alert(
-"添加失败:"+error.message
+error.message
 );
 
 
