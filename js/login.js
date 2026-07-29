@@ -1,3 +1,8 @@
+// =========================
+// Supabase配置
+// =========================
+
+
 const SUPABASE_URL =
 "https://ukxxmxnubxjezkwbbxdr.supabase.co";
 
@@ -16,57 +21,62 @@ SUPABASE_KEY
 
 
 
+// =========================
+// 登录
+// =========================
 
 
 async function login(){
 
 
-
 const email =
-document.getElementById(
-"email"
-).value.trim();
+
+document
+
+.getElementById("email")
+
+.value;
 
 
 
 const password =
+
+document
+
+.getElementById("password")
+
+.value;
+
+
+
+
+const message =
+
 document.getElementById(
-"password"
-).value.trim();
-
-
-
-
-
-if(!email || !password){
-
-
-alert(
-"请输入邮箱和密码"
+"message"
 );
 
 
-return;
 
 
-}
-
-
+message.innerHTML="登录中...";
 
 
 
 
+const {
 
-const {data,error}=await client.auth
-.signInWithPassword({
+data,
 
-email:email,
+error
 
-password:password
+}=await client.auth.signInWithPassword({
+
+email,
+
+password
 
 });
-
-
 
 
 
@@ -75,13 +85,9 @@ password:password
 if(error){
 
 
-alert(
+message.innerHTML=
 
-"登录失败:"
-+
-error.message
-
-);
+"登录失败：" + error.message;
 
 
 return;
@@ -92,28 +98,18 @@ return;
 
 
 
+// 保存登录状态
 
-
-
-console.log(
-"登录用户:",
-data.user
+localStorage.setItem(
+"admin_login",
+"yes"
 );
 
 
 
+// 跳转后台
 
-
-alert(
-"登录成功"
-);
-
-
-
-
-
-window.location.href =
-"admin.html";
+location.href="admin.html";
 
 
 
