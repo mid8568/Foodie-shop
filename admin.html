@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<html lang="zh-CN">
+<html lang="en">
 
 
 <head>
@@ -11,7 +11,7 @@
 
 
 <title>
-国韵白酒后台管理
+Product Admin
 </title>
 
 
@@ -21,138 +21,81 @@
 </head>
 
 
-
 <body>
-
-
-
-<header>
-
-
-<div class="logo">
-
-🍶 国韵白酒后台
-
-</div>
-
-
-
-<button onclick="logout()">
-
-退出登录
-
-</button>
-
-
-</header>
-
-
-
-
-
-
-
-<div class="container">
 
 
 <h1>
 
-添加白酒商品
+China Direct Shop
 
 </h1>
 
 
+<h2>
+
+Add Product
+
+</h2>
 
 
 
-<input 
-id="name"
-type="text"
-placeholder="白酒名称">
+<div class="admin-box">
 
 
+<input id="name" placeholder="商品中文名">
 
 
-
-<input 
-id="price"
-type="number"
-placeholder="价格">
+<input id="name_en" placeholder="English Name">
 
 
+<input id="category" placeholder="分类">
 
 
-
-<input 
-id="image"
-type="text"
-placeholder="图片地址">
+<input id="image" placeholder="商品图片地址">
 
 
+<input id="price" placeholder="售价 USD">
+
+
+<input id="cost_price" placeholder="成本价">
+
+
+<input id="supplier" placeholder="1688供应商">
+
+
+<input id="supplier_url" placeholder="1688链接">
+
+
+<input id="ebay_url" placeholder="eBay商品链接">
 
 
 
 <textarea
 
-id="description"
+id="description_en"
 
-placeholder="商品介绍">
+placeholder="Product Description">
 
 </textarea>
 
 
 
 
+<select id="stock_status">
 
 
-<input
+<option value="上架">
 
-id="stock"
-
-type="number"
-
-placeholder="库存数量">
-
-
-
-
-
-
-<!-- 商品分类 -->
-
-<select id="category">
-
-
-<option value="酱香型">
-
-酱香型
+上架
 
 </option>
 
 
+<option value="下架">
 
-<option value="浓香型">
-
-浓香型
-
-</option>
-
-
-
-<option value="清香型">
-
-清香型
+下架
 
 </option>
-
-
-
-<option value="收藏酒">
-
-收藏酒
-
-</option>
-
 
 
 </select>
@@ -160,92 +103,14 @@ placeholder="库存数量">
 
 
 
-
-
 <button onclick="addProduct()">
 
-添加商品
+Save Product
 
 </button>
 
 
-
-
 </div>
-
-
-
-
-
-
-
-
-
-<div class="container">
-
-
-<h2>
-
-商品管理
-
-</h2>
-
-
-
-<div id="product-list">
-
-加载商品中...
-
-</div>
-
-
-
-</div>
-
-
-
-
-
-
-
-
-
-<div class="container">
-
-
-<h2>
-
-订单管理
-
-</h2>
-
-
-
-<div id="order-list">
-
-加载订单中...
-
-</div>
-
-
-
-</div>
-
-
-
-
-
-
-
-
-<footer>
-
-© 2026 国韵白酒商城后台
-
-</footer>
-
-
-
 
 
 
@@ -254,12 +119,7 @@ placeholder="库存数量">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 
-
-
 <script src="js/admin.js"></script>
-
-
-
 
 
 </body>
