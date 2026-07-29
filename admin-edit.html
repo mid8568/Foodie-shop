@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+
+<title>
+编辑商品
+</title>
+
+
+<link rel="stylesheet" href="css/style.css">
+
+
+</head>
+
+
+
+<body>
+
+
+<div class="container">
+
+
+<h1>
+🇨🇳 China Direct Shop
+</h1>
+
+
+<h2>
+编辑商品
+</h2>
+
+
+
+
+<div class="admin-box">
+
+
+
+<input id="name_en" placeholder="英文名称">
+
+
+<input id="category" placeholder="分类">
+
+
+<label>
+更换商品图片
+</label>
+
+
+<input 
+type="file"
+id="imageFile"
+accept="image/*">
+
+
+
+<img 
+id="preview"
+width="150">
+
+
+
+
+
+<textarea 
+id="description_en"
+placeholder="英文介绍">
+</textarea>
+
+
+
+
+
+<input 
+id="price"
+placeholder="价格">
+
+
+
+
+
+<input 
+id="ebay_url"
+placeholder="eBay链接">
+
+
+
+
+
+<select id="stock_status">
+
+
+<option value="上架">
+上架
+</option>
+
+
+<option value="下架">
+下架
+</option>
+
+
+<option value="缺货">
+缺货
+</option>
+
+
+</select>
+
+
+
+
+
+
+<button onclick="updateProduct()">
+
+保存修改
+
+</button>
+
+
+
+
+<p id="message"></p>
+
+
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+<script src="js/admin-edit.js"></script>
+
+
+</body>
+
+
+</html>
