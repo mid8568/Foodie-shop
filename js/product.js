@@ -20,7 +20,9 @@ SUPABASE_KEY
 
 
 
-// 获取ID
+// =========================
+// 获取商品ID
+// =========================
 
 const params =
 new URLSearchParams(
@@ -39,10 +41,22 @@ params.get("id");
 async function loadProduct(){
 
 
+
 const box =
 document.getElementById(
 "product-detail"
 );
+
+
+
+if(!productId){
+
+box.innerHTML="Product not found";
+
+return;
+
+}
+
 
 
 
@@ -73,7 +87,7 @@ productId
 
 
 
-if(error){
+if(error || !data){
 
 
 console.log(error);
@@ -91,7 +105,11 @@ return;
 
 
 
-// 图片
+
+// =========================
+// 主图
+// =========================
+
 
 let images=[
 
@@ -105,24 +123,98 @@ data.image4
 
 ]
 
-
 .filter(Boolean);
 
-const detailImages =
-data.detail_images || [];
 
 
 
 
 
-let gallery="";
+// =========================
+// 详情图片 JSON转数组
+// =========================
+
+
+let detailImages=[];
+
+
+
+try{
+
+
+detailImages =
+data.detail_images
+?
+JSON.parse(data.detail_images)
+:
+
+[];
+
+
+}
+catch(e){
+
+
+detailImages=[];
+
+
+}
+
+
+
+
+
+
+
+
+// =========================
+// 规格 JSON转对象
+// =========================
+
+
+let specifications={};
+
+
+
+try{
+
+
+specifications =
+data.specifications
+?
+JSON.parse(data.specifications)
+:
+
+{};
+
+
+}
+catch(e){
+
+
+specifications={};
+
+
+}
+
+
+
+
+
+
+
+// =========================
+// 缩略图
+// =========================
+
+
+let thumbs="";
 
 
 images.forEach(img=>{
 
 
-gallery +=`
-
+thumbs +=`
 
 <img
 
@@ -134,7 +226,6 @@ onclick="changeImage('${img}')"
 
 >
 
-
 `;
 
 });
@@ -145,76 +236,64 @@ onclick="changeImage('${img}')"
 
 
 
-// 规格参数
+
+// =========================
+// 规格表
+// =========================
 
 
-let specs="";
-
-
-
-if(data.specifications){
-
-
-
-specs+="<table class='spec-table'>";
+let specsHtml="";
 
 
 
-Object.entries(
-data.specifications
-)
-.forEach(([k,v])=>{
+Object.entries(specifications)
+.forEach(([key,value])=>{
 
 
-specs+=`
+specsHtml +=`
 
 <tr>
 
-<td>${k}</td>
+<td>${key}</td>
 
-<td>${v}</td>
+<td>${value}</td>
 
 </tr>
 
 `;
 
-
 });
 
 
 
-specs+="</table>";
-
-
-
-}
 
 
 
 
 
-// 详情图片
+
+// =========================
+// 详情长图
+// =========================
 
 
-let detail="";
+let detailHtml="";
 
 
-if(data.detail_images){
+detailImages.forEach(img=>{
 
 
-data.detail_images.forEach(img=>{
-
-
-detail+=`
+detailHtml +=`
 
 <img
 
 src="${img}"
 
-class="detail-image"
+class="detail-img"
+
+loading="lazy"
 
 >
-
 
 `;
 
@@ -222,7 +301,6 @@ class="detail-image"
 });
 
 
-}
 
 
 
@@ -231,6 +309,7 @@ class="detail-image"
 
 
 box.innerHTML=`
+
 
 <div class="product-box">
 
@@ -243,7 +322,7 @@ box.innerHTML=`
 
 id="main-image"
 
-src="${images[0]}"
+src="${images[0] || ''}"
 
 class="main-image"
 
@@ -251,14 +330,20 @@ class="main-image"
 >
 
 
+
 <div class="thumb-list">
 
-${gallery}
+${thumbs}
 
 </div>
 
 
+
 </div>
+
+
+
+
 
 
 
@@ -275,6 +360,7 @@ ${data.name}
 
 
 
+
 <p class="category">
 
 ${data.category || "Chinese Products"}
@@ -284,9 +370,10 @@ ${data.category || "Chinese Products"}
 
 
 
+
 <h2 class="price">
 
-$${data.sale_price}
+$${data.sale_price || 0}
 
 </h2>
 
@@ -294,8 +381,11 @@ $${data.sale_price}
 
 
 
+
 <h2>
-Product Description
+
+Description
+
 </h2>
 
 
@@ -308,34 +398,23 @@ ${data.description || "Authentic Chinese Product"}
 
 
 
+
 <h2>
 
-Product Details
+Specifications
 
 </h2>
 
-<div class="detail-images">
 
 
-${
-detailImages.map(img=>`
-
-<img
-
-src="${img}"
-
-class="detail-img"
-
->
-
-`).join("")
-
-}
+<table class="spec-table">
 
 
-</div>
+${specsHtml}
 
-${specs}
+
+</table>
+
 
 
 
@@ -344,7 +423,9 @@ ${specs}
 
 href="${data.ebay_url || '#'}"
 
-class="buy-btn">
+class="buy-btn"
+
+>
 
 Buy Now
 
@@ -355,26 +436,34 @@ Buy Now
 </div>
 
 
-
 </div>
+
+
+
+
 
 
 
 <h2>
 
-1688 Product Details
+Product Details
 
 </h2>
 
 
+
 <div class="detail-images">
 
-${detail}
+
+${detailHtml}
+
 
 </div>
 
 
+
 `;
+
 
 
 
@@ -384,6 +473,10 @@ document.title=data.name;
 
 
 }
+
+
+
+
 
 
 
@@ -399,6 +492,8 @@ document.getElementById(
 
 
 }
+
+
 
 
 
