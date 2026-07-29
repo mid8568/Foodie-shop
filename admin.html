@@ -29,11 +29,13 @@ China Direct Shop Admin
 <div class="container">
 
 
+
 <h1>
 
 🇨🇳 China Direct Shop
 
 </h1>
+
 
 
 <h2>
@@ -46,21 +48,50 @@ China Direct Shop Admin
 
 
 
-<div class="admin-box">
+
+<form class="admin-box">
 
 
 
-<input id="name" placeholder="商品中文名称">
+
+
+<!-- 商品基本信息 -->
+
+
+<input
+
+id="name"
+
+placeholder="商品中文名称"
+
+>
 
 
 
-<input id="name_en" placeholder="英文商品名称">
+<input
+
+id="name_en"
+
+placeholder="英文商品名称"
+
+>
 
 
 
-<input id="category" placeholder="商品分类">
+
+<input
+
+id="category"
+
+placeholder="商品分类"
+
+>
 
 
+
+
+
+<!-- 主图片 -->
 
 
 <label>
@@ -70,31 +101,59 @@ China Direct Shop Admin
 </label>
 
 
+
 <input
 
 type="file"
 
 id="imageFile"
 
-accept="image/*">
+accept="image/*"
+
+>
+
+
+
+
+
+<!-- 商品详情图片 -->
+
+
+<input
+
+id="image2"
+
+placeholder="详情图片2地址"
+
+>
+
+
+
+<input
+
+id="image3"
+
+placeholder="详情图片3地址"
+
+>
+
+
+
+<input
+
+id="image4"
+
+placeholder="详情图片4地址"
+
+>
 
 
 
 
 
 
-<input id="image2" placeholder="详情图片2地址">
 
-
-
-<input id="image3" placeholder="详情图片3地址">
-
-
-
-<input id="image4" placeholder="详情图片4地址">
-
-
-
+<!-- 商品介绍 -->
 
 
 <textarea
@@ -104,6 +163,7 @@ id="description"
 placeholder="中文商品介绍">
 
 </textarea>
+
 
 
 
@@ -123,12 +183,16 @@ placeholder="英文商品介绍">
 
 
 
+<!-- 价格 -->
+
+
 <input
 
 id="price"
 
-placeholder="销售价格 USD">
+placeholder="销售价格 USD"
 
+>
 
 
 
@@ -139,8 +203,9 @@ id="currency"
 
 value="USD"
 
-placeholder="货币">
+placeholder="货币"
 
+>
 
 
 
@@ -149,18 +214,27 @@ placeholder="货币">
 
 id="cost_price"
 
-placeholder="采购成本">
+placeholder="采购成本"
+
+>
 
 
 
 
+
+
+
+
+<!-- 供应商 -->
 
 
 <input
 
 id="supplier"
 
-placeholder="1688供应商名称">
+placeholder="1688供应商名称"
+
+>
 
 
 
@@ -170,7 +244,9 @@ placeholder="1688供应商名称">
 
 id="supplier_url"
 
-placeholder="1688供应商链接">
+placeholder="1688供应商链接"
+
+>
 
 
 
@@ -180,18 +256,27 @@ placeholder="1688供应商链接">
 
 id="supplier_contact"
 
-placeholder="供应商联系方式">
+placeholder="供应商联系方式"
+
+>
 
 
 
 
+
+
+
+
+<!-- eBay信息 -->
 
 
 <input
 
 id="ebay_item_id"
 
-placeholder="eBay商品ID">
+placeholder="eBay商品ID"
+
+>
 
 
 
@@ -201,8 +286,9 @@ placeholder="eBay商品ID">
 
 id="ebay_url"
 
-placeholder="eBay购买链接">
+placeholder="eBay购买链接"
 
+>
 
 
 
@@ -211,8 +297,9 @@ placeholder="eBay购买链接">
 
 id="ebay_title"
 
-placeholder="eBay标题">
+placeholder="eBay标题"
 
+>
 
 
 
@@ -221,18 +308,26 @@ placeholder="eBay标题">
 
 id="ebay_category"
 
-placeholder="eBay分类">
+placeholder="eBay分类"
+
+>
 
 
 
 
+
+
+
+<!-- SEO -->
 
 
 <input
 
 id="seo_title"
 
-placeholder="SEO标题">
+placeholder="SEO标题"
+
+>
 
 
 
@@ -250,6 +345,9 @@ placeholder="SEO描述">
 
 
 
+
+
+<!-- 状态 -->
 
 
 <select id="stock_status">
@@ -283,11 +381,20 @@ placeholder="SEO描述">
 
 
 
-<button onclick="addProduct()">
+
+<!-- 保存 -->
+
+
+<button
+
+type="button"
+
+onclick="addProduct()">
 
 保存商品
 
 </button>
+
 
 
 
@@ -298,11 +405,17 @@ placeholder="SEO描述">
 
 
 
+
+</form>
+
+
+
+
+
+
+
 </div>
 
-
-
-</div>
 
 
 
@@ -314,6 +427,7 @@ placeholder="SEO描述">
 
 
 <script src="js/admin.js"></script>
+
 
 
 </body>
