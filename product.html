@@ -1,73 +1,222 @@
-<!DOCTYPE html>
-
-<html lang="en">
-
-
-<head>
-
-<meta charset="UTF-8">
+// =========================
+// Supabase配置
+// =========================
 
 
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+const SUPABASE_URL =
+"https://ukxxmxnubxjezkwbbxdr.supabase.co";
 
 
-<!-- 动态SEO标题 -->
-
-<title>
-China Direct Shop
-</title>
+const SUPABASE_KEY =
+"sb_publishable_2IFHfms3ombozpvZCvaeEg_2VZ2z5hJ";
 
 
 
-<!-- Facebook分享信息 -->
-
-<meta property="og:title" content="China Direct Shop">
-
-
-<meta property="og:description" content="Authentic Chinese Products">
-
-
-<meta property="og:image" content="">
-
-
-<meta property="og:type" content="product">
+const client =
+supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
 
 
 
-<link rel="stylesheet" href="css/style.css">
 
 
-</head>
+// =========================
+// 获取商品ID
+// =========================
+
+
+const params =
+new URLSearchParams(
+    window.location.search
+);
 
 
 
-<body>
+const productId =
+params.get("id");
 
 
 
-<header class="h5-header">
 
 
-<div class="h5-logo">
 
-🇨🇳 China Direct Shop
+// =========================
+// 加载详情
+// =========================
+
+
+async function loadProduct(){
+
+
+
+const box =
+document.getElementById(
+    "product-detail"
+);
+
+
+
+if(!productId){
+
+
+    box.innerHTML =
+    "Product not found";
+
+
+    return;
+
+
+}
+
+
+
+
+
+const {
+
+data,
+
+error
+
+}= await client
+
+
+.from("products")
+
+
+.select("*")
+
+
+.eq(
+"id",
+productId
+)
+
+
+.single();
+
+
+
+
+
+if(error || !data){
+
+
+    console.log(error);
+
+
+    box.innerHTML =
+    "Product loading failed";
+
+
+    return;
+
+
+}
+
+
+
+
+
+
+
+// 图片数组
+
+
+const images=[
+
+data.image,
+
+data.image2,
+
+data.image3,
+
+data.image4
+
+]
+
+
+.filter(Boolean);
+
+
+
+
+
+
+let thumbs="";
+
+
+
+images.forEach(img=>{
+
+
+thumbs += `
+
+
+<img
+
+src="${img}"
+
+class="thumb"
+
+onclick="changeImage('${img}')"
+
+>
+
+
+`;
+
+
+});
+
+
+
+
+
+
+
+
+box.innerHTML = `
+
+
+
+<div class="product-detail-box">
+
+
+
+
+
+
+<div class="gallery">
+
+
+
+<img
+
+
+id="main-image"
+
+
+src="${images[0] || ''}"
+
+class="main-image"
+
+
+>
+
+
+
+<div class="thumb-list">
+
+${thumbs}
 
 </div>
 
 
-</header>
 
-
-
-
-
-
-<section id="product-detail">
-
-
-Loading...
-
-</section>
+</div>
 
 
 
@@ -75,15 +224,135 @@ Loading...
 
 
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<div class="info">
 
 
 
-<script src="js/product.js"></script>
+<h1>
+
+${data.name_en || data.name}
+
+</h1>
 
 
 
-</body>
 
 
-</html>
+<p class="category">
+
+${data.category || "Chinese Products"}
+
+</p>
+
+
+
+
+
+
+<h2 class="price">
+
+$${data.sale_price || 0}
+
+</h2>
+
+
+
+
+
+
+
+<p class="description">
+
+${data.description_en || data.description || "Authentic Chinese Product"}
+
+</p>
+
+
+
+
+
+
+
+
+<a
+
+href="https://m.me/你的Facebook主页用户名"
+
+target="_blank"
+
+class="buy-btn">
+
+
+💬 Contact Us
+
+
+</a>
+
+
+
+
+
+
+</div>
+
+
+
+
+
+</div>
+
+
+
+
+`;
+
+
+
+
+
+// 动态修改SEO
+
+
+document.title =
+
+data.seo_title ||
+
+data.name_en ||
+
+data.name;
+
+
+
+}
+
+
+
+ 
+
+
+
+// =========================
+// 图片切换
+// =========================
+
+
+function changeImage(url){
+
+
+
+document
+
+.getElementById("main-image")
+
+.src=url;
+
+
+
+}
+
+
+
+
+
+loadProduct();
