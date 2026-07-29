@@ -125,7 +125,8 @@ data.image4
 
 .filter(Boolean);
 
-
+console.log("商品图片:",images);
+console.log("详情图片:",detailImages);
 
 
 
@@ -135,27 +136,33 @@ data.image4
 // =========================
 
 
-let detailImages=[];
+let detailImages = [];
 
 
-
-try{
-
-
-detailImages =
-data.detail_images
-?
-JSON.parse(data.detail_images)
-:
-
-[];
+if(data.detail_images){
 
 
-}
-catch(e){
+    if(Array.isArray(data.detail_images)){
+
+        detailImages = data.detail_images;
+
+    }
+    else{
 
 
-detailImages=[];
+        try{
+
+            detailImages = JSON.parse(data.detail_images);
+
+        }
+        catch(e){
+
+            detailImages=[];
+
+        }
+
+
+    }
 
 
 }
@@ -179,13 +186,37 @@ let specifications={};
 try{
 
 
-specifications =
-data.specifications
-?
-JSON.parse(data.specifications)
-:
+let specifications={};
 
-{};
+
+if(data.specifications){
+
+
+    if(typeof data.specifications==="object"){
+
+        specifications=data.specifications;
+
+    }
+    else{
+
+
+        try{
+
+            specifications=
+            JSON.parse(data.specifications);
+
+        }
+        catch(e){
+
+            specifications={};
+
+        }
+
+
+    }
+
+
+}
 
 
 }
