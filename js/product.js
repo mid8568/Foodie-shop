@@ -13,21 +13,18 @@ const SUPABASE_KEY =
 
 const client =
 supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
+SUPABASE_URL,
+SUPABASE_KEY
 );
 
 
 
 
-// =========================
-// 获取商品ID
-// =========================
-
+// 获取ID
 
 const params =
 new URLSearchParams(
-    window.location.search
+window.location.search
 );
 
 
@@ -38,34 +35,14 @@ params.get("id");
 
 
 
-// =========================
-// 加载商品详情
-// =========================
-
 
 async function loadProduct(){
 
 
 const box =
 document.getElementById(
-    "product-detail"
+"product-detail"
 );
-
-
-
-if(!productId){
-
-
-box.innerHTML =
-"Product not found";
-
-
-return;
-
-
-}
-
-
 
 
 
@@ -75,8 +52,7 @@ data,
 
 error
 
-
-}= await client
+}=await client
 
 
 .from("products")
@@ -97,12 +73,10 @@ productId
 
 
 
-if(error || !data){
+if(error){
 
 
-console.log(
-error
-);
+console.log(error);
 
 
 box.innerHTML =
@@ -117,14 +91,9 @@ return;
 
 
 
+// 图片
 
-// =========================
-// 主图
-// =========================
-
-
-const images=[
-
+let images=[
 
 data.image,
 
@@ -134,23 +103,24 @@ data.image3,
 
 data.image4
 
-
-].filter(Boolean);
-
+]
 
 
-
+.filter(Boolean);
 
 
 
-let thumbs="";
 
+
+
+
+let gallery="";
 
 
 images.forEach(img=>{
 
 
-thumbs += `
+gallery +=`
 
 
 <img
@@ -166,7 +136,6 @@ onclick="changeImage('${img}')"
 
 `;
 
-
 });
 
 
@@ -175,37 +144,73 @@ onclick="changeImage('${img}')"
 
 
 
-// =========================
+// 规格参数
+
+
+let specs="";
+
+
+
+if(data.specifications){
+
+
+
+specs+="<table class='spec-table'>";
+
+
+
+Object.entries(
+data.specifications
+)
+.forEach(([k,v])=>{
+
+
+specs+=`
+
+<tr>
+
+<td>${k}</td>
+
+<td>${v}</td>
+
+</tr>
+
+`;
+
+
+});
+
+
+
+specs+="</table>";
+
+
+
+}
+
+
+
+
+
 // 详情图片
-// =========================
 
 
-let detailHtml="";
+let detail="";
 
 
-
-if(
-
-data.detail_images
-
-&&
-
-Array.isArray(data.detail_images)
-
-){
+if(data.detail_images){
 
 
 data.detail_images.forEach(img=>{
 
 
-detailHtml += `
-
+detail+=`
 
 <img
 
 src="${img}"
 
-class="detail-img"
+class="detail-image"
 
 >
 
@@ -224,108 +229,48 @@ class="detail-img"
 
 
 
-// =========================
-// 商品描述
-// =========================
+box.innerHTML=`
 
+<div class="product-box">
 
-let description =
-
-data.description ||
-
-data.description_en ||
-
-"Authentic Chinese Product";
-
-
-
-description =
-
-description.replace(
-/\n/g,
-"<br>"
-);
-
-
-
-
-
-
-
-// =========================
-// 页面HTML
-// =========================
-
-
-box.innerHTML = `
-
-
-
-<div class="product-detail-box">
-
-
-
-
-
-<!-- 商品图片 -->
 
 
 <div class="gallery">
 
 
-
 <img
-
 
 id="main-image"
 
-
-src="${images[0] || ''}"
-
+src="${images[0]}"
 
 class="main-image"
-
 
 
 >
 
 
-
-
 <div class="thumb-list">
 
+${gallery}
 
-${thumbs}
+</div>
 
 
 </div>
 
 
 
-</div>
-
-
-
-
-
-
-
-
-
-<!-- 商品信息 -->
 
 
 <div class="info">
 
 
-
 <h1>
 
-${data.name_en || data.name || ""}
+${data.name}
 
 </h1>
-
-
 
 
 
@@ -338,14 +283,9 @@ ${data.category || "Chinese Products"}
 
 
 
-
-
-
 <h2 class="price">
 
-
-$${data.sale_price || data.price || 0}
-
+$${data.sale_price}
 
 </h2>
 
@@ -353,180 +293,18 @@ $${data.sale_price || data.price || 0}
 
 
 
+<h2>
+Product Description
+</h2>
 
 
+<p>
 
-<p class="cost">
-
+${data.description || "Authentic Chinese Product"}
 
 </p>
 
 
-
-
-
-
-
-<a
-
-
-href="https://m.me/你的Facebook主页用户名"
-
-
-target="_blank"
-
-
-class="buy-btn">
-
-
-💬 Contact Us
-
-
-</a>
-
-
-
-
-
-</div>
-
-
-
-
-
-
-</div>
-
-
-
-
-
-
-
-
-
-<!-- 商品描述 -->
-
-
-<section class="description-box">
-
-
-<h2>
-
-Product Description
-
-</h2>
-
-
-<div class="description-text">
-
-
-${description}
-
-
-</div>
-
-
-
-</section>
-
-
-
-
-
-
-
-
-
-<!-- 规格参数 -->
-
-
-<section class="spec-box">
-
-
-<h2>
-
-Product Information
-
-</h2>
-
-
-
-<table>
-
-
-<tr>
-
-<td>
-Supplier
-</td>
-
-
-<td>
-${data.supplier || "China Supplier"}
-
-</td>
-
-
-</tr>
-
-
-
-
-
-<tr>
-
-<td>
-Source
-</td>
-
-
-<td>
-1688 China
-
-</td>
-
-
-</tr>
-
-
-
-
-
-<tr>
-
-<td>
-Shipping
-
-</td>
-
-
-<td>
-Worldwide Shipping
-
-</td>
-
-
-</tr>
-
-
-</table>
-
-
-</section>
-
-
-
-
-
-
-
-
-
-<!-- 1688详情图片 -->
-
-
-<section class="detail-box">
 
 
 <h2>
@@ -536,18 +314,43 @@ Product Details
 </h2>
 
 
-
-${detailHtml || 
-
-"<p>No detail images</p>"
-
-}
+${specs}
 
 
 
-</section>
+
+<a
+
+href="${data.ebay_url || '#'}"
+
+class="buy-btn">
+
+Buy Now
+
+</a>
 
 
+
+</div>
+
+
+
+</div>
+
+
+
+<h2>
+
+1688 Product Details
+
+</h2>
+
+
+<div class="detail-images">
+
+${detail}
+
+</div>
 
 
 `;
@@ -555,21 +358,7 @@ ${detailHtml ||
 
 
 
-
-
-
-// =========================
-// SEO
-// =========================
-
-
-document.title =
-
-data.seo_title ||
-
-data.name_en ||
-
-data.name;
+document.title=data.name;
 
 
 
@@ -577,38 +366,18 @@ data.name;
 
 
 
-
-
-// =========================
-// 图片切换
-// =========================
 
 
 function changeImage(url){
 
 
-
-const img =
-
 document.getElementById(
 "main-image"
-);
-
-
-
-if(img){
-
-
-img.src=url;
+)
+.src=url;
 
 
 }
-
-
-}
-
-
-
 
 
 
