@@ -14,10 +14,9 @@ const SUPABASE_KEY =
 
 const client =
 supabase.createClient(
-SUPABASE_URL,
-SUPABASE_KEY
+    SUPABASE_URL,
+    SUPABASE_KEY
 );
-
 
 
 
@@ -40,84 +39,83 @@ let allProducts = [];
 async function loadProducts(){
 
 
-const box =
-document.getElementById(
-"product-list"
-);
+    const box =
+    document.getElementById(
+        "product-list"
+    );
 
 
 
-box.innerHTML =
-"Loading products...";
+    box.innerHTML =
+    "Loading products...";
 
 
 
 
-const {
+    const {
 
-data,
+        data,
 
-error
+        error
 
-}= await client
-
-
-.from("products")
+    } = await client
 
 
-.select("*")
+
+    .from("products")
 
 
-.eq(
-"stock_status",
-"上架"
-)
+    .select("*")
 
 
-.order(
-"id",
-{
-ascending:false
+    .eq(
+        "status",
+        "上架"
+    )
+
+
+    .order(
+        "id",
+        {
+            ascending:false
+        }
+    );
+
+
+
+
+
+    if(error){
+
+
+        console.log(error);
+
+
+
+        box.innerHTML =
+        "Products loading failed";
+
+
+        return;
+
+
+    }
+
+
+
+
+
+    allProducts = data || [];
+
+
+
+    showProducts(
+        allProducts
+    );
+
+
+
 }
-);
-
-
-
-
-
-if(error){
-
-
-console.log(error);
-
-
-
-box.innerHTML =
-"Products loading failed";
-
-
-return;
-
-
-}
-
-
-
-
-
-allProducts = data;
-
-
-
-showProducts(
-allProducts
-);
-
-
-
-}
-
-
 
 
 
@@ -134,154 +132,136 @@ function showProducts(list){
 
 
 
-const box =
-document.getElementById(
-"product-list"
-);
+    const box =
+    document.getElementById(
+        "product-list"
+    );
 
 
 
-let html = "";
+    let html = "";
 
 
 
 
 
-if(list.length===0){
+    if(!list || list.length===0){
 
 
-box.innerHTML =
+        box.innerHTML =
+        "<h3>No products found</h3>";
 
-"<h3>No products found</h3>";
+        return;
 
-return;
 
+    }
 
-}
 
 
 
 
 
 
+    list.forEach(item=>{
 
-list.forEach(item=>{
 
+        html += `
 
 
-html += `
+        <div class="card">
 
 
-<div class="card">
 
+            <img
 
+            src="${item.image || ''}"
 
+            alt="${item.name_en || item.name || ''}"
 
+            >
 
-<img
 
-src="${item.image || ''}"
 
-alt="${item.name_en || item.name}"
 
->
 
+            <h3>
 
+            ${item.name_en || item.name || ""}
 
+            </h3>
 
 
 
 
-<h3>
 
-${item.name_en || item.name}
+            <p class="category">
 
-</h3>
+            ${item.category || "Chinese Products"}
 
+            </p>
 
 
 
 
 
+            <p class="desc">
 
-<p class="category">
+            ${item.description_en || item.description || ""}
 
-${item.category || "Chinese Products"}
+            </p>
 
-</p>
 
 
 
 
+            <p class="price">
 
+            $${item.sale_price || 0}
 
+            </p>
 
-<p class="desc">
 
-${item.description_en || ""}
 
-</p>
 
 
+            <a
 
+            href="product.html?id=${item.id}">
 
 
+                <button
 
+                class="buy-btn">
 
-<p class="price">
+                View Details
 
-$${item.price || 0}
+                </button>
 
-</p>
 
+            </a>
 
 
 
 
 
+        </div>
 
-<a
 
-href="product.html?id=${item.id}">
+        `;
 
 
-<button
 
-class="buy-btn"
+    });
 
->
 
-View Details
 
-</button>
 
 
-</a>
-
-
-
-
-
-</div>
-
-
-`;
-
-
-
-});
-
-
-
-
-
-
-box.innerHTML = html;
+    box.innerHTML = html;
 
 
 
 }
-
 
 
 
@@ -299,43 +279,47 @@ function filterProducts(category){
 
 
 
-if(category==="全部"){
+    if(category==="全部"){
 
 
-showProducts(
-allProducts
-);
+        showProducts(
+            allProducts
+        );
 
 
-return;
+        return;
+
+
+    }
+
+
+
+
+
+
+
+    const result =
+
+
+    allProducts.filter(item=>
+
+
+        item.category === category
+
+
+    );
+
+
+
+
+
+    showProducts(
+        result
+    );
+
 
 
 }
-
-
-
-
-const result =
-
-
-allProducts.filter(item=>
-
-
-item.category === category
-
-
-);
-
-
-
-showProducts(
-result
-);
-
-
-
-}
-
 
 
 
@@ -353,82 +337,114 @@ function searchProducts(){
 
 
 
-const key =
+    const input =
+
+    document
+
+    .getElementById("search");
 
 
-document
 
-.getElementById("search")
-
-.value
-
-.trim()
-
-.toLowerCase();
+    if(!input) return;
 
 
 
 
+    const key =
 
 
-const result =
+    input.value
 
+    .trim()
 
-allProducts.filter(item=>{
-
-
-
-return (
-
-
-(item.name &&
-
-item.name.toLowerCase()
-
-.includes(key))
-
-
-||
-
-
-
-(item.name_en &&
-
-item.name_en.toLowerCase()
-
-.includes(key))
-
-
-||
-
-
-
-(item.category &&
-
-item.category.toLowerCase()
-
-.includes(key))
-
-
-);
-
-
-
-});
+    .toLowerCase();
 
 
 
 
 
 
-showProducts(
-result
-);
+
+    const result =
+
+
+    allProducts.filter(item=>{
+
+
+
+        return (
+
+
+
+            item.name &&
+
+            item.name
+
+            .toLowerCase()
+
+            .includes(key)
+
+
+
+        )
+
+
+
+        ||
+
+
+
+
+        (item.name_en &&
+
+
+        item.name_en
+
+        .toLowerCase()
+
+        .includes(key)
+
+
+
+        )
+
+
+
+        ||
+
+
+
+
+        (item.category &&
+
+
+        item.category
+
+        .toLowerCase()
+
+        .includes(key)
+
+
+
+        )
+
+
+
+    });
+
+
+
+
+
+
+
+    showProducts(
+        result
+    );
 
 
 
 }
-
 
 
 
