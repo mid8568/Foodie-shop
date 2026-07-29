@@ -11,13 +11,11 @@ const SUPABASE_KEY =
 "sb_publishable_2IFHfms3ombozpvZCvaeEg_2VZ2z5hJ";
 
 
-
 const client =
 supabase.createClient(
     SUPABASE_URL,
     SUPABASE_KEY
 );
-
 
 
 
@@ -33,7 +31,6 @@ new URLSearchParams(
 );
 
 
-
 const productId =
 params.get("id");
 
@@ -41,14 +38,12 @@ params.get("id");
 
 
 
-
 // =========================
-// 加载详情
+// 加载商品详情
 // =========================
 
 
 async function loadProduct(){
-
 
 
 const box =
@@ -61,11 +56,11 @@ document.getElementById(
 if(!productId){
 
 
-    box.innerHTML =
-    "Product not found";
+box.innerHTML =
+"Product not found";
 
 
-    return;
+return;
 
 
 }
@@ -79,6 +74,7 @@ const {
 data,
 
 error
+
 
 }= await client
 
@@ -104,14 +100,16 @@ productId
 if(error || !data){
 
 
-    console.log(error);
+console.log(
+error
+);
 
 
-    box.innerHTML =
-    "Product loading failed";
+box.innerHTML =
+"Product loading failed";
 
 
-    return;
+return;
 
 
 }
@@ -120,12 +118,13 @@ if(error || !data){
 
 
 
-
-
-// 图片数组
+// =========================
+// 主图
+// =========================
 
 
 const images=[
+
 
 data.image,
 
@@ -135,10 +134,9 @@ data.image3,
 
 data.image4
 
-]
 
+].filter(Boolean);
 
-.filter(Boolean);
 
 
 
@@ -177,6 +175,87 @@ onclick="changeImage('${img}')"
 
 
 
+// =========================
+// 详情图片
+// =========================
+
+
+let detailHtml="";
+
+
+
+if(
+
+data.detail_images
+
+&&
+
+Array.isArray(data.detail_images)
+
+){
+
+
+data.detail_images.forEach(img=>{
+
+
+detailHtml += `
+
+
+<img
+
+src="${img}"
+
+class="detail-img"
+
+>
+
+
+`;
+
+
+});
+
+
+}
+
+
+
+
+
+
+
+// =========================
+// 商品描述
+// =========================
+
+
+let description =
+
+data.description ||
+
+data.description_en ||
+
+"Authentic Chinese Product";
+
+
+
+description =
+
+description.replace(
+/\n/g,
+"<br>"
+);
+
+
+
+
+
+
+
+// =========================
+// 页面HTML
+// =========================
+
 
 box.innerHTML = `
 
@@ -187,6 +266,8 @@ box.innerHTML = `
 
 
 
+
+<!-- 商品图片 -->
 
 
 <div class="gallery">
@@ -201,28 +282,37 @@ id="main-image"
 
 src="${images[0] || ''}"
 
+
 class="main-image"
+
 
 
 >
 
 
 
+
 <div class="thumb-list">
+
 
 ${thumbs}
 
-</div>
-
-
 
 </div>
 
 
 
+</div>
 
 
 
+
+
+
+
+
+
+<!-- 商品信息 -->
 
 
 <div class="info">
@@ -231,7 +321,7 @@ ${thumbs}
 
 <h1>
 
-${data.name_en || data.name}
+${data.name_en || data.name || ""}
 
 </h1>
 
@@ -250,9 +340,12 @@ ${data.category || "Chinese Products"}
 
 
 
+
 <h2 class="price">
 
-$${data.sale_price || 0}
+
+$${data.sale_price || data.price || 0}
+
 
 </h2>
 
@@ -262,9 +355,9 @@ $${data.sale_price || 0}
 
 
 
-<p class="description">
 
-${data.description_en || data.description || "Authentic Chinese Product"}
+<p class="cost">
+
 
 </p>
 
@@ -274,12 +367,14 @@ ${data.description_en || data.description || "Authentic Chinese Product"}
 
 
 
-
 <a
+
 
 href="https://m.me/你的Facebook主页用户名"
 
+
 target="_blank"
+
 
 class="buy-btn">
 
@@ -293,6 +388,12 @@ class="buy-btn">
 
 
 
+</div>
+
+
+
+
+
 
 </div>
 
@@ -300,7 +401,151 @@ class="buy-btn">
 
 
 
+
+
+
+
+<!-- 商品描述 -->
+
+
+<section class="description-box">
+
+
+<h2>
+
+Product Description
+
+</h2>
+
+
+<div class="description-text">
+
+
+${description}
+
+
 </div>
+
+
+
+</section>
+
+
+
+
+
+
+
+
+
+<!-- 规格参数 -->
+
+
+<section class="spec-box">
+
+
+<h2>
+
+Product Information
+
+</h2>
+
+
+
+<table>
+
+
+<tr>
+
+<td>
+Supplier
+</td>
+
+
+<td>
+${data.supplier || "China Supplier"}
+
+</td>
+
+
+</tr>
+
+
+
+
+
+<tr>
+
+<td>
+Source
+</td>
+
+
+<td>
+1688 China
+
+</td>
+
+
+</tr>
+
+
+
+
+
+<tr>
+
+<td>
+Shipping
+
+</td>
+
+
+<td>
+Worldwide Shipping
+
+</td>
+
+
+</tr>
+
+
+</table>
+
+
+</section>
+
+
+
+
+
+
+
+
+
+<!-- 1688详情图片 -->
+
+
+<section class="detail-box">
+
+
+<h2>
+
+Product Details
+
+</h2>
+
+
+
+${detailHtml || 
+
+"<p>No detail images</p>"
+
+}
+
+
+
+</section>
 
 
 
@@ -311,7 +556,11 @@ class="buy-btn">
 
 
 
-// 动态修改SEO
+
+
+// =========================
+// SEO
+// =========================
 
 
 document.title =
@@ -328,8 +577,6 @@ data.name;
 
 
 
- 
-
 
 
 // =========================
@@ -341,15 +588,25 @@ function changeImage(url){
 
 
 
-document
+const img =
 
-.getElementById("main-image")
+document.getElementById(
+"main-image"
+);
 
-.src=url;
 
+
+if(img){
+
+
+img.src=url;
 
 
 }
+
+
+}
+
 
 
 
