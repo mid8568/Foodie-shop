@@ -242,9 +242,7 @@ $${item.price || 0}
 
 <a
 
-href="${item.ebay_url || '#'}"
-
-target="_blank">
+href="product.html?id=${item.id}">
 
 
 <button
@@ -253,7 +251,7 @@ class="buy-btn"
 
 >
 
-Buy on eBay
+View Details
 
 </button>
 
