@@ -108,7 +108,8 @@ data.image4
 
 .filter(Boolean);
 
-
+const detailImages =
+data.detail_images || [];
 
 
 
@@ -313,6 +314,26 @@ Product Details
 
 </h2>
 
+<div class="detail-images">
+
+
+${
+detailImages.map(img=>`
+
+<img
+
+src="${img}"
+
+class="detail-img"
+
+>
+
+`).join("")
+
+}
+
+
+</div>
 
 ${specs}
 
