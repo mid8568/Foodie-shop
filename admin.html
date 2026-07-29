@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="zh-CN">
 
 
 <head>
@@ -11,7 +11,7 @@
 
 
 <title>
-Product Admin
+China Direct Shop Admin
 </title>
 
 
@@ -21,53 +21,51 @@ Product Admin
 </head>
 
 
+
 <body>
-<script>
 
 
-if(
-localStorage.getItem("admin_login")
-!="yes"
 
-){
+<div class="container">
 
-location.href="admin-login.html";
-
-}
-
-
-</script>
 
 <h1>
 
-China Direct Shop
+🇨🇳 China Direct Shop
 
 </h1>
 
 
 <h2>
 
-Add Product
+商品管理后台
 
 </h2>
+
+
 
 
 
 <div class="admin-box">
 
 
-<input id="name" placeholder="商品中文名">
+
+<input id="name" placeholder="商品中文名称">
 
 
-<input id="name_en" placeholder="English Name">
+
+<input id="name_en" placeholder="英文商品名称">
 
 
-<input id="category" placeholder="分类">
+
+<input id="category" placeholder="商品分类">
+
+
 
 
 <label>
 
-商品图片
+主图片
 
 </label>
 
@@ -78,24 +76,36 @@ type="file"
 
 id="imageFile"
 
-accept="image/*"
-
->
+accept="image/*">
 
 
-<input id="price" placeholder="售价 USD">
 
 
-<input id="cost_price" placeholder="成本价">
 
 
-<input id="supplier" placeholder="1688供应商">
+<input id="image2" placeholder="详情图片2地址">
 
 
-<input id="supplier_url" placeholder="1688链接">
+
+<input id="image3" placeholder="详情图片3地址">
 
 
-<input id="ebay_url" placeholder="eBay商品链接">
+
+<input id="image4" placeholder="详情图片4地址">
+
+
+
+
+
+<textarea
+
+id="description"
+
+placeholder="中文商品介绍">
+
+</textarea>
+
+
 
 
 
@@ -103,9 +113,141 @@ accept="image/*"
 
 id="description_en"
 
-placeholder="Product Description">
+placeholder="英文商品介绍">
 
 </textarea>
+
+
+
+
+
+
+
+<input
+
+id="price"
+
+placeholder="销售价格 USD">
+
+
+
+
+
+<input
+
+id="currency"
+
+value="USD"
+
+placeholder="货币">
+
+
+
+
+
+<input
+
+id="cost_price"
+
+placeholder="采购成本">
+
+
+
+
+
+
+<input
+
+id="supplier"
+
+placeholder="1688供应商名称">
+
+
+
+
+
+<input
+
+id="supplier_url"
+
+placeholder="1688供应商链接">
+
+
+
+
+
+<input
+
+id="supplier_contact"
+
+placeholder="供应商联系方式">
+
+
+
+
+
+
+<input
+
+id="ebay_item_id"
+
+placeholder="eBay商品ID">
+
+
+
+
+
+<input
+
+id="ebay_url"
+
+placeholder="eBay购买链接">
+
+
+
+
+
+<input
+
+id="ebay_title"
+
+placeholder="eBay标题">
+
+
+
+
+
+<input
+
+id="ebay_category"
+
+placeholder="eBay分类">
+
+
+
+
+
+
+<input
+
+id="seo_title"
+
+placeholder="SEO标题">
+
+
+
+
+
+<textarea
+
+id="seo_description"
+
+placeholder="SEO描述">
+
+</textarea>
+
+
+
 
 
 
@@ -127,19 +269,42 @@ placeholder="Product Description">
 </option>
 
 
+<option value="缺货">
+
+缺货
+
+</option>
+
+
 </select>
+
+
 
 
 
 
 <button onclick="addProduct()">
 
-Save Product
+保存商品
 
 </button>
 
 
+
+
+
+<p id="message"></p>
+
+
+
+
 </div>
+
+
+
+</div>
+
+
 
 
 
