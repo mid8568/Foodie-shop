@@ -2,6 +2,7 @@
 // Supabase配置
 // =========================
 
+
 const SUPABASE_URL =
 "https://ukxxmxnubxjezkwbbxdr.supabase.co";
 
@@ -20,7 +21,13 @@ SUPABASE_KEY
 
 
 
-let allProducts=[];
+
+// =========================
+// 商品数据
+// =========================
+
+
+let allProducts = [];
 
 
 
@@ -29,26 +36,43 @@ let allProducts=[];
 // 加载商品
 // =========================
 
+
 async function loadProducts(){
 
 
+const box =
 document.getElementById(
 "product-list"
-).innerHTML=
+);
+
+
+
+box.innerHTML =
 "Loading products...";
 
 
 
-const {data,error}=await client
+
+const {
+
+data,
+
+error
+
+}= await client
+
 
 .from("products")
 
+
 .select("*")
+
 
 .eq(
 "stock_status",
 "上架"
 )
+
 
 .order(
 "id",
@@ -59,24 +83,30 @@ ascending:false
 
 
 
+
+
 if(error){
+
 
 console.log(error);
 
 
-document.getElementById(
-"product-list"
-).innerHTML=
-"Load failed";
+
+box.innerHTML =
+"Products loading failed";
 
 
 return;
+
 
 }
 
 
 
-allProducts=data;
+
+
+allProducts = data;
+
 
 
 showProducts(
@@ -84,7 +114,11 @@ allProducts
 );
 
 
+
 }
+
+
+
 
 
 
@@ -95,25 +129,39 @@ allProducts
 // 显示商品
 // =========================
 
+
 function showProducts(list){
 
 
-let html="";
+
+const box =
+document.getElementById(
+"product-list"
+);
+
+
+
+let html = "";
+
+
 
 
 
 if(list.length===0){
 
 
-document.getElementById(
-"product-list"
-).innerHTML=
-"<h3>No products</h3>";
+box.innerHTML =
 
+"<h3>No products found</h3>";
 
 return;
 
+
 }
+
+
+
+
 
 
 
@@ -121,13 +169,26 @@ list.forEach(item=>{
 
 
 
-html+=`
+html += `
+
 
 <div class="card">
 
 
 
-<img src="${item.image || ''}">
+
+
+<img
+
+src="${item.image || ''}"
+
+alt="${item.name_en || item.name}"
+
+>
+
+
+
+
 
 
 
@@ -136,6 +197,9 @@ html+=`
 ${item.name_en || item.name}
 
 </h3>
+
+
+
 
 
 
@@ -150,11 +214,15 @@ ${item.category || "Chinese Products"}
 
 
 
+
+
 <p class="desc">
 
-${item.description_en || item.description || ""}
+${item.description_en || ""}
 
 </p>
+
+
 
 
 
@@ -170,39 +238,29 @@ $${item.price || 0}
 
 
 
-<a href="product.html?id=${item.id}">
-
-<button>
-
-View Details
-
-</button>
-
-</a>
 
 
+<a
 
+href="${item.ebay_url || '#'}"
 
-
-${
-item.ebay_url
-?
-`
-<a 
-href="${item.ebay_url}"
 target="_blank">
 
-<button class="buy-btn">
+
+<button
+
+class="buy-btn"
+
+>
 
 Buy on eBay
 
 </button>
 
+
 </a>
-`
-:
-""
-}
+
+
 
 
 
@@ -218,9 +276,10 @@ Buy on eBay
 
 
 
-document.getElementById(
-"product-list"
-).innerHTML=html;
+
+
+box.innerHTML = html;
+
 
 
 }
@@ -252,17 +311,20 @@ allProducts
 
 return;
 
+
 }
+
 
 
 
 const result =
 
-allProducts.filter(
 
-item=>
+allProducts.filter(item=>
 
-item.category===category
+
+item.category === category
+
 
 );
 
@@ -273,6 +335,7 @@ result
 );
 
 
+
 }
 
 
@@ -282,8 +345,9 @@ result
 
 
 
+
 // =========================
-// 搜索
+// 搜索商品
 // =========================
 
 
@@ -293,39 +357,58 @@ function searchProducts(){
 
 const key =
 
-document.getElementById(
-"search"
-).value.trim()
+
+document
+
+.getElementById("search")
+
+.value
+
+.trim()
+
 .toLowerCase();
+
+
 
 
 
 
 const result =
 
-allProducts.filter(
 
-item=>
+allProducts.filter(item=>{
+
+
+
+return (
 
 
 (item.name &&
+
 item.name.toLowerCase()
+
 .includes(key))
 
 
 ||
+
 
 
 (item.name_en &&
+
 item.name_en.toLowerCase()
+
 .includes(key))
 
 
 ||
 
 
+
 (item.category &&
+
 item.category.toLowerCase()
+
 .includes(key))
 
 
@@ -333,62 +416,10 @@ item.category.toLowerCase()
 
 
 
-showProducts(
-result
-);
-
-
-}
+});
 
 
 
-
-
-
-
-
-// =========================
-// 价格排序
-// =========================
-
-
-function sortPrice(type){
-
-
-
-let result=[...allProducts];
-
-
-
-if(type==="low"){
-
-
-result.sort(
-
-(a,b)=>
-
-a.price-b.price
-
-);
-
-
-}
-
-
-
-if(type==="high"){
-
-
-result.sort(
-
-(a,b)=>
-
-b.price-a.price
-
-);
-
-
-}
 
 
 
@@ -397,6 +428,7 @@ result
 );
 
 
+
 }
 
 
@@ -404,8 +436,12 @@ result
 
 
 
+
+
+
 // =========================
-// 启动
+// 初始化
 // =========================
+
 
 loadProducts();
