@@ -51,7 +51,135 @@ China Direct Shop Admin
 
 <form class="admin-box">
 
+<!-- =====================
+1688采集商品
+===================== -->
 
+<div class="card">
+
+<h2>
+1688商品采集
+</h2>
+
+
+<div class="form-row">
+
+<input 
+id="1688Url"
+placeholder="请输入1688商品链接"
+style="width:80%;padding:10px;"
+>
+
+
+<button 
+onclick="collect1688()">
+开始采集
+</button>
+
+
+</div>
+
+
+
+<div id="collectResult"
+style="
+display:none;
+margin-top:20px;
+">
+
+
+<h3>
+采集结果
+</h3>
+
+
+
+<div>
+
+商品标题：
+
+<input 
+id="productTitle"
+style="width:100%;"
+>
+
+</div>
+
+
+
+<br>
+
+
+<div>
+
+采购价格：
+
+<input 
+id="costPrice"
+type="number"
+oninput="calcPrice()"
+>
+
+</div>
+
+
+
+<br>
+
+
+
+<div>
+
+销售价格：
+
+<input 
+id="sellPrice"
+readonly
+>
+
+</div>
+
+
+
+
+<h3>
+主图
+</h3>
+
+
+<div id="mainImages"
+class="image-box">
+
+</div>
+
+
+
+<h3>
+详情图片
+</h3>
+
+
+<div id="detailImages"
+class="image-box">
+
+</div>
+
+
+
+<br>
+
+
+<button onclick="saveProduct()">
+
+保存商品
+
+</button>
+
+
+</div>
+
+
+</div>
 
 
 
