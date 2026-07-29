@@ -14,8 +14,8 @@ const SUPABASE_KEY =
 
 const client =
 supabase.createClient(
-SUPABASE_URL,
-SUPABASE_KEY
+    SUPABASE_URL,
+    SUPABASE_KEY
 );
 
 
@@ -29,8 +29,9 @@ SUPABASE_KEY
 
 const params =
 new URLSearchParams(
-window.location.search
+    window.location.search
 );
+
 
 
 const productId =
@@ -40,8 +41,9 @@ params.get("id");
 
 
 
+
 // =========================
-// 加载商品详情
+// 加载详情
 // =========================
 
 
@@ -51,7 +53,7 @@ async function loadProduct(){
 
 const box =
 document.getElementById(
-"product-detail"
+    "product-detail"
 );
 
 
@@ -59,16 +61,14 @@ document.getElementById(
 if(!productId){
 
 
-box.innerHTML =
+    box.innerHTML =
+    "Product not found";
 
-"<h2>Product not found</h2>";
 
-return;
+    return;
 
 
 }
-
-
 
 
 
@@ -101,21 +101,17 @@ productId
 
 
 
-
 if(error || !data){
 
 
-console.log(error);
+    console.log(error);
 
 
-
-box.innerHTML =
-
-"<h2>Product not found</h2>";
+    box.innerHTML =
+    "Product loading failed";
 
 
-
-return;
+    return;
 
 
 }
@@ -125,97 +121,111 @@ return;
 
 
 
-// =========================
-// 修改网页标题
-// =========================
+
+// 图片数组
 
 
-document.title =
+const images=[
 
-(data.name_en || data.name)
+data.image,
 
-+
-" | China Direct Shop";
+data.image2,
 
+data.image3,
 
+data.image4
 
-
-
-
-
-
-// =========================
-// Facebook分享信息
-// =========================
+]
 
 
-setMeta(
-
-"og:title",
-
-data.name_en || data.name
-
-);
-
-
-
-setMeta(
-
-"og:description",
-
-data.description_en || ""
-
-);
-
-
-
-setMeta(
-
-"og:image",
-
-data.image
-
-);
-
-
-
-setMeta(
-
-"og:url",
-
-window.location.href
-
-);
+.filter(Boolean);
 
 
 
 
 
 
-// =========================
-// 显示商品
-// =========================
+let thumbs="";
+
+
+
+images.forEach(img=>{
+
+
+thumbs += `
+
+
+<img
+
+src="${img}"
+
+class="thumb"
+
+onclick="changeImage('${img}')"
+
+>
+
+
+`;
+
+
+});
+
+
+
+
+
+
 
 
 box.innerHTML = `
 
 
-<div class="detail-card">
+
+<div class="product-detail-box">
 
 
+
+
+
+
+<div class="gallery">
 
 
 
 <img
 
-src="${data.image || ''}"
 
-class="detail-image"
+id="main-image"
+
+
+src="${images[0] || ''}"
+
+class="main-image"
+
 
 >
 
 
 
+<div class="thumb-list">
+
+${thumbs}
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+<div class="info">
 
 
 
@@ -224,7 +234,6 @@ class="detail-image"
 ${data.name_en || data.name}
 
 </h1>
-
 
 
 
@@ -241,23 +250,23 @@ ${data.category || "Chinese Products"}
 
 
 
-<p class="desc">
-
-${data.description_en || ""}
-
-</p>
-
-
-
-
-
-
-
 <h2 class="price">
 
-$${data.price || 0}
+$${data.sale_price || 0}
 
 </h2>
+
+
+
+
+
+
+
+<p class="description">
+
+${data.description_en || data.description || "Authentic Chinese Product"}
+
+</p>
 
 
 
@@ -268,59 +277,18 @@ $${data.price || 0}
 
 <a
 
-href="${data.ebay_url || '#'}"
+href="https://m.me/你的Facebook主页用户名"
 
-target="_blank">
+target="_blank"
+
+class="buy-btn">
 
 
-<button class="buy-btn">
-
-Buy on eBay
-
-</button>
+💬 Contact Us
 
 
 </a>
 
-
-
-
-
-
-
-<button
-
-class="share-btn"
-
-onclick="shareFacebook()">
-
-Share on Facebook
-
-</button>
-
-
-
-
-
-
-
-<br><br>
-
-
-
-
-
-<a href="index.html">
-
-
-<button>
-
-Back Home
-
-</button>
-
-
-</a>
 
 
 
@@ -329,59 +297,30 @@ Back Home
 </div>
 
 
+
+
+
+</div>
+
+
+
+
 `;
 
 
 
-}
 
 
+// 动态修改SEO
 
 
+document.title =
 
+data.seo_title ||
 
+data.name_en ||
 
-
-
-// =========================
-// 设置Meta信息
-// =========================
-
-
-function setMeta(property,value){
-
-
-
-let meta =
-
-document.querySelector(
-
-`meta[property="${property}"]`
-
-);
-
-
-
-
-
-if(!meta){
-
-
-
-meta = document.createElement(
-"meta"
-);
-
-
-meta.setAttribute(
-"property",
-property
-);
-
-
-document.head.appendChild(
-meta
-);
+data.name;
 
 
 
@@ -389,12 +328,24 @@ meta
 
 
 
+ 
 
 
-meta.setAttribute(
-"content",
-value || ""
-);
+
+// =========================
+// 图片切换
+// =========================
+
+
+function changeImage(url){
+
+
+
+document
+
+.getElementById("main-image")
+
+.src=url;
 
 
 
@@ -402,58 +353,6 @@ value || ""
 
 
 
-
-
-
-
-
-
-// =========================
-// Facebook分享
-// =========================
-
-
-function shareFacebook(){
-
-
-
-const url =
-
-encodeURIComponent(
-window.location.href
-);
-
-
-
-
-
-window.open(
-
-"https://www.facebook.com/sharer/sharer.php?u="
-+
-url,
-
-
-"_blank"
-
-
-);
-
-
-
-}
-
-
-
-
-
-
-
-
-
-// =========================
-// 初始化
-// =========================
 
 
 loadProduct();
