@@ -2,7 +2,6 @@
 // Supabase配置
 // =========================
 
-
 const SUPABASE_URL =
 "https://ukxxmxnubxjezkwbbxdr.supabase.co";
 
@@ -21,9 +20,7 @@ SUPABASE_KEY
 
 
 
-
 let allProducts=[];
-
 
 
 
@@ -32,22 +29,27 @@ let allProducts=[];
 // 加载商品
 // =========================
 
-
 async function loadProducts(){
-
 
 
 document.getElementById(
 "product-list"
 ).innerHTML=
-"商品加载中...";
-
+"Loading products...";
 
 
 
 const {data,error}=await client
+
 .from("products")
+
 .select("*")
+
+.eq(
+"stock_status",
+"上架"
+)
+
 .order(
 "id",
 {
@@ -57,9 +59,7 @@ ascending:false
 
 
 
-
 if(error){
-
 
 console.log(error);
 
@@ -67,20 +67,16 @@ console.log(error);
 document.getElementById(
 "product-list"
 ).innerHTML=
-"商品加载失败";
+"Load failed";
 
 
 return;
-
 
 }
 
 
 
-
-
 allProducts=data;
-
 
 
 showProducts(
@@ -88,11 +84,7 @@ allProducts
 );
 
 
-
 }
-
-
-
 
 
 
@@ -103,35 +95,25 @@ allProducts
 // 显示商品
 // =========================
 
-
 function showProducts(list){
-
 
 
 let html="";
 
 
 
-
-
 if(list.length===0){
-
-
-html=
-"<h3>暂无商品</h3>";
 
 
 document.getElementById(
 "product-list"
-).innerHTML=html;
+).innerHTML=
+"<h3>No products</h3>";
 
 
 return;
 
-
 }
-
-
 
 
 
@@ -139,44 +121,28 @@ list.forEach(item=>{
 
 
 
-let stockText =
-item.stock>0
-?
-"库存:"+item.stock
-:
-"已售罄";
-
-
-
-
 html+=`
-
 
 <div class="card">
 
 
 
-<img src="${item.image}">
-
-
+<img src="${item.image || ''}">
 
 
 
 <h3>
 
-${item.name}
+${item.name_en || item.name}
 
 </h3>
 
 
 
 
+<p class="category">
 
-<p>
-
-分类：
-
-${item.category || "白酒"}
+${item.category || "Chinese Products"}
 
 </p>
 
@@ -186,7 +152,7 @@ ${item.category || "白酒"}
 
 <p class="desc">
 
-${item.description || ""}
+${item.description_en || item.description || ""}
 
 </p>
 
@@ -196,37 +162,47 @@ ${item.description || ""}
 
 <p class="price">
 
-¥${item.price}
+$${item.price || 0}
 
 </p>
 
-
-
-
-
-<p>
-
-${stockText}
-
-</p>
 
 
 
 
 <a href="product.html?id=${item.id}">
 
+<button>
 
-<button
-${item.stock<=0?"disabled":""}
->
-
-查看商品
+View Details
 
 </button>
 
-
 </a>
 
+
+
+
+
+${
+item.ebay_url
+?
+`
+<a 
+href="${item.ebay_url}"
+target="_blank">
+
+<button class="buy-btn">
+
+Buy on eBay
+
+</button>
+
+</a>
+`
+:
+""
+}
 
 
 
@@ -237,10 +213,7 @@ ${item.stock<=0?"disabled":""}
 
 
 
-
 });
-
-
 
 
 
@@ -248,7 +221,6 @@ ${item.stock<=0?"disabled":""}
 document.getElementById(
 "product-list"
 ).innerHTML=html;
-
 
 
 }
@@ -280,17 +252,18 @@ allProducts
 
 return;
 
-
 }
 
 
 
-
-
 const result =
+
 allProducts.filter(
+
 item=>
+
 item.category===category
+
 );
 
 
@@ -300,9 +273,7 @@ result
 );
 
 
-
 }
-
 
 
 
@@ -321,27 +292,41 @@ function searchProducts(){
 
 
 const key =
+
 document.getElementById(
 "search"
-).value.trim();
+).value.trim()
+.toLowerCase();
 
 
 
 
 const result =
+
 allProducts.filter(
+
 item=>
 
 
+(item.name &&
+item.name.toLowerCase()
+.includes(key))
 
-item.name.includes(key)
+
 ||
-(item.description &&
-item.description.includes(key))
+
+
+(item.name_en &&
+item.name_en.toLowerCase()
+.includes(key))
+
+
 ||
+
+
 (item.category &&
-item.category.includes(key))
-
+item.category.toLowerCase()
+.includes(key))
 
 
 );
@@ -353,9 +338,7 @@ result
 );
 
 
-
 }
-
 
 
 
@@ -381,8 +364,11 @@ if(type==="low"){
 
 
 result.sort(
+
 (a,b)=>
+
 a.price-b.price
+
 );
 
 
@@ -394,8 +380,11 @@ if(type==="high"){
 
 
 result.sort(
+
 (a,b)=>
+
 b.price-a.price
+
 );
 
 
@@ -408,7 +397,6 @@ result
 );
 
 
-
 }
 
 
@@ -416,6 +404,8 @@ result
 
 
 
-
+// =========================
+// 启动
+// =========================
 
 loadProducts();
