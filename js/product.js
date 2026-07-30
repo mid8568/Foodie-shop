@@ -2,7 +2,6 @@
 // Supabase配置
 // =========================
 
-
 const SUPABASE_URL =
 "https://ukxxmxnubxjezkwbbxdr.supabase.co";
 
@@ -19,21 +18,18 @@ supabase.createClient(
 
 
 
-
 // =========================
-// 获取商品ID
+// 商品ID
 // =========================
-
 
 const params =
 new URLSearchParams(
-    window.location.search
+window.location.search
 );
 
 
 const productId =
 params.get("id");
-
 
 
 
@@ -46,26 +42,21 @@ params.get("id");
 async function loadProduct(){
 
 
-
 const box =
 document.getElementById(
-    "product-detail"
+"product-detail"
 );
 
 
 
 if(!productId){
 
-
-box.innerHTML =
+box.innerHTML=
 "Product not found";
-
 
 return;
 
-
 }
-
 
 
 
@@ -78,22 +69,16 @@ error
 
 }=await client
 
-
 .from("products")
 
-
 .select("*")
-
 
 .eq(
 "id",
 productId
 )
 
-
 .single();
-
-
 
 
 
@@ -105,17 +90,22 @@ if(error || !data){
 console.log(error);
 
 
-box.innerHTML =
+box.innerHTML=
 "Product loading failed";
 
 
 return;
 
-
 }
 
 
 
+
+
+console.log(
+"商品数据:",
+data
+);
 
 
 
@@ -138,14 +128,34 @@ data.image4
 
 
 ]
-.filter(Boolean);
+.filter(
+x=>x && x.trim()
+);
+
+
+
+
+
+// 没有图片
+
+if(images.length===0){
+
+
+images=[
+"https://via.placeholder.com/600"
+];
+
+
+}
+
+
 
 
 
 
 
 // =========================
-// 详情图片 jsonb处理
+// 详情图片
 // =========================
 
 
@@ -153,45 +163,72 @@ let detailImages=[];
 
 
 
-if(data.detail_images){
+if(
+Array.isArray(data.detail_images)
+){
 
 
-
-    if(Array.isArray(data.detail_images)){
-
-
-        detailImages =
-        data.detail_images;
-
-
-    }
-
-    else{
-
-
-        try{
-
-
-            detailImages =
-            JSON.parse(
-                data.detail_images
-            );
-
-
-        }
-        catch(e){
-
-
-            detailImages=[];
-
-
-        }
-
-
-    }
+detailImages =
+data.detail_images;
 
 
 }
+
+
+
+
+// 去除重复
+
+detailImages =
+[...new Set(detailImages)]
+
+.filter(img=>{
+
+
+if(!img)
+return false;
+
+
+let x =
+img.toLowerCase();
+
+
+
+return !(
+
+x.includes("icon")
+
+||
+
+x.includes("logo")
+
+||
+
+x.includes("160x160")
+
+||
+
+x.includes("80x80")
+
+||
+
+x.includes("50x50")
+
+);
+
+
+});
+
+
+
+
+
+
+
+console.log(
+"详情:",
+detailImages
+);
 
 
 
@@ -200,53 +237,42 @@ if(data.detail_images){
 
 
 // =========================
-// 规格 jsonb处理
+// 规格
 // =========================
 
 
-let specifications={};
+let specifications =
+data.specifications || {};
 
 
 
-if(data.specifications){
+
+
+let specsHtml="";
 
 
 
-    if(typeof data.specifications==="object"){
+Object.entries(
+specifications
+)
+.forEach(([k,v])=>{
 
 
-        specifications =
-        data.specifications;
+specsHtml += `
+
+<tr>
+
+<td>${k}</td>
+
+<td>${v}</td>
+
+</tr>
+
+`;
 
 
-    }
+});
 
-    else{
-
-
-        try{
-
-
-            specifications =
-            JSON.parse(
-                data.specifications
-            );
-
-
-        }
-        catch(e){
-
-
-            specifications={};
-
-
-        }
-
-
-    }
-
-
-}
 
 
 
@@ -266,8 +292,7 @@ let thumbs="";
 images.forEach(img=>{
 
 
-thumbs += `
-
+thumbs +=`
 
 <img
 
@@ -279,7 +304,6 @@ onclick="changeImage('${img}')"
 
 >
 
-
 `;
 
 
@@ -292,50 +316,8 @@ onclick="changeImage('${img}')"
 
 
 
-
 // =========================
-// 规格表
-// =========================
-
-
-let specsHtml="";
-
-
-
-Object.entries(specifications)
-
-.forEach(([key,value])=>{
-
-
-specsHtml += `
-
-
-<tr>
-
-<td>${key}</td>
-
-<td>${value}</td>
-
-</tr>
-
-
-`;
-
-
-});
-
-
-
-
-
-
-
-
-
-
-
-// =========================
-// 详情图片
+// 详情HTML
 // =========================
 
 
@@ -346,8 +328,7 @@ let detailHtml="";
 detailImages.forEach(img=>{
 
 
-detailHtml += `
-
+detailHtml +=`
 
 <img
 
@@ -359,12 +340,10 @@ loading="lazy"
 
 >
 
-
 `;
 
 
 });
-
 
 
 
@@ -379,9 +358,7 @@ loading="lazy"
 // =========================
 
 
-
-box.innerHTML = `
-
+box.innerHTML=`
 
 
 <div class="product-box">
@@ -391,12 +368,11 @@ box.innerHTML = `
 <div class="gallery">
 
 
-
 <img
 
 id="main-image"
 
-src="${images[0] || ''}"
+src="${images[0]}"
 
 class="main-image"
 
@@ -405,21 +381,15 @@ class="main-image"
 
 
 
-
 <div class="thumb-list">
-
 
 ${thumbs}
 
-
 </div>
 
 
 
 </div>
-
-
-
 
 
 
@@ -427,7 +397,6 @@ ${thumbs}
 
 
 <div class="info">
-
 
 
 <h1>
@@ -438,16 +407,11 @@ ${data.name || ""}
 
 
 
-
-
-<p class="category">
+<p>
 
 ${data.category || "Chinese Products"}
 
 </p>
-
-
-
 
 
 
@@ -459,53 +423,30 @@ $${data.sale_price || 0}
 
 
 
-
-
-
-
 <h2>
-
 Description
-
 </h2>
-
 
 
 <p>
 
-${data.description || "Authentic Chinese Product"}
+${data.description || ""}
 
 </p>
 
 
 
 
-
-
-
-
 <h2>
-
 Specifications
-
 </h2>
-
-
-
 
 
 <table class="spec-table">
 
-
 ${specsHtml}
 
-
 </table>
-
-
-
-
-
 
 
 
@@ -523,17 +464,10 @@ Buy Now
 
 
 
-
-
 </div>
 
 
-
 </div>
-
-
-
-
 
 
 
@@ -547,20 +481,14 @@ Product Details
 
 
 
-
-
 <div class="detail-images">
 
-
 ${detailHtml}
-
 
 </div>
 
 
-
 `;
-
 
 
 
@@ -571,47 +499,31 @@ data.name;
 
 
 
-
 }
 
 
 
 
-
-
-
-
-// =========================
-// 切换主图
-// =========================
 
 
 
 function changeImage(url){
 
 
-
 const img =
-
 document.getElementById(
-    "main-image"
+"main-image"
 );
-
 
 
 if(img){
 
-
 img.src=url;
 
-
 }
 
 
-
 }
-
-
 
 
 
