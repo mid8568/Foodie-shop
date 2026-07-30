@@ -2,6 +2,7 @@
 // Supabase配置
 // =========================
 
+
 const SUPABASE_URL =
 "https://ukxxmxnubxjezkwbbxdr.supabase.co";
 
@@ -18,9 +19,11 @@ supabase.createClient(
 
 
 
+
 // =========================
 // 获取商品ID
 // =========================
+
 
 const params =
 new URLSearchParams(
@@ -34,12 +37,14 @@ params.get("id");
 
 
 
+
 // =========================
 // 加载商品
 // =========================
 
 
 async function loadProduct(){
+
 
 
 const box =
@@ -51,10 +56,13 @@ document.getElementById(
 
 if(!productId){
 
-    box.innerHTML =
-    "Product not found";
 
-    return;
+box.innerHTML =
+"Product not found";
+
+
+return;
+
 
 }
 
@@ -68,18 +76,24 @@ data,
 
 error
 
-}= await client
+}=await client
+
 
 .from("products")
 
+
 .select("*")
+
 
 .eq(
 "id",
 productId
 )
 
+
 .single();
+
+
 
 
 
@@ -88,16 +102,19 @@ productId
 if(error || !data){
 
 
-    console.log(error);
+console.log(error);
 
 
-    box.innerHTML =
-    "Product loading failed";
+box.innerHTML =
+"Product loading failed";
 
 
-    return;
+return;
+
 
 }
+
+
 
 
 
@@ -110,6 +127,7 @@ if(error || !data){
 
 let images=[
 
+
 data.image,
 
 data.image2,
@@ -118,6 +136,7 @@ data.image3,
 
 data.image4
 
+
 ]
 .filter(Boolean);
 
@@ -125,26 +144,28 @@ data.image4
 
 
 
-
 // =========================
-// 详情图片
+// 详情图片 jsonb处理
 // =========================
 
 
 let detailImages=[];
 
 
+
 if(data.detail_images){
 
 
-    if(
-        Array.isArray(data.detail_images)
-    ){
+
+    if(Array.isArray(data.detail_images)){
+
 
         detailImages =
         data.detail_images;
 
+
     }
+
     else{
 
 
@@ -160,7 +181,9 @@ if(data.detail_images){
         }
         catch(e){
 
+
             detailImages=[];
+
 
         }
 
@@ -177,19 +200,19 @@ if(data.detail_images){
 
 
 // =========================
-// 规格
+// 规格 jsonb处理
 // =========================
 
 
 let specifications={};
 
 
+
 if(data.specifications){
 
 
-    if(
-        typeof data.specifications === "object"
-    ){
+
+    if(typeof data.specifications==="object"){
 
 
         specifications =
@@ -197,6 +220,7 @@ if(data.specifications){
 
 
     }
+
     else{
 
 
@@ -212,7 +236,9 @@ if(data.specifications){
         }
         catch(e){
 
+
             specifications={};
+
 
         }
 
@@ -236,10 +262,12 @@ if(data.specifications){
 let thumbs="";
 
 
+
 images.forEach(img=>{
 
 
 thumbs += `
+
 
 <img
 
@@ -251,9 +279,13 @@ onclick="changeImage('${img}')"
 
 >
 
+
 `;
 
+
 });
+
+
 
 
 
@@ -269,30 +301,26 @@ onclick="changeImage('${img}')"
 let specsHtml="";
 
 
-Object.entries(
-    specifications
-)
+
+Object.entries(specifications)
 
 .forEach(([key,value])=>{
 
 
 specsHtml += `
 
+
 <tr>
 
-<td>
-${key}
-</td>
+<td>${key}</td>
 
-
-<td>
-${value}
-</td>
-
+<td>${value}</td>
 
 </tr>
 
+
 `;
+
 
 });
 
@@ -303,18 +331,23 @@ ${value}
 
 
 
+
+
+
 // =========================
-// 详情长图
+// 详情图片
 // =========================
 
 
 let detailHtml="";
 
 
+
 detailImages.forEach(img=>{
 
 
 detailHtml += `
+
 
 <img
 
@@ -326,7 +359,9 @@ loading="lazy"
 
 >
 
+
 `;
+
 
 });
 
@@ -338,12 +373,15 @@ loading="lazy"
 
 
 
+
 // =========================
-// 页面输出
+// 页面
 // =========================
+
 
 
 box.innerHTML = `
+
 
 
 <div class="product-box">
@@ -362,13 +400,17 @@ src="${images[0] || ''}"
 
 class="main-image"
 
+
 >
+
 
 
 
 <div class="thumb-list">
 
+
 ${thumbs}
+
 
 </div>
 
@@ -387,6 +429,7 @@ ${thumbs}
 <div class="info">
 
 
+
 <h1>
 
 ${data.name || ""}
@@ -396,11 +439,14 @@ ${data.name || ""}
 
 
 
+
 <p class="category">
 
 ${data.category || "Chinese Products"}
 
 </p>
+
+
 
 
 
@@ -415,11 +461,14 @@ $${data.sale_price || 0}
 
 
 
+
+
 <h2>
 
 Description
 
 </h2>
+
 
 
 <p>
@@ -434,13 +483,37 @@ ${data.description || "Authentic Chinese Product"}
 
 
 
+
+<h2>
+
+Specifications
+
+</h2>
+
+
+
+
+
+<table class="spec-table">
+
+
+${specsHtml}
+
+
+</table>
+
+
+
+
+
+
+
+
 <a
 
 href="${data.ebay_url || '#'}"
 
 class="buy-btn"
-
-target="_blank"
 
 >
 
@@ -453,6 +526,7 @@ Buy Now
 
 
 </div>
+
 
 
 </div>
@@ -473,35 +547,20 @@ Product Details
 
 
 
+
+
 <div class="detail-images">
 
+
 ${detailHtml}
+
 
 </div>
 
 
 
-
-
-
-
-<h2>
-
-Specifications
-
-</h2>
-
-
-
-<table class="spec-table">
-
-${specsHtml}
-
-</table>
-
-
-
 `;
+
 
 
 
@@ -512,6 +571,7 @@ data.name;
 
 
 
+
 }
 
 
@@ -522,27 +582,36 @@ data.name;
 
 
 // =========================
-// 图片切换
+// 切换主图
 // =========================
+
 
 
 function changeImage(url){
 
 
+
 const img =
+
 document.getElementById(
     "main-image"
 );
 
 
+
 if(img){
 
-    img.src=url;
+
+img.src=url;
+
 
 }
 
 
+
 }
+
+
 
 
 
