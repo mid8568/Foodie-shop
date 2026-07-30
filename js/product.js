@@ -167,6 +167,11 @@ if(data.detail_images){
 
 }
 
+    }
+
+
+}
+
 
 
 
@@ -178,37 +183,44 @@ if(data.detail_images){
 // 规格 JSON转对象
 // =========================
 
-
-let specifications={};
-
-
-
-try{
-
-
-let specifications={};
+let specifications = {};
 
 
 if(data.specifications){
 
 
-    if(typeof data.specifications==="object"){
+    // Supabase jsonb 类型
+    if(typeof data.specifications === "object"){
 
-        specifications=data.specifications;
+
+        specifications = data.specifications;
+
 
     }
+
+    // text 类型
     else{
 
 
         try{
 
-            specifications=
+
+            specifications =
             JSON.parse(data.specifications);
+
 
         }
         catch(e){
 
-            specifications={};
+
+            console.log(
+                "规格解析失败",
+                e
+            );
+
+
+            specifications = {};
+
 
         }
 
@@ -217,20 +229,6 @@ if(data.specifications){
 
 
 }
-
-
-}
-catch(e){
-
-
-specifications={};
-
-
-}
-
-
-
-
 
 
 
