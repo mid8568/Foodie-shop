@@ -7,7 +7,7 @@ const SUPABASE_URL =
 
 
 const SUPABASE_KEY =
-"sb_publishable_2IFHfms3ombozpvZCvaeEg_2VZ2z5h";
+"sb_publishable_2IFHfms3ombozpvZCvaeEg_2VZ2z5hJ";
 
 
 const client =
@@ -15,7 +15,6 @@ supabase.createClient(
     SUPABASE_URL,
     SUPABASE_KEY
 );
-
 
 
 
@@ -35,53 +34,6 @@ params.get("id");
 
 
 
-
-// =========================
-// 安全JSON解析
-// =========================
-
-function parseJSON(data){
-
-
-    if(!data){
-
-        return [];
-
-    }
-
-
-    if(typeof data === "object"){
-
-        return data;
-
-    }
-
-
-    try{
-
-        return JSON.parse(data);
-
-    }
-    catch(e){
-
-        console.log(
-            "JSON解析失败",
-            e
-        );
-
-        return [];
-
-    }
-
-
-}
-
-
-
-
-
-
-
 // =========================
 // 加载商品
 // =========================
@@ -92,7 +44,7 @@ async function loadProduct(){
 
 const box =
 document.getElementById(
-"product-detail"
+    "product-detail"
 );
 
 
@@ -118,18 +70,14 @@ error
 
 }= await client
 
-
 .from("products")
 
-
 .select("*")
-
 
 .eq(
 "id",
 productId
 )
-
 
 .single();
 
@@ -137,31 +85,19 @@ productId
 
 
 
-if(error){
+if(error || !data){
 
 
-console.log(error);
+    console.log(error);
 
 
-box.innerHTML =
-"Product loading failed";
+    box.innerHTML =
+    "Product loading failed";
 
 
-return;
-
+    return;
 
 }
-
-
-
-
-
-console.log(
-"商品数据:",
-data
-);
-
-
 
 
 
@@ -174,7 +110,6 @@ data
 
 let images=[
 
-
 data.image,
 
 data.image2,
@@ -182,7 +117,6 @@ data.image2,
 data.image3,
 
 data.image4
-
 
 ]
 .filter(Boolean);
@@ -192,17 +126,50 @@ data.image4
 
 
 
-
 // =========================
-// 详情图
+// 详情图片
 // =========================
 
 
-let detailImages =
+let detailImages=[];
 
-parseJSON(
-data.detail_images
-);
+
+if(data.detail_images){
+
+
+    if(
+        Array.isArray(data.detail_images)
+    ){
+
+        detailImages =
+        data.detail_images;
+
+    }
+    else{
+
+
+        try{
+
+
+            detailImages =
+            JSON.parse(
+                data.detail_images
+            );
+
+
+        }
+        catch(e){
+
+            detailImages=[];
+
+        }
+
+
+    }
+
+
+}
+
 
 
 
@@ -214,13 +181,46 @@ data.detail_images
 // =========================
 
 
-let specifications =
-
-parseJSON(
-data.specifications
-);
+let specifications={};
 
 
+if(data.specifications){
+
+
+    if(
+        typeof data.specifications === "object"
+    ){
+
+
+        specifications =
+        data.specifications;
+
+
+    }
+    else{
+
+
+        try{
+
+
+            specifications =
+            JSON.parse(
+                data.specifications
+            );
+
+
+        }
+        catch(e){
+
+            specifications={};
+
+        }
+
+
+    }
+
+
+}
 
 
 
@@ -239,7 +239,7 @@ let thumbs="";
 images.forEach(img=>{
 
 
-thumbs +=`
+thumbs += `
 
 <img
 
@@ -251,9 +251,7 @@ onclick="changeImage('${img}')"
 
 >
 
-
 `;
-
 
 });
 
@@ -263,62 +261,40 @@ onclick="changeImage('${img}')"
 
 
 
-
-
 // =========================
-// 规格HTML
+// 规格表
 // =========================
 
 
-let specHTML="";
+let specsHtml="";
 
 
+Object.entries(
+    specifications
+)
 
-if(
-Object.keys(specifications).length
-){
-
-
-specHTML +=`
-
-<table class="spec-table">
-
-`;
-
-
-
-Object.entries(specifications)
 .forEach(([key,value])=>{
 
 
-specHTML +=`
+specsHtml += `
 
 <tr>
 
-<td>${key}</td>
+<td>
+${key}
+</td>
 
-<td>${value}</td>
+
+<td>
+${value}
+</td>
+
 
 </tr>
 
-
 `;
-
 
 });
-
-
-specHTML +=`
-
-</table>
-
-`;
-
-
-}
-
-
-
 
 
 
@@ -332,19 +308,13 @@ specHTML +=`
 // =========================
 
 
-let detailHTML="";
-
-
-
-if(
-Array.isArray(detailImages)
-){
+let detailHtml="";
 
 
 detailImages.forEach(img=>{
 
 
-detailHTML +=`
+detailHtml += `
 
 <img
 
@@ -356,18 +326,11 @@ loading="lazy"
 
 >
 
-
 `;
-
 
 });
 
 
-}
-
-
-
-
 
 
 
@@ -376,11 +339,11 @@ loading="lazy"
 
 
 // =========================
-// 页面
+// 页面输出
 // =========================
 
 
-box.innerHTML =`
+box.innerHTML = `
 
 
 <div class="product-box">
@@ -398,7 +361,6 @@ id="main-image"
 src="${images[0] || ''}"
 
 class="main-image"
-
 
 >
 
@@ -420,8 +382,9 @@ ${thumbs}
 
 
 
-<div class="info">
 
+
+<div class="info">
 
 
 <h1>
@@ -433,14 +396,11 @@ ${data.name || ""}
 
 
 
-<p>
+<p class="category">
 
-Category:
-
-${data.category || "Chinese Product"}
+${data.category || "Chinese Products"}
 
 </p>
-
 
 
 
@@ -455,8 +415,6 @@ $${data.sale_price || 0}
 
 
 
-
-
 <h2>
 
 Description
@@ -466,7 +424,7 @@ Description
 
 <p>
 
-${data.description || ""}
+${data.description || "Authentic Chinese Product"}
 
 </p>
 
@@ -476,46 +434,29 @@ ${data.description || ""}
 
 
 
-<h2>
-
-Specifications
-
-</h2>
-
-
-${specHTML}
-
-
-
-
-<br>
-
-
-
 <a
 
 href="${data.ebay_url || '#'}"
 
 class="buy-btn"
 
+target="_blank"
+
 >
 
-
 Buy Now
-
 
 </a>
 
 
 
-</div>
-
-
-
-
 
 
 </div>
+
+
+</div>
+
 
 
 
@@ -531,13 +472,32 @@ Product Details
 </h2>
 
 
+
 <div class="detail-images">
 
-
-${detailHTML}
-
+${detailHtml}
 
 </div>
+
+
+
+
+
+
+
+<h2>
+
+Specifications
+
+</h2>
+
+
+
+<table class="spec-table">
+
+${specsHtml}
+
+</table>
 
 
 
@@ -569,14 +529,17 @@ data.name;
 function changeImage(url){
 
 
-document
+const img =
+document.getElementById(
+    "main-image"
+);
 
-.getElementById(
-"main-image"
-)
 
-.src=url;
+if(img){
 
+    img.src=url;
+
+}
 
 
 }
