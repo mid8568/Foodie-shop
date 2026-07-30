@@ -2,19 +2,18 @@
 // Supabase配置
 // =========================
 
-
 const SUPABASE_URL =
 "https://ukxxmxnubxjezkwbbxdr.supabase.co";
 
 
 const SUPABASE_KEY =
-"sb_publishable_2IFHfms3ombozpvZCvaeEg_2VZ2z5hJ";
+"sb_publishable_2IFHfms3ombozpvZCvaeEg_2VZ2z5h";
 
 
 const client =
 supabase.createClient(
-SUPABASE_URL,
-SUPABASE_KEY
+    SUPABASE_URL,
+    SUPABASE_KEY
 );
 
 
@@ -26,7 +25,7 @@ SUPABASE_KEY
 
 const params =
 new URLSearchParams(
-window.location.search
+    window.location.search
 );
 
 
@@ -37,9 +36,58 @@ params.get("id");
 
 
 
+// =========================
+// 安全JSON解析
+// =========================
+
+function parseJSON(data){
+
+
+    if(!data){
+
+        return [];
+
+    }
+
+
+    if(typeof data === "object"){
+
+        return data;
+
+    }
+
+
+    try{
+
+        return JSON.parse(data);
+
+    }
+    catch(e){
+
+        console.log(
+            "JSON解析失败",
+            e
+        );
+
+        return [];
+
+    }
+
+
+}
+
+
+
+
+
+
+
+// =========================
+// 加载商品
+// =========================
+
 
 async function loadProduct(){
-
 
 
 const box =
@@ -51,11 +99,13 @@ document.getElementById(
 
 if(!productId){
 
-box.innerHTML="Product not found";
+    box.innerHTML =
+    "Product not found";
 
-return;
+    return;
 
 }
+
 
 
 
@@ -66,7 +116,7 @@ data,
 
 error
 
-}=await client
+}= await client
 
 
 .from("products")
@@ -87,7 +137,7 @@ productId
 
 
 
-if(error || !data){
+if(error){
 
 
 console.log(error);
@@ -106,12 +156,24 @@ return;
 
 
 
+console.log(
+"商品数据:",
+data
+);
+
+
+
+
+
+
+
 // =========================
 // 主图
 // =========================
 
 
 let images=[
+
 
 data.image,
 
@@ -121,58 +183,10 @@ data.image3,
 
 data.image4
 
-]
 
+]
 .filter(Boolean);
 
-console.log("商品图片:",images);
-console.log("详情图片:",detailImages);
-
-
-
-
-// =========================
-// 详情图片 JSON转数组
-// =========================
-
-
-let detailImages = [];
-
-
-if(data.detail_images){
-
-
-    if(Array.isArray(data.detail_images)){
-
-        detailImages = data.detail_images;
-
-    }
-    else{
-
-
-        try{
-
-            detailImages = JSON.parse(data.detail_images);
-
-        }
-        catch(e){
-
-            detailImages=[];
-
-        }
-
-
-    }
-
-
-}
-
-    }
-
-
-}
-
-
 
 
 
@@ -180,55 +194,37 @@ if(data.detail_images){
 
 
 // =========================
-// 规格 JSON转对象
+// 详情图
 // =========================
 
-let specifications = {};
+
+let detailImages =
+
+parseJSON(
+data.detail_images
+);
 
 
-if(data.specifications){
 
 
-    // Supabase jsonb 类型
-    if(typeof data.specifications === "object"){
 
 
-        specifications = data.specifications;
+// =========================
+// 规格
+// =========================
 
 
-    }
+let specifications =
 
-    // text 类型
-    else{
-
-
-        try{
+parseJSON(
+data.specifications
+);
 
 
-            specifications =
-            JSON.parse(data.specifications);
 
 
-        }
-        catch(e){
 
 
-            console.log(
-                "规格解析失败",
-                e
-            );
-
-
-            specifications = {};
-
-
-        }
-
-
-    }
-
-
-}
 
 
 
@@ -255,7 +251,9 @@ onclick="changeImage('${img}')"
 
 >
 
+
 `;
+
 
 });
 
@@ -266,12 +264,26 @@ onclick="changeImage('${img}')"
 
 
 
+
 // =========================
-// 规格表
+// 规格HTML
 // =========================
 
 
-let specsHtml="";
+let specHTML="";
+
+
+
+if(
+Object.keys(specifications).length
+){
+
+
+specHTML +=`
+
+<table class="spec-table">
+
+`;
 
 
 
@@ -279,7 +291,7 @@ Object.entries(specifications)
 .forEach(([key,value])=>{
 
 
-specsHtml +=`
+specHTML +=`
 
 <tr>
 
@@ -289,9 +301,23 @@ specsHtml +=`
 
 </tr>
 
+
 `;
 
+
 });
+
+
+specHTML +=`
+
+</table>
+
+`;
+
+
+}
+
+
 
 
 
@@ -306,13 +332,19 @@ specsHtml +=`
 // =========================
 
 
-let detailHtml="";
+let detailHTML="";
+
+
+
+if(
+Array.isArray(detailImages)
+){
 
 
 detailImages.forEach(img=>{
 
 
-detailHtml +=`
+detailHTML +=`
 
 <img
 
@@ -324,12 +356,14 @@ loading="lazy"
 
 >
 
+
 `;
 
 
 });
 
 
+}
 
 
 
@@ -337,7 +371,16 @@ loading="lazy"
 
 
 
-box.innerHTML=`
+
+
+
+
+// =========================
+// 页面
+// =========================
+
+
+box.innerHTML =`
 
 
 <div class="product-box">
@@ -345,6 +388,7 @@ box.innerHTML=`
 
 
 <div class="gallery">
+
 
 
 <img
@@ -376,23 +420,24 @@ ${thumbs}
 
 
 
-
-
 <div class="info">
+
 
 
 <h1>
 
-${data.name}
+${data.name || ""}
 
 </h1>
 
 
 
 
-<p class="category">
+<p>
 
-${data.category || "Chinese Products"}
+Category:
+
+${data.category || "Chinese Product"}
 
 </p>
 
@@ -411,6 +456,7 @@ $${data.sale_price || 0}
 
 
 
+
 <h2>
 
 Description
@@ -420,9 +466,11 @@ Description
 
 <p>
 
-${data.description || "Authentic Chinese Product"}
+${data.description || ""}
 
 </p>
+
+
 
 
 
@@ -435,16 +483,12 @@ Specifications
 </h2>
 
 
-
-<table class="spec-table">
-
-
-${specsHtml}
+${specHTML}
 
 
-</table>
 
 
+<br>
 
 
 
@@ -456,7 +500,9 @@ class="buy-btn"
 
 >
 
+
 Buy Now
+
 
 </a>
 
@@ -465,7 +511,12 @@ Buy Now
 </div>
 
 
+
+
+
+
 </div>
+
 
 
 
@@ -480,11 +531,10 @@ Product Details
 </h2>
 
 
-
 <div class="detail-images">
 
 
-${detailHtml}
+${detailHTML}
 
 
 </div>
@@ -497,7 +547,8 @@ ${detailHtml}
 
 
 
-document.title=data.name;
+document.title =
+data.name;
 
 
 
@@ -510,14 +561,22 @@ document.title=data.name;
 
 
 
+// =========================
+// 图片切换
+// =========================
+
 
 function changeImage(url){
 
 
-document.getElementById(
+document
+
+.getElementById(
 "main-image"
 )
+
 .src=url;
+
 
 
 }
