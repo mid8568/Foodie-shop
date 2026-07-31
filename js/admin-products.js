@@ -29,30 +29,24 @@ SUPABASE_KEY
 
 async function loadProducts(){
 
-
-
 const {
-
 data,
-
 error
-
 }=await client
-
-
 .from("products")
+.select("*");
 
 
-.select("*")
-
-
-.order(
-"id",
-{
-ascending:false
-}
+console.log(
+"Supabase商品:",
+data
 );
 
+
+console.log(
+"Supabase错误:",
+error
+);
 
 
 
