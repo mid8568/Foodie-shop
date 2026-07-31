@@ -20,6 +20,16 @@ SUPABASE_KEY
 
 
 
+// =========================
+// 图片缓存
+// =========================
+
+
+let mainImageUrl = "";
+
+let detailImageUrls = [];
+
+
 
 
 // =========================
@@ -27,30 +37,14 @@ SUPABASE_KEY
 // =========================
 
 
-async function uploadImage(){
-
-
-const file =
-
-document
-
-.getElementById("imageFile")
-
-.files[0];
-
+async function uploadFile(file){
 
 
 if(!file){
 
-
-alert("请选择商品图片");
-
-
 return null;
 
-
 }
-
 
 
 
@@ -65,8 +59,6 @@ Date.now()
 +
 
 file.name;
-
-
 
 
 
@@ -94,8 +86,6 @@ file
 
 
 
-
-
 if(error){
 
 
@@ -103,7 +93,9 @@ console.log(error);
 
 
 alert(
-"图片上传失败："+error.message
+"图片上传失败："
++
+error.message
 );
 
 
@@ -115,9 +107,7 @@ return null;
 
 
 
-
-const imageUrl =
-
+return (
 
 SUPABASE_URL
 
@@ -127,13 +117,265 @@ SUPABASE_URL
 
 +
 
-fileName;
+fileName
+
+);
+
+
+
+}
+
+
+
+
+// =========================
+// 主图上传
+// =========================
+
+
+document
+.getElementById("imageFile")
+.addEventListener(
+"change",
+async function(){
+
+
+
+const file =
+this.files[0];
+
+
+
+const url =
+await uploadFile(file);
+
+
+
+if(url){
+
+
+mainImageUrl=url;
+
+
+showMainImage();
+
+
+}
+
+
+});
 
 
 
 
 
-return imageUrl;
+
+function showMainImage(){
+
+
+
+const box =
+
+document.getElementById(
+"mainEditImage"
+);
+
+
+
+if(!box)
+return;
+
+
+
+box.innerHTML="";
+
+
+
+if(!mainImageUrl)
+return;
+
+
+
+box.innerHTML=`
+
+<div class="image-item">
+
+
+<img src="${mainImageUrl}">
+
+
+<button
+
+class="delete-img"
+
+onclick="deleteMainImage()">
+
+×
+
+</button>
+
+
+</div>
+
+`;
+
+
+
+}
+
+
+
+
+
+
+function deleteMainImage(){
+
+
+mainImageUrl="";
+
+
+showMainImage();
+
+
+}
+
+
+
+
+
+
+
+// =========================
+// 详情图片上传
+// =========================
+
+
+document
+
+.getElementById("detailFiles")
+
+.addEventListener(
+
+"change",
+
+async function(){
+
+
+
+for(
+let file of this.files
+){
+
+
+const url =
+await uploadFile(file);
+
+
+
+if(url){
+
+
+detailImageUrls.push(url);
+
+
+}
+
+
+}
+
+
+
+showDetailImages();
+
+
+
+});
+
+
+
+
+
+
+
+function showDetailImages(){
+
+
+
+const box =
+
+document.getElementById(
+"detailEditImages"
+);
+
+
+
+if(!box)
+return;
+
+
+
+box.innerHTML="";
+
+
+
+detailImageUrls.forEach(
+
+(img,index)=>{
+
+
+box.innerHTML += `
+
+
+<div class="image-item">
+
+
+<img src="${img}">
+
+
+<button
+
+class="delete-img"
+
+onclick="deleteDetailImage(${index})">
+
+×
+
+</button>
+
+
+</div>
+
+
+`;
+
+
+
+});
+
+
+}
+
+
+
+
+
+
+
+function deleteDetailImage(index){
+
+
+
+detailImageUrls.splice(
+
+index,
+
+1
+
+);
+
+
+
+showDetailImages();
 
 
 
@@ -145,10 +387,52 @@ return imageUrl;
 
 
 
+// =========================
+// 自动计算售价
+// =========================
+
+
+function calcPrice(){
+
+
+
+const cost =
+
+Number(
+
+document.getElementById(
+"costPrice"
+).value
+
+);
+
+
+
+if(!cost)
+return;
+
+
+
+document.getElementById(
+"sellPrice"
+).value =
+
+Math.round(
+cost * 3
+);
+
+
+
+}
+
+
+
+
+
 
 
 // =========================
-// 添加商品
+// 保存商品
 // =========================
 
 
@@ -164,7 +448,6 @@ document.getElementById(
 
 
 
-
 message.innerHTML =
 "正在保存商品...";
 
@@ -172,31 +455,22 @@ message.innerHTML =
 
 
 
-
-// 上传主图片
-
-
-const imageUrl =
-
-await uploadImage();
+if(!mainImageUrl){
 
 
+alert(
+"请上传主图片"
+);
 
-
-
-if(!imageUrl){
 
 return;
+
 
 }
 
 
 
 
-
-
-
-// 商品数据
 
 
 const product = {
@@ -211,13 +485,11 @@ document.getElementById(
 
 
 
-
 name_en:
 
 document.getElementById(
 "name_en"
 ).value,
-
 
 
 
@@ -230,38 +502,28 @@ document.getElementById(
 
 
 
+
 image:
 
-imageUrl,
-
-
+mainImageUrl,
 
 
 
 image2:
 
-document.getElementById(
-"image2"
-).value,
-
+detailImageUrls[0] || "",
 
 
 
 image3:
 
-document.getElementById(
-"image3"
-).value,
-
+detailImageUrls[1] || "",
 
 
 
 image4:
 
-document.getElementById(
-"image4"
-).value,
-
+detailImageUrls[2] || "",
 
 
 
@@ -272,7 +534,6 @@ description:
 document.getElementById(
 "description"
 ).value,
-
 
 
 
@@ -289,15 +550,15 @@ document.getElementById(
 
 
 
-
 price:
 
 Number(
+
 document.getElementById(
 "price"
 ).value
-),
 
+),
 
 
 
@@ -314,16 +575,15 @@ document.getElementById(
 
 
 
-
 cost_price:
 
 Number(
+
 document.getElementById(
 "cost_price"
 ).value
+
 ),
-
-
 
 
 
@@ -338,15 +598,11 @@ document.getElementById(
 
 
 
-
-
 supplier_url:
 
 document.getElementById(
 "supplier_url"
 ).value,
-
-
 
 
 
@@ -362,16 +618,11 @@ document.getElementById(
 
 
 
-
-
-
 ebay_item_id:
 
 document.getElementById(
 "ebay_item_id"
 ).value,
-
-
 
 
 
@@ -387,16 +638,11 @@ document.getElementById(
 
 
 
-
-
-
 ebay_title:
 
 document.getElementById(
 "ebay_title"
 ).value,
-
-
 
 
 
@@ -412,16 +658,11 @@ document.getElementById(
 
 
 
-
-
-
 seo_title:
 
 document.getElementById(
 "seo_title"
 ).value,
-
-
 
 
 
@@ -437,13 +678,12 @@ document.getElementById(
 
 
 
-
-
 stock_status:
 
 document.getElementById(
 "stock_status"
 ).value
+
 
 
 
@@ -453,13 +693,6 @@ document.getElementById(
 
 
 
-
-
-
-
-// =========================
-// 保存商品
-// =========================
 
 
 const {
@@ -484,7 +717,9 @@ error
 
 
 
+
 if(error){
+
 
 
 console.log(error);
@@ -493,10 +728,16 @@ console.log(error);
 
 message.innerHTML =
 
-"保存失败："+error.message;
+"保存失败："
+
++
+
+error.message;
+
 
 
 return;
+
 
 
 }
@@ -505,10 +746,6 @@ return;
 
 
 
-
-
-
-// 获取新增商品ID
 
 
 const productId =
@@ -520,10 +757,8 @@ data[0].id;
 
 
 
-// 自动生成详情页地址
-
-
 const detailUrl =
+
 
 window.location.origin
 
@@ -544,11 +779,13 @@ productId;
 message.innerHTML = `
 
 
+
 <h3>
 
 商品添加成功！
 
 </h3>
+
 
 
 <p>
@@ -598,6 +835,7 @@ style="width:100%;padding:8px;">
 </p>
 
 
+
 `;
 
 
@@ -606,7 +844,21 @@ style="width:100%;padding:8px;">
 
 
 
-// 清空表单
+// 清空
+
+mainImageUrl="";
+
+detailImageUrls=[];
+
+
+
+showMainImage();
+
+showDetailImages();
+
+
+
+
 
 
 const form =
@@ -619,9 +871,7 @@ document.querySelector(
 
 if(form && form.reset){
 
-
 form.reset();
-
 
 }
 
