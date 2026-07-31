@@ -26,42 +26,44 @@ SUPABASE_KEY
 // 加载商品
 // =========================
 
-
 async function loadProducts(){
 
-const {
-data,
-error
-}=await client
+
+console.log("开始读取products");
+
+
+const result = await client
 .from("products")
 .select("*");
 
 
-console.log(
-"Supabase商品:",
-data
-);
+console.log("查询结果:");
+console.log(result);
 
 
-console.log(
-"Supabase错误:",
-error
-);
 
+const data = result.data;
+const error = result.error;
 
 
 
 if(error){
 
-console.log(error);
-
-alert(error.message);
+console.log(
+"Supabase错误:",
+error.message
+);
 
 return;
 
 }
 
 
+
+console.log(
+"商品数量:",
+data.length
+);
 
 
 
@@ -71,79 +73,66 @@ document.getElementById(
 );
 
 
-
 box.innerHTML="";
-
-
 
 
 
 data.forEach(product=>{
 
 
+console.log(
+"商品:",
+product.name
+);
+
+
 
 box.innerHTML += `
 
-
 <tr>
 
-
 <td>
 
-<img
-
-src="${product.image}"
-
-width="80"
-
-height="80">
+<img src="${product.image}" width="80">
 
 </td>
 
 
-
-
 <td>
-
-${product.name || ""}
-
+${product.name}
 </td>
 
 
-
-
 <td>
-
-${product.price || 0}
-
-${product.currency || ""}
-
+${product.price}
+${product.currency}
 </td>
 
 
-
-
 <td>
-
-${product.stock_status || ""}
-
+${product.stock_status}
 </td>
 
 
-
-
 <td>
 
-
-
-<button
-
-onclick="editProduct(${product.id})">
-
+<button>
 编辑
-
 </button>
 
+</td>
+
+
+</tr>
+
+
+`;
+
+
+});
+
+
+}
 
 
 <button
