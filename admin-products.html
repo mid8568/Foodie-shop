@@ -2,7 +2,6 @@
 
 <html lang="zh-CN">
 
-
 <head>
 
 <meta charset="UTF-8">
@@ -21,53 +20,78 @@
 </head>
 
 
+
 <body>
+
 
 
 <div class="container">
 
 
 <h1>
-
 🇨🇳 China Direct Shop
-
 </h1>
 
 
-
 <h2>
-
-商品列表管理
-
+商品管理
 </h2>
 
 
 
 
-
-<a href="admin.html">
-
-➕ 添加商品
-
-</a>
+<table border="1" width="100%">
 
 
+<thead>
+
+<tr>
+
+<th>
+图片
+</th>
+
+
+<th>
+商品名称
+</th>
+
+
+<th>
+价格
+</th>
+
+
+<th>
+状态
+</th>
+
+
+<th>
+操作
+</th>
+
+
+</tr>
+
+
+</thead>
 
 
 
+<tbody id="productList">
 
 
-<div id="product-list">
+</tbody>
 
-加载中...
+
+
+</table>
+
+
 
 </div>
 
-
-
-
-
-</div>
 
 
 
@@ -77,7 +101,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 
-<script src="js/admin-products.js"></script>
+<script src="js/products-admin.js"></script>
 
 
 </body>
