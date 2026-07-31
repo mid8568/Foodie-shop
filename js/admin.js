@@ -20,6 +20,17 @@ SUPABASE_KEY
 
 
 
+
+// =========================
+// 当前编辑商品ID
+// =========================
+
+
+let editId = null;
+
+
+
+
 // =========================
 // 图片缓存
 // =========================
@@ -32,142 +43,307 @@ let detailImageUrls = [];
 
 
 
+
 // =========================
-// 上传图片
+// 页面初始化
 // =========================
 
 
-async function uploadFile(file){
+window.onload=function(){
 
 
-if(!file){
 
-return null;
+// 判断是否编辑
+
+
+const params =
+new URLSearchParams(
+window.location.search
+);
+
+
+
+editId =
+params.get("id");
+
+
+
+
+
+if(editId){
+
+
+loadProduct(editId);
+
 
 }
 
 
 
-const fileName =
+};
 
-Date.now()
 
-+
 
-"_"
 
-+
 
-file.name;
 
+
+// =========================
+// 加载商品
+// =========================
+
+
+async function loadProduct(id){
 
 
 
 const {
+
+data,
 
 error
 
 }=await client
 
 
-.storage
+.from("products")
 
 
-.from("product-images")
+.select("*")
 
 
-.upload(
+.eq(
+"id",
+id
+)
 
-fileName,
 
-file
+.single();
 
-);
+
+
 
 
 
 if(error){
 
-
 console.log(error);
 
-
 alert(
-"图片上传失败："
-+
-error.message
+"读取商品失败"
 );
 
-
-return null;
-
+return;
 
 }
 
 
 
 
-return (
-
-SUPABASE_URL
-
-+
-
-"/storage/v1/object/public/product-images/"
-
-+
-
-fileName
-
-);
 
 
 
-}
+// 基本信息
+
+
+document.getElementById(
+"name"
+).value =
+data.name || "";
+
+
+
+document.getElementById(
+"name_en"
+).value =
+data.name_en || "";
+
+
+
+document.getElementById(
+"category"
+).value =
+data.category || "";
 
 
 
 
-// =========================
-// 主图上传
-// =========================
 
 
-document
-.getElementById("imageFile")
-.addEventListener(
-"change",
-async function(){
+document.getElementById(
+"description"
+).value =
+data.description || "";
 
 
 
-const file =
-this.files[0];
+document.getElementById(
+"description_en"
+).value =
+data.description_en || "";
 
 
 
-const url =
-await uploadFile(file);
 
 
 
-if(url){
+document.getElementById(
+"price"
+).value =
+data.price || "";
 
 
-mainImageUrl=url;
+
+document.getElementById(
+"currency"
+).value =
+data.currency || "USD";
+
+
+
+document.getElementById(
+"cost_price"
+).value =
+data.cost_price || "";
+
+
+
+
+
+
+
+document.getElementById(
+"supplier"
+).value =
+data.supplier || "";
+
+
+
+document.getElementById(
+"supplier_url"
+).value =
+data.supplier_url || "";
+
+
+
+document.getElementById(
+"supplier_contact"
+).value =
+data.supplier_contact || "";
+
+
+
+
+
+
+
+document.getElementById(
+"ebay_item_id"
+).value =
+data.ebay_item_id || "";
+
+
+
+document.getElementById(
+"ebay_url"
+).value =
+data.ebay_url || "";
+
+
+
+document.getElementById(
+"ebay_title"
+).value =
+data.ebay_title || "";
+
+
+
+document.getElementById(
+"ebay_category"
+).value =
+data.ebay_category || "";
+
+
+
+
+
+
+
+document.getElementById(
+"seo_title"
+).value =
+data.seo_title || "";
+
+
+
+document.getElementById(
+"seo_description"
+).value =
+data.seo_description || "";
+
+
+
+
+
+
+document.getElementById(
+"stock_status"
+).value =
+data.stock_status || "上架";
+
+
+
+
+
+
+
+
+// 图片
+
+
+mainImageUrl =
+data.image || "";
+
+
+
+detailImageUrls=[];
+
+
+
+if(data.image2)
+detailImageUrls.push(data.image2);
+
+
+
+if(data.image3)
+detailImageUrls.push(data.image3);
+
+
+
+if(data.image4)
+detailImageUrls.push(data.image4);
+
+
+
 
 
 showMainImage();
 
 
+showDetailImages();
+
+
+
 }
 
 
-});
 
 
 
 
+// =========================
+// 显示主图
+// =========================
 
 
 function showMainImage(){
@@ -175,7 +351,6 @@ function showMainImage(){
 
 
 const box =
-
 document.getElementById(
 "mainEditImage"
 );
@@ -193,6 +368,7 @@ box.innerHTML="";
 
 if(!mainImageUrl)
 return;
+
 
 
 
@@ -244,65 +420,15 @@ showMainImage();
 
 
 
-
 // =========================
-// 详情图片上传
+// 显示详情图
 // =========================
-
-
-document
-
-.getElementById("detailFiles")
-
-.addEventListener(
-
-"change",
-
-async function(){
-
-
-
-for(
-let file of this.files
-){
-
-
-const url =
-await uploadFile(file);
-
-
-
-if(url){
-
-
-detailImageUrls.push(url);
-
-
-}
-
-
-}
-
-
-
-showDetailImages();
-
-
-
-});
-
-
-
-
-
 
 
 function showDetailImages(){
 
 
-
 const box =
-
 document.getElementById(
 "detailEditImages"
 );
@@ -358,24 +484,108 @@ onclick="deleteDetailImage(${index})">
 
 
 
-
-
-
 function deleteDetailImage(index){
 
 
-
 detailImageUrls.splice(
-
 index,
-
 1
+);
+
+
+showDetailImages();
+
+
+}
+// =========================
+// 上传图片
+// =========================
+
+
+async function uploadFile(file){
+
+
+if(!file){
+
+return null;
+
+}
+
+
+
+const fileName =
+
+Date.now()
+
++
+
+"_"
+
++
+
+file.name;
+
+
+
+
+
+const {
+
+error
+
+}=await client
+
+
+.storage
+
+
+.from("product-images")
+
+
+.upload(
+
+fileName,
+
+file
 
 );
 
 
 
-showDetailImages();
+
+
+if(error){
+
+
+console.log(error);
+
+
+alert(
+"上传失败："+error.message
+);
+
+
+return null;
+
+
+}
+
+
+
+
+return (
+
+SUPABASE_URL
+
++
+
+"/storage/v1/object/public/product-images/"
+
++
+
+fileName
+
+);
 
 
 
@@ -386,9 +596,104 @@ showDetailImages();
 
 
 
+// =========================
+// 主图上传
+// =========================
+
+
+document
+.getElementById("imageFile")
+.addEventListener(
+"change",
+async function(){
+
+
+
+const file =
+this.files[0];
+
+
+
+const url =
+await uploadFile(file);
+
+
+
+if(url){
+
+
+mainImageUrl=url;
+
+
+showMainImage();
+
+
+}
+
+
+});
+
+
+
+
+
+
+
 
 // =========================
-// 自动计算售价
+// 详情图上传
+// =========================
+
+
+document
+.getElementById("detailFiles")
+.addEventListener(
+"change",
+async function(){
+
+
+
+for(
+let file of this.files
+){
+
+
+
+const url =
+await uploadFile(file);
+
+
+
+if(url){
+
+
+detailImageUrls.push(url);
+
+
+}
+
+
+
+}
+
+
+
+showDetailImages();
+
+
+
+});
+
+
+
+
+
+
+
+
+
+// =========================
+// 计算价格
 // =========================
 
 
@@ -401,7 +706,7 @@ const cost =
 Number(
 
 document.getElementById(
-"costPrice"
+"cost_price"
 ).value
 
 );
@@ -413,17 +718,25 @@ return;
 
 
 
-document.getElementById(
-"sellPrice"
-).value =
 
+const price =
 Math.round(
-cost * 3
+cost*3
 );
 
 
 
+document.getElementById(
+"price"
+).value =
+price;
+
+
+
+
 }
+
+
 
 
 
@@ -441,7 +754,6 @@ async function addProduct(){
 
 
 const message =
-
 document.getElementById(
 "message"
 );
@@ -449,24 +761,8 @@ document.getElementById(
 
 
 message.innerHTML =
-"正在保存商品...";
+"正在保存...";
 
-
-
-
-
-if(!mainImageUrl){
-
-
-alert(
-"请上传主图片"
-);
-
-
-return;
-
-
-}
 
 
 
@@ -493,6 +789,7 @@ document.getElementById(
 
 
 
+
 category:
 
 document.getElementById(
@@ -503,9 +800,11 @@ document.getElementById(
 
 
 
+
 image:
 
 mainImageUrl,
+
 
 
 
@@ -529,6 +828,8 @@ detailImageUrls[2] || "",
 
 
 
+
+
 description:
 
 document.getElementById(
@@ -539,11 +840,13 @@ document.getElementById(
 
 
 
+
 description_en:
 
 document.getElementById(
 "description_en"
 ).value,
+
 
 
 
@@ -575,6 +878,7 @@ document.getElementById(
 
 
 
+
 cost_price:
 
 Number(
@@ -589,6 +893,9 @@ document.getElementById(
 
 
 
+
+
+
 supplier:
 
 document.getElementById(
@@ -598,11 +905,14 @@ document.getElementById(
 
 
 
+
 supplier_url:
 
 document.getElementById(
 "supplier_url"
 ).value,
+
+
 
 
 
@@ -618,11 +928,15 @@ document.getElementById(
 
 
 
+
+
 ebay_item_id:
 
 document.getElementById(
 "ebay_item_id"
 ).value,
+
+
 
 
 
@@ -638,11 +952,15 @@ document.getElementById(
 
 
 
+
+
 ebay_title:
 
 document.getElementById(
 "ebay_title"
 ).value,
+
+
 
 
 
@@ -658,6 +976,8 @@ document.getElementById(
 
 
 
+
+
 seo_title:
 
 document.getElementById(
@@ -668,11 +988,14 @@ document.getElementById(
 
 
 
+
 seo_description:
 
 document.getElementById(
 "seo_description"
 ).value,
+
+
 
 
 
@@ -695,34 +1018,71 @@ document.getElementById(
 
 
 
-const {
 
-data,
 
-error
+let result;
 
-}=await client
+
+
+
+
+// =========================
+// 判断新增还是修改
+// =========================
+
+
+
+if(editId){
+
+
+
+result = await client
 
 
 .from("products")
 
 
-.insert(product)
+.update(product)
 
 
-.select();
-
-
-
-
-
-
-
-if(error){
+.eq(
+"id",
+editId
+)
 
 
 
-console.log(error);
+
+
+}else{
+
+
+
+result = await client
+
+
+.from("products")
+
+
+.insert(product);
+
+
+
+}
+
+
+
+
+
+
+
+if(result.error){
+
+
+
+console.log(
+result.error
+);
 
 
 
@@ -732,7 +1092,7 @@ message.innerHTML =
 
 +
 
-error.message;
+result.error.message;
 
 
 
@@ -748,92 +1108,20 @@ return;
 
 
 
-const productId =
-
-data[0].id;
-
-
-
-
-
-
-const detailUrl =
-
-
-window.location.origin
-
-+
-
-"/product.html?id="
-
-+
-
-productId;
-
-
-
-
-
-
 
 message.innerHTML = `
 
 
-
 <h3>
-
-商品添加成功！
-
+保存成功！
 </h3>
 
 
-
 <p>
 
-商品详情页：
+商品已经更新
 
 </p>
-
-
-
-<input
-
-value="${detailUrl}"
-
-readonly
-
-style="width:100%;padding:8px;">
-
-
-
-
-
-<p>
-
-Facebook分享链接：
-
-</p>
-
-
-
-<input
-
-value="${detailUrl}"
-
-readonly
-
-style="width:100%;padding:8px;">
-
-
-
-
-
-<p>
-
-复制链接即可发布到Facebook
-
-</p>
-
 
 
 `;
@@ -843,37 +1131,15 @@ style="width:100%;padding:8px;">
 
 
 
-
-// 清空
-
-mainImageUrl="";
-
-detailImageUrls=[];
+setTimeout(()=>{
 
 
-
-showMainImage();
-
-showDetailImages();
+location.href =
+"admin-products.html";
 
 
 
-
-
-
-const form =
-
-document.querySelector(
-".admin-box"
-);
-
-
-
-if(form && form.reset){
-
-form.reset();
-
-}
+},1500);
 
 
 
