@@ -1,7 +1,7 @@
 // =========================
 // Supabase
 // =========================
-
+console.log("products-admin.js 已加载");
 
 const SUPABASE_URL =
 "https://ukxxmxnubxjezkwbbxdr.supabase.co";
