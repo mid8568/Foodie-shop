@@ -31,19 +31,13 @@ China Direct Shop Admin
 
 
 <h1>
-
 🇨🇳 China Direct Shop
-
 </h1>
 
 
-
 <h2>
-
 商品管理后台
-
 </h2>
-
 
 
 
@@ -51,181 +45,50 @@ China Direct Shop Admin
 
 <form class="admin-box">
 
-<!-- =====================
-1688采集商品
-===================== -->
-
-<div class="card">
-
-<h2>
-1688商品采集
-</h2>
-
-
-<div class="form-row">
-
-<input 
-id="1688Url"
-placeholder="请输入1688商品链接"
-style="width:80%;padding:10px;"
->
-
-
-<button 
-type="button"
-onclick="collect1688()">
-开始采集
-</button>
-
-
-</div>
-
-
-
-<div id="collectResult"
-style="
-display:none;
-margin-top:20px;
-">
-
-
-<h3>
-采集结果
-</h3>
-
-
-
-<div>
-
-商品标题：
-
-<input 
-id="productTitle"
-style="width:100%;"
->
-
-</div>
-
-
-
-<br>
-
-
-<div>
-
-采购价格：
-
-<input 
-id="costPrice"
-type="number"
-oninput="calcPrice()"
->
-
-</div>
-
-
-
-<br>
-
-
-
-<div>
-
-销售价格：
-
-<input 
-id="sellPrice"
-readonly
->
-
-</div>
-
-
-
-
-<h3>
-主图
-</h3>
-
-
-<div id="mainImages"
-class="image-box">
-
-</div>
-
-
-
-<h3>
-详情图片
-</h3>
-
-
-<div id="detailImages"
-class="image-box">
-
-</div>
-
-
-
-<br>
-
-
-<button 
-type="button"
-onclick="save1688Product()">
-
-保存采集商品
-
-</button>
-
-
-</div>
-
-
-</div>
-
 
 
 <!-- 商品基本信息 -->
 
 
-<input
+<h3>
+商品信息
+</h3>
 
+
+<input
 id="name"
-
 placeholder="商品中文名称"
-
 >
 
 
 
 <input
-
 id="name_en"
-
 placeholder="英文商品名称"
-
 >
 
 
 
 
 <input
-
 id="category"
-
 placeholder="商品分类"
-
 >
 
 
 
 
 
-<!-- 主图片 -->
+
+<!-- =====================
+图片管理
+===================== -->
 
 
-<!-- 主图片 -->
+<h3>
+图片管理
+</h3>
+
 
 
 <label>
@@ -233,7 +96,9 @@ placeholder="商品分类"
 </label>
 
 
-<div id="mainEditImage"
+
+<div
+id="mainEditImage"
 class="image-box">
 
 </div>
@@ -254,34 +119,41 @@ accept="image/*"
 
 
 
-<!-- 商品详情图片 -->
+
+
+<br>
+
+
+
+<label>
+
+详情图片
+
+</label>
+
+
+
+
+<div
+
+id="detailEditImages"
+
+class="image-box">
+
+</div>
+
+
 
 
 <input
 
-id="image2"
+type="file"
 
-placeholder="详情图片2地址"
+id="detailFiles"
 
->
+accept="image/*"
 
-
-
-<input
-
-id="image3"
-
-placeholder="详情图片3地址"
-
->
-
-
-
-<input
-
-id="image4"
-
-placeholder="详情图片4地址"
+multiple
 
 >
 
@@ -292,6 +164,12 @@ placeholder="详情图片4地址"
 
 
 <!-- 商品介绍 -->
+
+
+<h3>
+商品描述
+</h3>
+
 
 
 <textarea
@@ -324,6 +202,12 @@ placeholder="英文商品介绍">
 <!-- 价格 -->
 
 
+<h3>
+价格管理
+</h3>
+
+
+
 <input
 
 id="price"
@@ -348,11 +232,29 @@ placeholder="货币"
 
 
 
+
 <input
 
 id="cost_price"
 
 placeholder="采购成本"
+
+oninput="calcPrice()"
+
+>
+
+
+
+
+
+
+<input
+
+id="profit_rate"
+
+placeholder="利润率"
+
+readonly
 
 >
 
@@ -362,8 +264,13 @@ placeholder="采购成本"
 
 
 
-
 <!-- 供应商 -->
+
+
+<h3>
+供应商信息
+</h3>
+
 
 
 <input
@@ -378,13 +285,16 @@ placeholder="1688供应商名称"
 
 
 
+
 <input
 
 id="supplier_url"
 
-placeholder="1688供应商链接"
+placeholder="1688商品链接"
 
 >
+
+
 
 
 
@@ -404,8 +314,13 @@ placeholder="供应商联系方式"
 
 
 
+<!-- eBay -->
 
-<!-- eBay信息 -->
+
+<h3>
+eBay信息
+</h3>
+
 
 
 <input
@@ -415,6 +330,8 @@ id="ebay_item_id"
 placeholder="eBay商品ID"
 
 >
+
+
 
 
 
@@ -431,6 +348,9 @@ placeholder="eBay购买链接"
 
 
 
+
+
+
 <input
 
 id="ebay_title"
@@ -438,6 +358,9 @@ id="ebay_title"
 placeholder="eBay标题"
 
 >
+
+
+
 
 
 
@@ -456,7 +379,15 @@ placeholder="eBay分类"
 
 
 
+
+
 <!-- SEO -->
+
+
+<h3>
+SEO
+</h3>
+
 
 
 <input
@@ -466,6 +397,7 @@ id="seo_title"
 placeholder="SEO标题"
 
 >
+
 
 
 
@@ -485,7 +417,15 @@ placeholder="SEO描述">
 
 
 
+
+
 <!-- 状态 -->
+
+
+<h3>
+商品状态
+</h3>
+
 
 
 <select id="stock_status">
@@ -498,11 +438,13 @@ placeholder="SEO描述">
 </option>
 
 
+
 <option value="下架">
 
 下架
 
 </option>
+
 
 
 <option value="缺货">
@@ -520,7 +462,10 @@ placeholder="SEO描述">
 
 
 
-<!-- 保存 -->
+<br><br>
+
+
+
 
 
 <button
@@ -538,6 +483,7 @@ onclick="addProduct()">
 
 
 
+
 <p id="message"></p>
 
 
@@ -545,8 +491,6 @@ onclick="addProduct()">
 
 
 </form>
-
-
 
 
 
@@ -566,7 +510,7 @@ onclick="addProduct()">
 
 <script src="js/admin.js"></script>
 
-<script src="js/1688.js"></script>
+
 
 </body>
 
