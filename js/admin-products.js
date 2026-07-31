@@ -1,15 +1,9 @@
-// =========================
-// Supabase配置
-// =========================
-
-
 const SUPABASE_URL =
 "https://ukxxmxnubxjezkwbbxdr.supabase.co";
 
 
 const SUPABASE_KEY =
 "sb_publishable_2IFHfms3ombozpvZCvaeEg_2VZ2z5hJ";
-
 
 
 const client =
@@ -21,19 +15,8 @@ SUPABASE_KEY
 
 
 
-// =========================
-// 加载商品
-// =========================
-
 
 async function loadProducts(){
-
-
-const box =
-document.getElementById(
-"product-list"
-);
-
 
 
 const {
@@ -47,7 +30,9 @@ error
 
 .from("products")
 
+
 .select("*")
+
 
 .order(
 "id",
@@ -59,145 +44,83 @@ ascending:false
 
 
 
+
 if(error){
 
-
-box.innerHTML =
-"加载失败："+error.message;
-
+console.log(error);
 
 return;
-
 
 }
 
 
 
+const box =
+document.getElementById(
+"productList"
+);
 
 
 
-let html="";
+box.innerHTML="";
 
 
 
+data.forEach(
+p=>{
 
 
-
-data.forEach(item=>{
-
+box.innerHTML += `
 
 
-let url =
-
-window.location.origin
-
-+
-
-"/product.html?id="
-
-+
-
-item.id;
+<tr>
 
 
-
-
-
-
-html += `
-
-
-<div class="admin-product-card">
-
-
+<td>
 
 <img
 
-src="${item.image || ''}"
+src="${p.image}"
 
-width="120"
+width="80">
 
->
-
-
+</td>
 
 
 
-<h3>
+<td>
 
-${item.name_en || item.name}
+${p.name}
 
-</h3>
-
-
+</td>
 
 
 
-<p>
+<td>
 
-价格：
+${p.price}
 
-$${item.price}
+${p.currency}
 
-</p>
-
-
+</td>
 
 
 
-<p>
+<td>
 
-状态：
+${p.stock_status}
 
-${item.stock_status}
-
-</p>
+</td>
 
 
 
 
-
+<td>
 
 
 <button
 
-onclick="copyLink('${url}')">
-
-复制详情链接
-
-</button>
-
-
-
-
-
-
-
-<button
-
-onclick="changeStatus(${item.id},'上架')">
-
-上架
-
-</button>
-
-
-
-
-
-
-<button
-
-onclick="changeStatus(${item.id},'下架')">
-
-下架
-
-</button>
-
-
-<button
-
-onclick="editProduct(${item.id})">
+onclick="editProduct(${p.id})">
 
 编辑
 
@@ -207,7 +130,7 @@ onclick="editProduct(${item.id})">
 
 <button
 
-onclick="deleteProduct(${item.id})">
+onclick="deleteProduct(${p.id})">
 
 删除
 
@@ -215,9 +138,10 @@ onclick="deleteProduct(${item.id})">
 
 
 
+</td>
 
 
-</div>
+</tr>
 
 
 `;
@@ -228,11 +152,24 @@ onclick="deleteProduct(${item.id})">
 
 
 
+}
 
 
 
-box.innerHTML = html;
 
+
+
+
+function editProduct(id){
+
+
+location.href=
+
+"admin.html?id="
+
++
+
+id;
 
 
 }
@@ -242,70 +179,6 @@ box.innerHTML = html;
 
 
 
-
-
-
-// =========================
-// 修改状态
-// =========================
-
-
-async function changeStatus(id,status){
-
-
-
-const {
-
-error
-
-}=await client
-
-
-.from("products")
-
-
-.update({
-
-stock_status:status
-
-})
-
-
-.eq(
-"id",
-id
-);
-
-
-
-
-
-if(error){
-
-alert(error.message);
-
-return;
-
-}
-
-
-
-loadProducts();
-
-
-}
-
-
-
-
-
-
-
-
-
-// =========================
-// 删除商品
-// =========================
 
 
 async function deleteProduct(id){
@@ -313,13 +186,9 @@ async function deleteProduct(id){
 
 
 if(!confirm(
-"确定删除这个商品吗？"
-)){
-
+"确定删除商品？"
+))
 return;
-
-}
-
 
 
 
@@ -347,17 +216,22 @@ id
 
 
 
+
 if(error){
 
-
-alert(error.message);
-
+alert(
+error.message
+);
 
 return;
 
-
 }
 
+
+
+alert(
+"删除成功"
+);
 
 
 
@@ -369,39 +243,6 @@ loadProducts();
 
 
 
-
-
-
-
-
-
-// =========================
-// 复制详情链接
-// =========================
-
-
-function copyLink(url){
-
-
-
-navigator.clipboard.writeText(url);
-
-
-
-alert(
-"商品链接已复制"
-);
-
-
-
-}
-
-function editProduct(id){
-
-location.href =
-"admin-edit.html?id="+id;
-
-}
 
 
 
