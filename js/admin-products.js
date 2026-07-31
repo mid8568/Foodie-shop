@@ -1,9 +1,15 @@
+// =========================
+// Supabase
+// =========================
+
+
 const SUPABASE_URL =
 "https://ukxxmxnubxjezkwbbxdr.supabase.co";
 
 
 const SUPABASE_KEY =
 "sb_publishable_2IFHfms3ombozpvZCvaeEg_2VZ2z5hJ";
+
 
 
 const client =
@@ -16,7 +22,13 @@ SUPABASE_KEY
 
 
 
+// =========================
+// 加载商品
+// =========================
+
+
 async function loadProducts(){
+
 
 
 const {
@@ -49,9 +61,13 @@ if(error){
 
 console.log(error);
 
+alert(error.message);
+
 return;
 
 }
+
+
 
 
 
@@ -66,8 +82,10 @@ box.innerHTML="";
 
 
 
-data.forEach(
-p=>{
+
+
+data.forEach(product=>{
+
 
 
 box.innerHTML += `
@@ -80,35 +98,11 @@ box.innerHTML += `
 
 <img
 
-src="${p.image}"
+src="${product.image}"
 
-width="80">
+width="80"
 
-</td>
-
-
-
-<td>
-
-${p.name}
-
-</td>
-
-
-
-<td>
-
-${p.price}
-
-${p.currency}
-
-</td>
-
-
-
-<td>
-
-${p.stock_status}
+height="80">
 
 </td>
 
@@ -116,11 +110,41 @@ ${p.stock_status}
 
 
 <td>
+
+${product.name || ""}
+
+</td>
+
+
+
+
+<td>
+
+${product.price || 0}
+
+${product.currency || ""}
+
+</td>
+
+
+
+
+<td>
+
+${product.stock_status || ""}
+
+</td>
+
+
+
+
+<td>
+
 
 
 <button
 
-onclick="editProduct(${p.id})">
+onclick="editProduct(${product.id})">
 
 编辑
 
@@ -130,7 +154,7 @@ onclick="editProduct(${p.id})">
 
 <button
 
-onclick="deleteProduct(${p.id})">
+onclick="deleteProduct(${product.id})">
 
 删除
 
@@ -138,7 +162,18 @@ onclick="deleteProduct(${p.id})">
 
 
 
+<button
+
+onclick="changeStatus(${product.id},'${product.stock_status}')">
+
+上下架
+
+</button>
+
+
+
 </td>
+
 
 
 </tr>
@@ -159,11 +194,15 @@ onclick="deleteProduct(${p.id})">
 
 
 
+// =========================
+// 编辑
+// =========================
+
 
 function editProduct(id){
 
 
-location.href=
+location.href =
 
 "admin.html?id="
 
@@ -181,15 +220,19 @@ id;
 
 
 
+// =========================
+// 删除
+// =========================
+
+
 async function deleteProduct(id){
 
 
 
-if(!confirm(
-"确定删除商品？"
-))
+if(
+!confirm("确定删除?")
+)
 return;
-
 
 
 
@@ -215,13 +258,9 @@ id
 
 
 
-
-
 if(error){
 
-alert(
-error.message
-);
+alert(error.message);
 
 return;
 
@@ -229,18 +268,89 @@ return;
 
 
 
-alert(
-"删除成功"
+loadProducts();
+
+
+}
+
+
+
+
+
+
+
+
+// =========================
+// 上下架
+// =========================
+
+
+async function changeStatus(
+id,
+status
+){
+
+
+
+let newStatus;
+
+
+
+if(status==="上架"){
+
+newStatus="下架";
+
+}else{
+
+newStatus="上架";
+
+}
+
+
+
+
+
+
+const {
+
+error
+
+}=await client
+
+
+.from("products")
+
+
+.update({
+
+stock_status:newStatus
+
+})
+
+
+.eq(
+"id",
+id
 );
+
+
+
+
+
+if(error){
+
+alert(error.message);
+
+return;
+
+}
 
 
 
 loadProducts();
 
 
-
 }
-
 
 
 
