@@ -14,6 +14,7 @@ const SUPABASE_KEY =
 "sb_publishable_2IFHfms3ombozpvZCvaeEg_2VZ2z5hJ";
 
 
+
 const supabaseClient =
 supabase.createClient(
 SUPABASE_URL,
@@ -24,24 +25,8 @@ SUPABASE_KEY
 
 
 // 1688 API
-// 后面部署服务器以后修改这里
-
 const API_URL =
 "http://localhost:3000";
-
-
-
-
-
-let currentProduct=null;
-
-
-let materials=[];
-
-
-
-
-
 
 
 
@@ -54,1390 +39,25 @@ let materials=[];
 window.onload=function(){
 
 
-loadProducts();
-
-
-loadMaterials();
-
-
 loadStoreConfig();
 
 
-loadCategories();
-
-
-loadSystem();
-
-
-
-};
-
-
-
-
-
-
-
-
-
-
-
-// =======================
-// 商品列表
-// =======================
-
-
-async function loadProducts(){
-
-
-let {
-
-data,
-error
-
-}=await supabaseClient
-
-
-.from("products")
-
-
-.select("*")
-
-
-.order(
-"created_at",
-{
-ascending:false
-}
-
-);
-
-
-
-
-
-if(error){
-
-console.log(error);
-
-return;
-
-}
-
-
-
-
-
-
-let select =
-document.getElementById(
-"productSelect"
-);
-
-
-
-if(!select)
-return;
-
-
-
-
-
-select.innerHTML=
-
-`
-
-<option>
-请选择商品
-</option>
-
-`;
-
-
-
-
-
-data.forEach(product=>{
-
-
-let option =
-document.createElement(
-"option"
-);
-
-
-
-option.value =
-product.id;
-
-
-
-option.textContent =
-product.name;
-
-
-
-select.appendChild(option);
-
-
-
-});
-
-
-
-
-
-
-select.onchange =
-loadProduct;
-
-
-
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-// =======================
-// 加载商品
-// =======================
-
-
-async function loadProduct(){
-
-
-let id =
-productSelect.value;
-
-
-
-if(!id)
-return;
-
-
-
-
-
-let {
-
-data,
-error
-
-}=await supabaseClient
-
-
-.from("products")
-
-
-.select("*")
-
-
-.eq(
-"id",
-id
-)
-
-
-.single();
-
-
-
-
-
-if(error){
-
-console.log(error);
-
-return;
-
-}
-
-
-
-
-currentProduct=data;
-
-
-
-
-
-name.value =
-data.name || "";
-
-
-
-name_en.value =
-data.name_en || "";
-
-
-
-description.value =
-data.description || "";
-
-
-
-description_en.value =
-data.description_en || "";
-
-
-
-cost_price.value =
-data.cost_price || "";
-
-
-
-sale_price.value =
-data.sale_price || "";
-
-
-
-stock_status.value =
-data.stock_status || "上架";
-
-
-
-
-
-
-
-mainImage.innerHTML=
-
-`
-
-<img src="${data.image}" width="200">
-
-`;
-
-
-
-
-
-
-detailImages.innerHTML="";
-
-
-
-
-
-[
-
-data.image2,
-
-data.image3,
-
-data.image4
-
-
-].forEach(img=>{
-
-
-if(img){
-
-
-
-detailImages.innerHTML +=
-
-
-`
-
-<div>
-
-
-<img src="${img}" width="120">
-
-
-<button onclick="deleteDetailImage('${img}')">
-
-删除
-
-</button>
-
-
-</div>
-
-`;
-
-
-
-}
-
-
-});
-
-
-
-
-
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// =======================
-// 保存商品
-// =======================
-
-
-async function saveProduct(){
-
-
-
-if(!currentProduct){
-
-
-alert(
-"请选择商品"
-);
-
-
-return;
-
-
-}
-
-
-
-
-let update={
-
-
-
-name:
-name.value,
-
-
-name_en:
-name_en.value,
-
-
-description:
-description.value,
-
-
-description_en:
-description_en.value,
-
-
-cost_price:
-Number(cost_price.value),
-
-
-sale_price:
-Number(sale_price.value),
-
-
-stock_status:
-stock_status.value
-
-
-
-};
-
-
-
-
-
-let {
-
-error
-
-}=await supabaseClient
-
-
-.from("products")
-
-
-.update(update)
-
-
-.eq(
-"id",
-currentProduct.id
-);
-
-
-
-
-
-
-if(error){
-
-
-alert(error.message);
-
-
-return;
-
-
-}
-
-
-
-
-
-alert(
-"商品修改成功"
-);
-
-
-
-loadProducts();
-
-
-
-}
-
-// =======================
-// 主图上传
-// =======================
-
-
-mainUpload.onchange = async function(){
-
-
-let file =
-mainUpload.files[0];
-
-
-if(!file)
-return;
-
-
-
-let path =
-
-"products/"
-
-+
-
-Date.now()
-
-+
-
-file.name;
-
-
-
-
-
-let {
-
-error
-
-}=await supabaseClient
-
-
-.storage
-
-
-.from(
-"product-images"
-)
-
-
-.upload(
-path,
-file
-);
-
-
-
-
-
-if(error){
-
-
-alert(error.message);
-
-
-return;
-
-
-}
-
-
-
-
-
-let {
-
-data
-
-}=supabaseClient
-
-
-.storage
-
-
-.from(
-"product-images"
-)
-
-
-.getPublicUrl(
-path
-);
-
-
-
-
-
-await supabaseClient
-
-
-.from("products")
-
-
-.update({
-
-image:
-data.publicUrl
-
-})
-
-
-.eq(
-"id",
-currentProduct.id
-);
-
-
-
-
-
-alert(
-"主图更新成功"
-);
-
-
-
-loadProduct();
-
-
-
-};
-
-
-
-
-
-
-
-
-
-
-
-// =======================
-// 详情图片上传
-// =======================
-
-
-detailUpload.onchange = async function(){
-
-
-let files =
-detailUpload.files;
-
-
-
-let urls=[];
-
-
-
-
-
-for(let file of files){
-
-
-let path =
-
-"detail/"
-
-+
-
-Date.now()
-
-+
-
-file.name;
-
-
-
-
-
-await supabaseClient
-
-
-.storage
-
-
-.from(
-"product-images"
-)
-
-
-.upload(
-path,
-file
-);
-
-
-
-
-
-
-let {
-
-data
-
-}=supabaseClient
-
-
-.storage
-
-
-.from(
-"product-images"
-)
-
-
-.getPublicUrl(
-path
-);
-
-
-
-
-
-urls.push(
-data.publicUrl
-);
-
-
-
-}
-
-
-
-
-
-
-
-let update={};
-
-
-
-
-
-if(urls[0])
-
-update.image2 =
-urls[0];
-
-
-
-if(urls[1])
-
-update.image3 =
-urls[1];
-
-
-
-if(urls[2])
-
-update.image4 =
-urls[2];
-
-
-
-
-
-
-
-await supabaseClient
-
-
-.from("products")
-
-
-.update(update)
-
-
-.eq(
-"id",
-currentProduct.id
-);
-
-
-
-
-
-alert(
-"详情图片添加成功"
-);
-
-
-
-loadProduct();
-
-
-
-};
-
-
-
-
-
-
-
-
-
-
-
-// =======================
-// 删除详情图片
-// =======================
-
-
-async function deleteDetailImage(url){
-
-
-
-let update={};
-
-
-
-
-if(currentProduct.image2===url)
-
-update.image2=null;
-
-
-
-if(currentProduct.image3===url)
-
-update.image3=null;
-
-
-
-if(currentProduct.image4===url)
-
-update.image4=null;
-
-
-
-
-
-
-await supabaseClient
-
-
-.from("products")
-
-
-.update(update)
-
-
-.eq(
-"id",
-currentProduct.id
-);
-
-
-
-
-
-loadProduct();
-
-
-
-}
-
-
-
-
-
-
-
-
-
-
-
-
-// =======================
-// 素材中心
-// =======================
-
-
-
-async function loadMaterials(){
-
-
-
-let {
-
-data,
-error
-
-}=await supabaseClient
-
-
-.from("media_library")
-
-
-.select("*")
-
-
-.order(
-
-"created_at",
-
-{
-
-ascending:false
-
-}
-
-);
-
-
-
-
-
-
-if(error){
-
-
-console.log(error);
-
-
-return;
-
-
-}
-
-
-
-
-materials=data || [];
-
-
-
-renderMaterials(
-"全部"
-);
-
-
-
-}
-
-
-
-
-
-
-
-
-
-function renderMaterials(type){
-
-
-
-let box =
-document.getElementById(
-"materialList"
-);
-
-
-
-if(!box)
-return;
-
-
-
-
-box.innerHTML="";
-
-
-
-
-
-materials
-
-.filter(item=>{
-
-
-if(type==="全部")
-
-return true;
-
-
-
-return item.type===type;
-
-
-
-})
-
-
-.forEach(item=>{
-
-
-
-box.innerHTML +=
-
-
-`
-
-<div class="material-card">
-
-
-<img src="${item.url}" width="150">
-
-
-<p>
-${item.name}
-</p>
-
-
-<p>
-${item.type}
-</p>
-
-
-
-<button onclick="copyUrl('${item.url}')">
-
-复制
-
-</button>
-
-
-
-<button onclick="deleteMaterial(${item.id})">
-
-删除
-
-</button>
-
-
-</div>
-
-
-`;
-
-
-
-});
-
-
-
-}
-
-
-
-
-
-
-
-
-
-
-
-function filterMaterials(){
-
-
-
-renderMaterials(
-
-materialCategory.value
-
-);
-
-
-
-}
-
-
-
-
-
-
-
-
-
-
-
-// 上传素材
-
-
-async function uploadMaterial(){
-
-
-
-let file =
-materialUpload.files[0];
-
-
-
-if(!file)
-return;
-
-
-
-
-
-
-let path =
-
-"media/"
-
-+
-
-Date.now()
-
-+
-
-file.name;
-
-
-
-
-
-
-
-let {
-
-error
-
-}=await supabaseClient
-
-
-.storage
-
-
-.from(
-"product-images"
-)
-
-
-.upload(
-path,
-file
-);
-
-
-
-
-
-if(error){
-
-
-alert(error.message);
-
-
-return;
-
-
-}
-
-
-
-
-
-let {
-
-data
-
-}=supabaseClient
-
-
-.storage
-
-
-.from(
-"product-images"
-)
-
-
-.getPublicUrl(
-path
-);
-
-
-
-
-
-
-
-
-await supabaseClient
-
-
-.from("media_library")
-
-
-.insert({
-
-url:
-
-data.publicUrl,
-
-
-name:
-
-file.name,
-
-
-type:
-
-uploadType.value
-
-
-
-});
-
-
-
-
-
-
-alert(
-"上传成功"
-);
-
-
-
 loadMaterials();
 
 
+loadSEO();
 
-}
 
+};
 
 
 
 
 
-
-
-
-
-
-
-// 删除素材
-
-
-async function deleteMaterial(id){
-
-
-
-await supabaseClient
-
-
-.from("media_library")
-
-
-.delete()
-
-
-.eq(
-"id",
-id
-);
-
-
-
-
-
-loadMaterials();
-
-
-
-}
-
-
-
-
-
-
-
-
-
-
-
-// 复制链接
-
-
-function copyUrl(url){
-
-
-
-navigator.clipboard.writeText(url);
-
-
-
-alert(
-"复制成功"
-);
-
-
-
-}
-
-
-
-
-
-
-
-
-
-// =======================
-// Banner
-// =======================
-
-
-async function uploadBanner(){
-
-
-
-let file =
-bannerUpload.files[0];
-
-
-
-if(!file)
-
-return;
-
-
-
-
-
-let path =
-
-"banner/"
-
-+
-
-Date.now()
-
-+
-
-file.name;
-
-
-
-
-
-
-await supabaseClient
-
-
-.storage
-
-
-.from(
-"product-images"
-)
-
-
-.upload(
-path,
-file
-);
-
-
-
-
-
-
-
-let {
-
-data
-
-}=supabaseClient
-
-
-.storage
-
-
-.from(
-"product-images"
-)
-
-
-.getPublicUrl(
-path
-);
-
-
-
-
-
-
-
-await supabaseClient
-
-
-.from("store_config")
-
-
-.update({
-
-banner:
-
-data.publicUrl
-
-
-})
-
-
-.eq(
-"id",
-1
-);
-
-
-
-
-
-
-alert(
-"Banner更新成功"
-);
-
-
-
-loadStoreConfig();
-
-
-
-}
 // =======================
 // 店铺装修
 // =======================
+
 
 
 async function loadStoreConfig(){
@@ -1489,30 +109,33 @@ return;
 
 
 
-let noticeBox =
+let notice =
 document.getElementById(
 "notice"
 );
 
 
 
-let titleBox =
+let title =
 document.getElementById(
 "homeTitle"
 );
 
 
 
-if(noticeBox)
 
-noticeBox.value =
+
+if(notice)
+
+notice.value =
 data.notice || "";
 
 
 
-if(titleBox)
 
-titleBox.value =
+if(title)
+
+title.value =
 data.home_title || "";
 
 
@@ -1520,7 +143,7 @@ data.home_title || "";
 
 
 
-let bannerBox =
+let banner =
 document.getElementById(
 "bannerPreview"
 );
@@ -1528,12 +151,12 @@ document.getElementById(
 
 
 if(
-bannerBox &&
+banner &&
 data.banner
 ){
 
 
-bannerBox.innerHTML=
+banner.innerHTML=
 
 `
 
@@ -1556,25 +179,81 @@ bannerBox.innerHTML=
 
 
 
-
-// 保存首页装修
-
-
-async function saveDecoration(){
+// 上传Banner
 
 
+async function uploadBanner(){
 
-let noticeBox =
-document.getElementById(
-"notice"
+
+
+let file =
+bannerUpload.files[0];
+
+
+
+if(!file)
+
+return;
+
+
+
+
+
+
+let path =
+
+"banner/"
+
++
+
+Date.now()
+
++
+
+file.name;
+
+
+
+
+
+
+
+await supabaseClient.storage
+
+
+.from(
+"product-images"
+)
+
+
+.upload(
+path,
+file
 );
 
 
 
-let titleBox =
-document.getElementById(
-"homeTitle"
+
+
+
+
+
+let {
+
+data
+
+}=supabaseClient.storage
+
+
+.from(
+"product-images"
+)
+
+
+.getPublicUrl(
+path
 );
+
 
 
 
@@ -1590,15 +269,659 @@ await supabaseClient
 .update({
 
 
+banner:
+
+data.publicUrl
+
+
+})
+
+
+.eq(
+"id",
+1
+);
+
+
+
+
+
+alert(
+"Banner更新成功"
+);
+
+
+
+loadStoreConfig();
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+// 保存装修
+
+
+async function saveDecoration(){
+
+
+
+await supabaseClient
+
+
+.from("store_config")
+
+
+.update({
+
+
 notice:
 
-noticeBox.value,
+notice.value,
 
 
 
 home_title:
 
-titleBox.value,
+homeTitle.value,
+
+
+
+updated_at:
+
+new Date()
+
+
+})
+
+
+.eq(
+"id",
+1
+);
+
+
+
+
+
+
+alert(
+"保存成功"
+);
+
+
+
+}
+// =======================
+// 图片管理
+// media_library
+// =======================
+
+
+let materials=[];
+
+
+
+
+async function loadMaterials(){
+
+
+
+let {
+
+data,
+error
+
+}=await supabaseClient
+
+
+.from("media_library")
+
+
+.select("*")
+
+
+.order(
+"created_at",
+{
+ascending:false
+}
+);
+
+
+
+
+if(error){
+
+console.log(error);
+
+return;
+
+}
+
+
+
+materials=data || [];
+
+
+
+renderMaterials(
+"全部"
+);
+
+
+
+}
+
+
+
+
+
+
+
+
+
+function renderMaterials(type){
+
+
+
+let box =
+document.getElementById(
+"materialList"
+);
+
+
+
+if(!box)
+return;
+
+
+
+box.innerHTML="";
+
+
+
+
+
+materials
+
+
+.filter(item=>{
+
+
+if(type==="全部")
+
+return true;
+
+
+
+return item.type===type;
+
+
+})
+
+
+.forEach(item=>{
+
+
+
+box.innerHTML +=
+
+
+
+`
+
+<div class="material-card">
+
+
+<img src="${item.url}" width="150">
+
+
+<p>
+
+${item.name}
+
+</p>
+
+
+<p>
+
+${item.type}
+
+</p>
+
+
+
+
+<button onclick="copyUrl('${item.url}')">
+
+复制链接
+
+</button>
+
+
+
+
+<button onclick="deleteMaterial(${item.id})">
+
+删除
+
+</button>
+
+
+
+</div>
+
+
+`;
+
+
+
+});
+
+
+
+}
+
+
+
+
+
+
+
+
+
+function filterMaterials(){
+
+
+
+let type =
+document.getElementById(
+"materialCategory"
+).value;
+
+
+
+renderMaterials(type);
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+// 上传图片素材
+
+
+async function uploadMaterial(){
+
+
+
+let file =
+materialUpload.files[0];
+
+
+
+if(!file)
+
+return;
+
+
+
+
+
+
+
+let path =
+
+"media/"
+
++
+
+Date.now()
+
++
+
+file.name;
+
+
+
+
+
+
+
+let {
+
+error
+
+}=await supabaseClient.storage
+
+
+.from(
+"product-images"
+)
+
+
+.upload(
+path,
+file
+);
+
+
+
+
+
+
+if(error){
+
+alert(error.message);
+
+return;
+
+}
+
+
+
+
+
+
+
+let {
+
+data
+
+}=supabaseClient.storage
+
+
+.from(
+"product-images"
+)
+
+
+.getPublicUrl(
+path
+);
+
+
+
+
+
+
+
+await supabaseClient
+
+
+.from("media_library")
+
+
+.insert({
+
+
+
+name:
+
+file.name,
+
+
+
+url:
+
+data.publicUrl,
+
+
+
+type:
+
+uploadType.value
+
+
+
+});
+
+
+
+
+
+
+
+alert(
+"上传成功"
+);
+
+
+
+loadMaterials();
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+// 删除图片
+
+
+async function deleteMaterial(id){
+
+
+
+await supabaseClient
+
+
+.from("media_library")
+
+
+.delete()
+
+
+.eq(
+"id",
+id
+);
+
+
+
+
+loadMaterials();
+
+
+
+}
+
+
+
+
+
+
+
+
+// 复制链接
+
+
+function copyUrl(url){
+
+
+
+navigator.clipboard.writeText(url);
+
+
+
+alert(
+"复制成功"
+);
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+// =======================
+// SEO设置
+// =======================
+
+
+
+async function loadSEO(){
+
+
+
+let {
+
+data,
+error
+
+}=await supabaseClient
+
+
+.from("store_config")
+
+
+.select("*")
+
+
+.eq(
+"id",
+1
+)
+
+
+.single();
+
+
+
+
+
+
+if(error)
+
+return;
+
+
+
+
+
+
+if(!data)
+
+return;
+
+
+
+
+
+
+if(
+document.getElementById("seoTitle")
+)
+
+seoTitle.value =
+data.seo_title || "";
+
+
+
+
+
+
+if(
+document.getElementById("seoDescription")
+)
+
+seoDescription.value =
+data.seo_description || "";
+
+
+
+
+
+
+if(
+document.getElementById("seoKeywords")
+)
+
+seoKeywords.value =
+data.seo_keywords || "";
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+// 保存SEO
+
+
+async function saveSEO(){
+
+
+
+await supabaseClient
+
+
+.from("store_config")
+
+
+.update({
+
+
+
+seo_title:
+
+seoTitle.value,
+
+
+
+seo_description:
+
+seoDescription.value,
+
+
+
+seo_keywords:
+
+seoKeywords.value,
 
 
 
@@ -1620,209 +943,35 @@ new Date()
 
 
 
+
 alert(
-"保存成功"
+"SEO保存成功"
 );
 
 
 
 }
-
-
-
-
-
-
-
-
-
-
-
 // =======================
-// 1688采集
+// 首页推荐商品
 // =======================
 
 
 
-async function startCollect(){
+async function loadRecommendProducts(){
 
 
 
-let url =
+let box =
 document.getElementById(
-"collectUrl"
-).value;
-
-
-
-
-
-if(!url){
-
-
-alert(
-"请输入1688链接"
+"recommendProducts"
 );
 
 
+
+if(!box)
 return;
 
 
-}
-
-
-
-
-
-let result =
-document.getElementById(
-"collectResult"
-);
-
-
-
-
-
-if(result)
-
-result.innerHTML =
-"正在采集...";
-
-
-
-
-
-
-
-
-try{
-
-
-let response =
-
-await fetch(
-
-API_URL + "/collect",
-
-{
-
-
-method:"POST",
-
-
-headers:{
-
-
-"Content-Type":
-
-"application/json"
-
-
-},
-
-
-
-body:
-
-
-JSON.stringify({
-
-url:url
-
-})
-
-
-}
-
-
-);
-
-
-
-
-
-
-let data =
-await response.json();
-
-
-
-
-
-console.log(data);
-
-
-
-
-
-if(result)
-
-result.innerHTML =
-"采集完成";
-
-
-
-
-alert(
-"采集完成"
-);
-
-
-
-
-
-loadProducts();
-
-
-
-
-}
-
-catch(error){
-
-
-
-console.log(error);
-
-
-
-if(result)
-
-result.innerHTML =
-"采集失败";
-
-
-
-alert(
-"采集失败"
-);
-
-
-
-}
-
-
-
-}
-
-
-
-
-
-
-
-
-
-
-
-
-// =======================
-// 分类管理
-// =======================
-
-
-
-async function loadCategories(){
 
 
 
@@ -1834,20 +983,19 @@ error
 }=await supabaseClient
 
 
-.from("categories")
+.from("products")
 
 
-.select("*")
+.select(
+"id,name,image"
+)
 
 
 .order(
-"id",
+"created_at",
 {
-
 ascending:false
-
 }
-
 );
 
 
@@ -1866,24 +1014,8 @@ return;
 
 
 
-let box =
-document.getElementById(
-"categoryList"
-);
-
-
-
-
-
-if(!box)
-return;
-
-
-
-
 
 box.innerHTML="";
-
 
 
 
@@ -1896,13 +1028,17 @@ data.forEach(item=>{
 box.innerHTML +=
 
 
+
 `
 
-<p>
+<option value="${item.id}">
+
 
 ${item.name}
 
-</p>
+
+</option>
+
 
 
 `;
@@ -1913,8 +1049,6 @@ ${item.name}
 
 
 
-
-
 }
 
 
@@ -1925,32 +1059,44 @@ ${item.name}
 
 
 
-async function addCategory(){
+// 保存推荐商品
+
+
+async function saveRecommendProducts(){
 
 
 
-let name =
+let select =
 document.getElementById(
-"categoryName"
-).value;
-
-
-
-
-
-if(!name){
-
-
-alert(
-"请输入分类名称"
+"recommendProducts"
 );
 
+
+
+
+if(!select)
 
 return;
 
 
-}
 
+
+
+
+let ids = [];
+
+
+for(
+let option of select.selectedOptions
+){
+
+
+ids.push(
+Number(option.value)
+);
+
+
+}
 
 
 
@@ -1960,30 +1106,38 @@ return;
 await supabaseClient
 
 
-.from("categories")
+.from("store_config")
 
 
-.insert({
+.update({
 
 
-name:name
+recommend_products:
+
+ids,
 
 
-});
+updated_at:
+
+new Date()
+
+
+})
+
+
+.eq(
+"id",
+1
+);
 
 
 
 
 
-document.getElementById(
-"categoryName"
-).value="";
 
-
-
-
-
-loadCategories();
+alert(
+"推荐商品保存成功"
+);
 
 
 
@@ -2001,12 +1155,12 @@ loadCategories();
 
 
 // =======================
-// 系统设置
+// 读取推荐商品
 // =======================
 
 
 
-async function loadSystem(){
+async function loadRecommendSetting(){
 
 
 
@@ -2017,7 +1171,7 @@ data
 }=await supabaseClient
 
 
-.from("system_config")
+.from("store_config")
 
 
 .select("*")
@@ -2035,7 +1189,6 @@ data
 
 
 
-
 if(!data)
 
 return;
@@ -2044,37 +1197,44 @@ return;
 
 
 
-
-let api =
+let select =
 document.getElementById(
-"apiUrl"
+"recommendProducts"
 );
 
 
 
-let site =
-document.getElementById(
-"siteName"
-);
+if(
+!select ||
+!data.recommend_products
+)
+
+return;
 
 
 
 
 
-if(api)
-
-api.value =
-data.api_url || "";
-
-
+Array.from(
+select.options
+)
+.forEach(option=>{
 
 
-if(site)
+if(
+data.recommend_products.includes(
+Number(option.value)
+)
+)
 
-site.value =
-data.site_name || "";
+{
+
+option.selected=true;
+
+}
 
 
+});
 
 
 
@@ -2088,41 +1248,184 @@ data.site_name || "";
 
 
 
-async function saveSystem(){
+
+
+// =======================
+// 1688采集入口
+// =======================
+
+
+
+function open1688Collector(){
+
+
+
+window.location.href =
+
+"collector.html";
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+// =======================
+// eBay同步
+// =======================
+
+
+
+async function syncProducts(){
+
+
+
+alert(
+"开始同步商品"
+);
+
+
+
+// 后续接 eBay API
+
+
+}
+
+
+
+
+
+
+
+
+async function syncPrice(){
+
+
+
+alert(
+"同步价格"
+);
+
+
+
+}
+
+
+
+
+
+
+
+
+async function syncStock(){
+
+
+
+alert(
+"同步库存"
+);
+
+
+
+}
+
+
+
+
+
+
+
+
+async function syncStatus(){
+
+
+
+alert(
+"同步上下架状态"
+);
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+// =======================
+// Facebook分享设置
+// =======================
+
+
+
+async function saveFacebook(){
+
+
+
+let title =
+document.getElementById(
+"facebookTitle"
+);
+
+
+
+let desc =
+document.getElementById(
+"facebookDescription"
+);
+
+
+
 
 
 
 await supabaseClient
 
 
-.from("system_config")
+.from("store_config")
 
 
-.upsert({
+.update({
 
 
-id:1,
+facebook_title:
 
-
-api_url:
-
-
-document.getElementById(
-"apiUrl"
-).value,
+title.value,
 
 
 
-site_name:
+facebook_description:
+
+desc.value,
 
 
-document.getElementById(
-"siteName"
-).value
+updated_at:
+
+new Date()
 
 
+})
 
-});
+
+.eq(
+"id",
+1
+);
 
 
 
@@ -2130,147 +1433,7 @@ document.getElementById(
 
 
 alert(
-"设置保存成功"
-);
-
-
-
-}
-
-
-
-
-
-
-
-
-
-
-
-
-// =======================
-// Facebook分享
-// =======================
-
-
-
-async function loadShareProducts(){
-
-
-
-let {
-
-data
-
-}=await supabaseClient
-
-
-.from("products")
-
-
-.select(
-"id,name"
-);
-
-
-let box =
-document.getElementById(
-"shareProduct"
-);
-
-
-
-if(!box)
-return;
-
-
-
-
-box.innerHTML="";
-
-
-
-data.forEach(item=>{
-
-
-box.innerHTML +=
-
-
-`
-
-<option value="${item.id}">
-
-${item.name}
-
-</option>
-
-`;
-
-
-
-});
-
-
-
-}
-
-
-
-
-
-
-
-
-function createFacebookShare(){
-
-
-
-let id =
-document.getElementById(
-"shareProduct"
-).value;
-
-
-
-
-
-let url =
-
-window.location.origin
-
-+
-
-"/Foodie-shop/product.html?id="
-
-+
-
-id;
-
-
-
-
-
-
-let text =
-
-"China Direct Shop\n\n"
-
-+
-
-url;
-
-
-
-
-
-
-navigator.clipboard.writeText(text);
-
-
-
-
-alert(
-"分享内容已复制"
+"Facebook分享设置保存成功"
 );
 
 
