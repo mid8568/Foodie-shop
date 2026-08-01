@@ -1,56 +1,69 @@
 *{
-box-sizing:border-box;
+    box-sizing:border-box;
 }
 
 
 html,
 body{
 
-margin:0;
+    margin:0;
 
-width:100%;
+    padding:0;
 
-height:100%;
+    width:100%;
 
-font-family:
-Arial,
-"Microsoft YaHei",
-sans-serif;
+    height:100%;
+
+    font-family:
+    Arial,
+    "Microsoft YaHei",
+    sans-serif;
+
+    background:#f5f6fa;
 
 }
 
+
+
+
+/* =====================
+   后台整体布局
+===================== */
 
 
 .admin-layout{
 
-display:flex;
+    display:flex;
 
-width:100%;
+    width:100%;
 
-height:100vh;
+    height:100vh;
 
-overflow:hidden;
+    overflow:hidden;
 
 }
 
 
 
 
-/* 左侧 */
+/* =====================
+   左侧菜单
+===================== */
+
 
 .sidebar{
 
-width:230px;
+    width:230px;
 
-height:100vh;
+    height:100vh;
 
-background:#111827;
+    background:#111827;
 
-color:white;
+    color:white;
 
-padding:20px;
+    padding:20px;
 
-flex:none;
+    flex-shrink:0;
 
 }
 
@@ -58,21 +71,26 @@ flex:none;
 
 .sidebar h2{
 
-text-align:center;
+    text-align:center;
 
-margin:10px 0 40px;
+    margin:
+
+    10px 0 40px;
+
+    font-size:22px;
 
 }
 
 
 
+
 .sidebar ul{
 
-padding:0;
+    list-style:none;
 
-margin:0;
+    padding:0;
 
-list-style:none;
+    margin:0;
 
 }
 
@@ -80,13 +98,17 @@ list-style:none;
 
 .sidebar li{
 
-padding:15px;
+    padding:15px 18px;
 
-cursor:pointer;
+    margin-bottom:12px;
 
-border-radius:8px;
+    border-radius:8px;
 
-margin-bottom:10px;
+    cursor:pointer;
+
+    font-size:16px;
+
+    transition:.2s;
 
 }
 
@@ -94,7 +116,7 @@ margin-bottom:10px;
 
 .sidebar li:hover{
 
-background:#2563eb;
+    background:#2563eb;
 
 }
 
@@ -102,30 +124,419 @@ background:#2563eb;
 
 
 
+/* =====================
+   右侧 iframe区域
+===================== */
 
-/* 右侧 */
 
 .main-content{
 
-flex:1;
+    flex:1;
 
-height:100vh;
+    height:100vh;
 
-overflow:hidden;
+    overflow:hidden;
 
 }
-
 
 
 
 #module-frame{
 
-width:100%;
+    width:100%;
 
-height:100%;
+    height:100%;
 
-border:none;
+    border:0;
 
-display:block;
+    display:block;
+
+}
+
+
+
+
+
+
+/* =====================
+   商品管理页面
+===================== */
+
+
+.product-page{
+
+    padding:30px;
+
+    width:100%;
+
+    min-height:100vh;
+
+}
+
+
+
+
+.product-page h1{
+
+    margin:0 0 25px;
+
+    font-size:26px;
+
+}
+
+
+
+
+
+
+
+/* 搜索区域 */
+
+
+.toolbar{
+
+    background:white;
+
+    padding:20px;
+
+    border-radius:12px;
+
+    margin-bottom:20px;
+
+    display:flex;
+
+    gap:10px;
+
+    align-items:center;
+
+}
+
+
+
+.toolbar input{
+
+    width:300px;
+
+    height:38px;
+
+    padding:0 12px;
+
+    border:
+
+    1px solid #ddd;
+
+    border-radius:6px;
+
+}
+
+
+
+
+
+button{
+
+    background:#2563eb;
+
+    color:white;
+
+    border:none;
+
+    padding:
+
+    9px 18px;
+
+    border-radius:6px;
+
+    cursor:pointer;
+
+}
+
+
+
+button:hover{
+
+    opacity:.85;
+
+}
+
+
+
+
+
+/* =====================
+   商品表格
+===================== */
+
+
+.product-page table{
+
+    width:100%;
+
+    min-width:900px;
+
+    background:white;
+
+    border-collapse:collapse;
+
+    border-radius:12px;
+
+    overflow:hidden;
+
+}
+
+
+
+.product-page th{
+
+
+    background:#f3f4f6;
+
+    padding:15px;
+
+    font-weight:600;
+
+    text-align:center;
+
+}
+
+
+
+.product-page td{
+
+
+    padding:15px 10px;
+
+    border-bottom:
+
+    1px solid #eeeeee;
+
+    text-align:center;
+
+    vertical-align:middle;
+
+}
+
+
+
+
+
+/* 商品图片 */
+
+
+.table-image{
+
+
+    width:80px;
+
+    height:80px;
+
+    object-fit:cover;
+
+    border-radius:8px;
+
+    display:block;
+
+    margin:auto;
+
+
+}
+
+
+
+
+
+
+/* =====================
+   编辑弹窗
+===================== */
+
+
+.modal{
+
+
+    display:none;
+
+    position:fixed;
+
+    top:0;
+
+    left:0;
+
+    width:100%;
+
+    height:100%;
+
+
+    background:
+
+    rgba(0,0,0,.45);
+
+
+    justify-content:center;
+
+    align-items:center;
+
+
+}
+
+
+
+.edit-panel{
+
+
+    width:500px;
+
+    max-height:90vh;
+
+    overflow:auto;
+
+    background:white;
+
+    padding:30px;
+
+    border-radius:12px;
+
+
+}
+
+
+
+
+.edit-panel h2{
+
+    margin-top:0;
+
+}
+
+
+
+
+
+.edit-panel label{
+
+
+    display:block;
+
+    margin-top:15px;
+
+    margin-bottom:6px;
+
+    font-weight:bold;
+
+
+}
+
+
+
+
+.edit-panel input,
+.edit-panel textarea,
+.edit-panel select{
+
+
+    width:100%;
+
+    padding:10px;
+
+    border:
+
+    1px solid #ddd;
+
+    border-radius:6px;
+
+}
+
+
+
+
+
+.edit-panel textarea{
+
+
+    height:120px;
+
+    resize:none;
+
+}
+
+
+
+
+
+.preview{
+
+
+    width:120px;
+
+    height:120px;
+
+    object-fit:cover;
+
+    border-radius:8px;
+
+    margin:10px 0;
+
+
+}
+
+
+
+
+.buttons{
+
+
+    display:flex;
+
+    gap:15px;
+
+    margin-top:25px;
+
+
+}
+
+
+
+
+
+/* =====================
+   移动端
+===================== */
+
+
+@media(max-width:768px){
+
+
+.sidebar{
+
+    width:80px;
+
+    padding:10px;
+
+}
+
+
+.sidebar h2{
+
+    font-size:14px;
+
+}
+
+
+.sidebar li{
+
+    font-size:12px;
+
+    padding:10px 5px;
+
+}
+
+
+
+.product-page{
+
+    padding:15px;
+
+}
+
 
 }
