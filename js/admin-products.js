@@ -3,7 +3,6 @@ console.log(
 );
 
 
-
 // =======================
 // Supabase
 // =======================
@@ -17,7 +16,6 @@ const SUPABASE_KEY =
 "sb_publishable_2IFHfms3ombozpvZCvaeEg_2VZ2z5hJ";
 
 
-
 const supabaseClient =
 supabase.createClient(
 SUPABASE_URL,
@@ -26,23 +24,18 @@ SUPABASE_KEY
 
 
 
-
-
 let products=[];
 
 
 
-
-
-
-
+// =======================
+// 初始化
+// =======================
 
 
 window.onload=function(){
 
-
 loadProducts();
-
 
 };
 
@@ -50,33 +43,22 @@ loadProducts();
 
 
 
-
-
-
-
 // =======================
-// 加载商品列表
+// 获取商品
 // =======================
-
 
 
 async function loadProducts(){
 
 
-
-let {
-
+const {
 data,
 error
-
 }=await supabaseClient
-
 
 .from("products")
 
-
 .select("*")
-
 
 .order(
 "created_at",
@@ -87,30 +69,20 @@ ascending:false
 
 
 
-
-
-
 if(error){
-
 
 console.log(error);
 
-
 return;
 
-
 }
-
-
 
 
 
 products=data || [];
 
 
-
 renderProducts();
-
 
 
 }
@@ -121,21 +93,15 @@ renderProducts();
 
 
 
-
-
-
-
 // =======================
-// 渲染商品
+// 渲染列表
 // =======================
-
 
 
 function renderProducts(){
 
 
-
-let box =
+const box =
 document.getElementById(
 "productTable"
 );
@@ -146,32 +112,51 @@ box.innerHTML="";
 
 
 
-
-
 products.forEach(product=>{
 
 
+let status =
+product.stock_status || "下架";
 
-box.innerHTML +=
+
+
+let seo =
+product.seo_title
+?
+"✔ 已优化"
+:
+"未设置";
 
 
 
-`
+let profit="";
+
+
+if(product.sale_price && product.cost_price){
+
+profit =
+(
+product.sale_price -
+product.cost_price
+).toFixed(2);
+
+}
+
+
+
+box.innerHTML +=`
+
 
 <tr>
 
 
-
 <td>
 
-
-<input type="checkbox"
+<input 
+type="checkbox"
 value="${product.id}">
 
-
 </td>
-
-
 
 
 
@@ -182,132 +167,103 @@ value="${product.id}">
 <div class="product-info">
 
 
-<img
+<img 
 
 src="${product.image || ''}"
 
-width="80"
-
-height="80">
-
-
+class="product-img">
 
 
 
 <div>
 
 
+<div class="product-name">
 
-<p>
+${product.name || "未命名"}
 
-${product.name || "未命名商品"}
-
-</p>
-
+</div>
 
 
-<p>
+
+<div>
 
 ${product.name_en || ""}
 
-</p>
-
-
-
-</div>
-
-
 </div>
 
 
 
-</td>
+<div>
 
+ID:
+${product.id}
 
+</div>
 
-
-
-
-
-
-<td>
-
-
-
-<span>
-
-
-${product.stock_status || "未设置"}
-
-
-</span>
-
-
-
-</td>
-
-
-
-
-
-
-
-
-<td>
-
-
-
-分类：
-
-${product.category || "无"}
-
-
-<br>
-
-
-采购：
-
-${product.cost_price || 0}
-
-
-
-<br>
-
-
-售价：
-
-${product.sale_price || 0}
-
-
-
-</td>
-
-
-
-
-
-
-
-
-<td>
 
 
 ${
-
-product.seo_title
+product["1688_url"]
 
 ?
 
-"已优化"
+`
 
-:
+<a 
+href="${product["1688_url"]}"
+target="_blank">
 
-"未设置"
+1688来源
+
+</a>
+
+`
+
+:""
 
 }
 
 
 
+</div>
+
+
+</div>
+
+
+</td>
+
+
+
+
+
+
+
+<td>
+
+
+<span class="status">
+
+
+${
+
+status==="上架"
+
+?
+
+"🟢 在售"
+
+:
+
+"⚪ 下架"
+
+}
+
+
+</span>
+
+
 </td>
 
 
@@ -320,11 +276,96 @@ product.seo_title
 <td>
 
 
+<p>
+
+售价：
+
+${product.sale_price || product.price || 0}
+
+</p>
+
+
+<p>
+
+成本：
+
+${product.cost_price || 0}
+
+</p>
+
+
+
+<p>
+
+利润：
+
+${profit}
+
+</p>
+
+
+
+<p>
+
+库存：
+
+${product.stock_quantity || 0}
+
+</p>
+
+
+
+<p>
+
+分类：
+
+${product.category || "-"}
+
+</p>
+
+
+
+</td>
+
+
+
+
+
+
+
+<td>
+
+
+${seo}
+
+
+<br>
+
+
+${
+product.seo_description
+?
+"描述完成"
+:
+"无描述"
+}
+
+
+</td>
+
+
+
+
+
+
+
+
+<td>
+
 
 <button
 
 onclick="editProduct(${product.id})">
-
 
 编辑
 
@@ -332,11 +373,9 @@ onclick="editProduct(${product.id})">
 
 
 
-
 <button
 
 onclick="deleteProduct(${product.id})">
-
 
 删除
 
@@ -345,8 +384,6 @@ onclick="deleteProduct(${product.id})">
 
 
 </td>
-
-
 
 
 </tr>
@@ -372,20 +409,36 @@ onclick="deleteProduct(${product.id})">
 
 
 // =======================
-// 编辑商品
+// 新建商品
 // =======================
 
+
+function openProductAdd(){
+
+
+window.location.href =
+"admin-edit.html";
+
+
+}
+
+
+
+
+
+
+
+
+// =======================
+// 编辑
+// =======================
 
 
 function editProduct(id){
 
 
-
 window.location.href =
-
-
 "admin-edit.html?id="+id;
-
 
 
 }
@@ -399,42 +452,30 @@ window.location.href =
 
 
 // =======================
-// 删除商品
+// 删除
 // =======================
-
 
 
 async function deleteProduct(id){
 
 
-
 if(
-
 !confirm(
 "确定删除这个商品?"
 )
-
 )
 
 return;
 
 
 
-
-
-
-let {
-
+const {
 error
-
 }=await supabaseClient
-
 
 .from("products")
 
-
 .delete()
-
 
 .eq(
 "id",
@@ -443,23 +484,13 @@ id
 
 
 
-
-
-
 if(error){
 
-
-alert(
-error.message
-);
-
+alert(error.message);
 
 return;
 
-
 }
-
-
 
 
 
@@ -484,87 +515,8 @@ loadProducts();
 
 
 // =======================
-// 搜索商品
-// =======================
-
-
-
-async function searchProducts(){
-
-
-
-let keyword =
-
-document.getElementById(
-"searchInput"
-).value;
-
-
-
-
-
-
-let {
-
-data,
-error
-
-}=await supabaseClient
-
-
-.from("products")
-
-
-.select("*")
-
-
-.or(
-
-`
-
-name.ilike.%${keyword}%,
-
-name_en.ilike.%${keyword}%
-
-`
-
-);
-
-
-
-
-
-
-if(error)
-
-return;
-
-
-
-
-products=data;
-
-
-
-renderProducts();
-
-
-
-}
-
-
-
-
-
-
-
-
-
-
-// =======================
 // 批量删除
 // =======================
-
 
 
 async function batchDelete(){
@@ -581,16 +533,15 @@ document
 "#productTable input[type=checkbox]:checked"
 )
 
-.forEach(box=>{
+.forEach(item=>{
 
 
 ids.push(
-Number(box.value)
+Number(item.value)
 );
 
 
 });
-
 
 
 
@@ -613,14 +564,13 @@ return;
 
 
 
-await supabaseClient
-
+const {
+error
+}=await supabaseClient
 
 .from("products")
 
-
 .delete()
-
 
 .in(
 "id",
@@ -629,16 +579,80 @@ ids
 
 
 
+if(error){
+
+alert(error.message);
+
+return;
+
+}
+
 
 
 alert(
-"删除完成"
+"批量删除完成"
 );
 
 
 
 loadProducts();
 
+
+
+}
+
+
+
+
+
+
+
+
+
+// =======================
+// 搜索
+// =======================
+
+
+async function searchProducts(){
+
+
+let keyword =
+document.getElementById(
+"searchInput"
+).value;
+
+
+
+const {
+data,
+error
+}=await supabaseClient
+
+.from("products")
+
+.select("*")
+
+.or(
+
+`
+name.ilike.%${keyword}%,
+name_en.ilike.%${keyword}%
+`
+
+);
+
+
+
+if(error)
+return;
+
+
+
+products=data || [];
+
+
+renderProducts();
 
 
 }
