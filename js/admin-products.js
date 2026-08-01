@@ -16,6 +16,7 @@ const SUPABASE_KEY =
 "sb_publishable_2IFHfms3ombozpvZCvaeEg_2VZ2z5hJ";
 
 
+
 const supabaseClient =
 supabase.createClient(
 SUPABASE_URL,
@@ -24,20 +25,26 @@ SUPABASE_KEY
 
 
 
-let products=[];
+
+// 当前商品
+
+let currentProduct=null;
+
 
 
 
 // =======================
-// 初始化
+// 页面加载
 // =======================
 
 
-window.onload=function(){
+document.addEventListener(
+"DOMContentLoaded",
+()=>{
 
 loadProducts();
 
-};
+});
 
 
 
@@ -48,24 +55,40 @@ loadProducts();
 // =======================
 
 
-async function loadProducts(){
+async function loadProducts(keyword=""){
+
+
+
+let query =
+supabaseClient
+.from("products")
+.select("*")
+.order(
+"id",
+{
+ascending:false
+}
+);
+
+
+
+
+if(keyword){
+
+query =
+query.ilike(
+"name",
+`%${keyword}%`
+);
+
+}
+
 
 
 const {
 data,
 error
-}=await supabaseClient
-
-.from("products")
-
-.select("*")
-
-.order(
-"created_at",
-{
-ascending:false
-}
-);
+}=await query;
 
 
 
@@ -79,10 +102,9 @@ return;
 
 
 
-products=data || [];
 
+renderProducts(data);
 
-renderProducts();
 
 
 }
@@ -92,18 +114,18 @@ renderProducts();
 
 
 
-
 // =======================
-// 渲染列表
+// 显示列表
 // =======================
 
 
-function renderProducts(){
+function renderProducts(products){
+
 
 
 const box =
 document.getElementById(
-"productTable"
+"product-list"
 );
 
 
@@ -112,251 +134,60 @@ box.innerHTML="";
 
 
 
-products.forEach(product=>{
-
-
-let status =
-product.stock_status || "下架";
+products.forEach(item=>{
 
 
 
-let seo =
-product.seo_title
-?
-"✔ 已优化"
-:
-"未设置";
+let tr =
+document.createElement(
+"tr"
+);
 
 
 
-let profit="";
-
-
-if(product.sale_price && product.cost_price){
-
-profit =
-(
-product.sale_price -
-product.cost_price
-).toFixed(2);
-
-}
-
-
-
-box.innerHTML +=`
-
-
-<tr>
-
+tr.innerHTML=`
 
 <td>
-
-<input 
-type="checkbox"
-value="${product.id}">
-
-</td>
-
-
-
-
-<td>
-
-
-<div class="product-info">
 
 
 <img 
-
-src="${product.image || ''}"
-
-class="product-img">
-
-
-
-<div>
-
-
-<div class="product-name">
-
-${product.name || "未命名"}
-
-</div>
-
-
-
-<div>
-
-${product.name_en || ""}
-
-</div>
-
-
-
-<div>
-
-ID:
-${product.id}
-
-</div>
-
-
-
-${
-product["1688_url"]
-
-?
-
-`
-
-<a 
-href="${product["1688_url"]}"
-target="_blank">
-
-1688来源
-
-</a>
-
-`
-
-:""
-
-}
-
-
-
-</div>
-
-
-</div>
+src="${item.image || ''}"
+class="table-image">
 
 
 </td>
-
-
-
-
 
 
 
 <td>
 
-
-<span class="status">
-
-
-${
-
-status==="上架"
-
-?
-
-"🟢 在售"
-
-:
-
-"⚪ 下架"
-
-}
-
-
-</span>
-
+${item.name || ""}
 
 </td>
-
-
-
-
-
 
 
 
 <td>
 
-
-<p>
-
-售价：
-
-${product.sale_price || product.price || 0}
-
-</p>
-
-
-<p>
-
-成本：
-
-${product.cost_price || 0}
-
-</p>
-
-
-
-<p>
-
-利润：
-
-${profit}
-
-</p>
-
-
-
-<p>
-
-库存：
-
-${product.stock_quantity || 0}
-
-</p>
-
-
-
-<p>
-
-分类：
-
-${product.category || "-"}
-
-</p>
-
-
+${item.name_en || ""}
 
 </td>
-
-
-
-
 
 
 
 <td>
 
-
-${seo}
-
-
-<br>
-
-
-${
-product.seo_description
-?
-"描述完成"
-:
-"无描述"
-}
-
+${item.price || 0}
 
 </td>
 
 
 
+<td>
 
+${item.stock_status || "下架"}
 
+</td>
 
 
 
@@ -364,8 +195,7 @@ product.seo_description
 
 
 <button
-
-onclick="editProduct(${product.id})">
+onclick="editProduct('${item.id}')">
 
 编辑
 
@@ -373,235 +203,22 @@ onclick="editProduct(${product.id})">
 
 
 
-<button
-
-onclick="deleteProduct(${product.id})">
-
-删除
-
-</button>
-
-
-
 </td>
-
-
-</tr>
-
 
 
 `;
 
 
 
-});
+box.appendChild(tr);
 
-
-
-}
-
-
-
-
-
-
-
-
-
-// =======================
-// 新建商品
-// =======================
-
-
-function openProductAdd(){
-
-
-window.location.href =
-"admin-edit.html";
-
-
-}
-
-
-
-
-
-
-
-
-// =======================
-// 编辑
-// =======================
-
-
-function editProduct(id){
-
-
-window.location.href =
-"admin-edit.html?id="+id;
-
-
-}
-
-
-
-
-
-
-
-
-
-// =======================
-// 删除
-// =======================
-
-
-async function deleteProduct(id){
-
-
-if(
-!confirm(
-"确定删除这个商品?"
-)
-)
-
-return;
-
-
-
-const {
-error
-}=await supabaseClient
-
-.from("products")
-
-.delete()
-
-.eq(
-"id",
-id
-);
-
-
-
-if(error){
-
-alert(error.message);
-
-return;
-
-}
-
-
-
-alert(
-"删除成功"
-);
-
-
-
-loadProducts();
-
-
-
-}
-
-
-
-
-
-
-
-
-
-// =======================
-// 批量删除
-// =======================
-
-
-async function batchDelete(){
-
-
-
-let ids=[];
-
-
-
-document
-
-.querySelectorAll(
-"#productTable input[type=checkbox]:checked"
-)
-
-.forEach(item=>{
-
-
-ids.push(
-Number(item.value)
-);
 
 
 });
 
 
 
-
-
-if(ids.length===0){
-
-
-alert(
-"请选择商品"
-);
-
-
-return;
-
-
 }
-
-
-
-
-
-const {
-error
-}=await supabaseClient
-
-.from("products")
-
-.delete()
-
-.in(
-"id",
-ids
-);
-
-
-
-if(error){
-
-alert(error.message);
-
-return;
-
-}
-
-
-
-alert(
-"批量删除完成"
-);
-
-
-
-loadProducts();
-
-
-
-}
-
-
 
 
 
@@ -614,13 +231,35 @@ loadProducts();
 // =======================
 
 
-async function searchProducts(){
+function searchProduct(){
+
 
 
 let keyword =
 document.getElementById(
-"searchInput"
+"search"
 ).value;
+
+
+
+loadProducts(keyword);
+
+
+
+}
+
+
+
+
+
+
+
+// =======================
+// 编辑商品
+// =======================
+
+
+async function editProduct(id){
 
 
 
@@ -628,31 +267,234 @@ const {
 data,
 error
 }=await supabaseClient
-
 .from("products")
-
 .select("*")
+.eq(
+"id",
+id
+)
+.single();
 
-.or(
 
-`
-name.ilike.%${keyword}%,
-name_en.ilike.%${keyword}%
-`
 
+if(error){
+
+console.log(error);
+
+return;
+
+}
+
+
+
+currentProduct=data;
+
+
+
+document.getElementById(
+"edit-name"
+).value =
+data.name || "";
+
+
+
+document.getElementById(
+"edit-name-en"
+).value =
+data.name_en || "";
+
+
+
+document.getElementById(
+"edit-description"
+).value =
+data.description || "";
+
+
+
+document.getElementById(
+"edit-price"
+).value =
+data.price || "";
+
+
+
+document.getElementById(
+"edit-status"
+).value =
+data.stock_status || "下架";
+
+
+
+document.getElementById(
+"edit-image"
+).src =
+data.image || "";
+
+
+
+document.getElementById(
+"edit-box"
+).style.display=
+"flex";
+
+
+
+}
+
+
+
+
+
+
+
+// =======================
+// 保存修改
+// =======================
+
+
+async function saveProduct(){
+
+
+
+if(!currentProduct){
+
+return;
+
+}
+
+
+
+
+let updateData={
+
+
+
+name:
+document.getElementById(
+"edit-name"
+).value,
+
+
+
+name_en:
+document.getElementById(
+"edit-name-en"
+).value,
+
+
+
+description:
+document.getElementById(
+"edit-description"
+).value,
+
+
+
+price:
+Number(
+document.getElementById(
+"edit-price"
+).value
+),
+
+
+
+stock_status:
+document.getElementById(
+"edit-status"
+).value
+
+
+
+};
+
+
+
+
+
+const {
+error
+}=await supabaseClient
+.from("products")
+.update(updateData)
+.eq(
+"id",
+currentProduct.id
 );
 
 
 
-if(error)
+if(error){
+
+alert(
+"保存失败"
+);
+
+console.log(error);
+
 return;
 
+}
 
 
-products=data || [];
+
+alert(
+"修改成功"
+);
 
 
-renderProducts();
+
+closeEdit();
+
+
+loadProducts();
+
+
+
+}
+
+
+
+
+
+
+
+// =======================
+// 关闭编辑
+// =======================
+
+
+function closeEdit(){
+
+
+document.getElementById(
+"edit-box"
+).style.display=
+"none";
+
+
+currentProduct=null;
+
+
+}
+
+
+
+
+
+
+// =======================
+// 添加商品
+// =======================
+
+
+function addProduct(){
+
+
+alert(
+"下一步接入添加商品功能"
+);
 
 
 }
