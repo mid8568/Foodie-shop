@@ -404,18 +404,6 @@ placeholder="利润率">
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 <!-- ======================
 新建商品
 跳转1688采集
@@ -477,38 +465,87 @@ style="display:none">
 
 
 
-<select id="materialCategory">
+<h3>
+上传素材
+</h3>
 
 
-<option>
-
-全部图片
-
-</option>
-
+<select id="uploadType">
 
 <option>
-
 商品主图
-
 </option>
 
-
-
 <option>
-
 详情图片
-
 </option>
-
-
 
 <option>
-
 Banner图片
-
 </option>
 
+<option>
+其他
+</option>
+
+
+</select>
+
+
+
+<input
+type="file"
+id="materialUpload">
+
+
+
+<button onclick="uploadMaterial()">
+
+上传图片
+
+</button>
+
+
+
+
+
+
+
+<h3>
+素材分类
+
+</h3>
+
+
+
+<select 
+id="materialCategory"
+onchange="filterMaterials()">
+
+
+<option value="全部">
+全部
+</option>
+
+
+<option value="商品主图">
+商品主图
+</option>
+
+
+<option value="详情图片">
+详情图片
+</option>
+
+
+<option value="Banner图片">
+Banner图片
+</option>
+
+
+<option value="其他">
+其他
+</option>
 
 
 </select>
@@ -518,22 +555,17 @@ Banner图片
 
 
 
+
+
 <div id="materialList"
-class="images">
+class="material-grid">
 
 
 </div>
 
 
 
-
 </div>
-
-
-
-
-
-
 
 
 
