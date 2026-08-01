@@ -1,7 +1,5 @@
 <!DOCTYPE html>
-
 <html lang="zh-CN">
-
 
 <head>
 
@@ -9,28 +7,26 @@
 
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 
-
 <title>
 China Direct Shop Admin
 </title>
 
-
 <link rel="stylesheet" href="css/admin.css">
-
 
 </head>
 
 
-
 <body>
-
 
 
 <div class="admin-layout">
 
 
 
-<!-- 左侧菜单 -->
+<!-- =====================
+左侧菜单
+===================== -->
+
 
 <div class="sidebar">
 
@@ -41,16 +37,14 @@ China Direct Shop Admin
 
 
 
+<!-- 商品中心 -->
 
-
-<button onclick="toggleMenu('productMenu')">
-商品管理 ▼
+<button onclick="toggleMenu('productCenter')">
+商品中心 ▼
 </button>
 
 
-
-<div id="productMenu"
-class="submenu">
+<div id="productCenter" class="submenu">
 
 
 <button onclick="openPage('products')">
@@ -58,9 +52,13 @@ class="submenu">
 </button>
 
 
+<button onclick="openPage('collector')">
+1688采集
+</button>
 
-<button onclick="openPage('newProduct')">
-新建商品
+
+<button onclick="openPage('category')">
+分类管理
 </button>
 
 
@@ -69,29 +67,24 @@ class="submenu">
 
 
 
+
+<!-- 素材中心 -->
+
+<button onclick="toggleMenu('mediaCenter')">
+素材中心 ▼
+</button>
+
+
+<div id="mediaCenter" class="submenu">
 
 
 <button onclick="openPage('materials')">
-素材管理
+图片库
 </button>
 
 
-
-
-
-
-<button onclick="toggleMenu('shopMenu')">
-店铺管理 ▼
-</button>
-
-
-
-<div id="shopMenu"
-class="submenu">
-
-
-<button onclick="openPage('decorate')">
-店铺装修
+<button onclick="openPage('banner')">
+Banner
 </button>
 
 
@@ -100,6 +93,41 @@ class="submenu">
 
 
 
+
+<!-- 店铺设置 -->
+
+<button onclick="toggleMenu('storeCenter')">
+店铺设置 ▼
+</button>
+
+
+<div id="storeCenter" class="submenu">
+
+
+<button onclick="openPage('decorate')">
+首页装修
+</button>
+
+
+<button onclick="openPage('notice')">
+公告
+</button>
+
+
+</div>
+
+
+
+
+
+<!-- 销售渠道 -->
+
+<button onclick="toggleMenu('channelCenter')">
+销售渠道 ▼
+</button>
+
+
+<div id="channelCenter" class="submenu">
 
 
 <button onclick="openPage('ebay')">
@@ -107,6 +135,10 @@ eBay同步
 </button>
 
 
+<button onclick="openPage('facebook')">
+Facebook分享
+</button>
+
 
 </div>
 
@@ -114,13 +146,27 @@ eBay同步
 
 
 
+<!-- 系统 -->
+
+<button onclick="toggleMenu('systemCenter')">
+系统 ▼
+</button>
+
+
+<div id="systemCenter" class="submenu">
+
+
+<button onclick="openPage('setting')">
+设置
+</button>
+
+
+</div>
 
 
 
+</div>
 
-<!-- 主内容 -->
-
-<div class="main">
 
 
 
@@ -129,12 +175,19 @@ eBay同步
 
 
 <!-- =====================
-商品管理
+主体
 ===================== -->
 
 
-<div id="products"
-class="panel">
+<div class="main">
+
+
+
+
+
+<!-- 商品列表 -->
+
+<div id="products" class="panel">
 
 
 <h1>
@@ -142,17 +195,13 @@ class="panel">
 </h1>
 
 
-
 <select id="productSelect">
-
 
 <option>
 请选择商品
 </option>
 
-
 </select>
-
 
 
 
@@ -169,14 +218,12 @@ class="panel">
 
 
 
-
 <h3>
 英文标题
 </h3>
 
 
 <input id="name_en">
-
 
 
 
@@ -200,12 +247,9 @@ id="mainUpload">
 
 
 
-<button>
-
+<button onclick="mainUpload.click()">
 替换主图
-
 </button>
-
 
 
 
@@ -223,7 +267,6 @@ class="images">
 
 
 
-
 <input
 type="file"
 id="detailUpload"
@@ -231,10 +274,8 @@ multiple>
 
 
 
-<button>
-
+<button onclick="detailUpload.click()">
 添加详情图片
-
 </button>
 
 
@@ -247,16 +288,10 @@ multiple>
 </h3>
 
 
-<textarea id="description">
-
-</textarea>
+<textarea id="description"></textarea>
 
 
-
-<textarea id="description_en">
-
-</textarea>
-
+<textarea id="description_en"></textarea>
 
 
 
@@ -268,11 +303,9 @@ multiple>
 </h3>
 
 
-
 <input
 id="cost_price"
 placeholder="采购成本">
-
 
 
 <input
@@ -313,10 +346,7 @@ placeholder="销售价格">
 
 
 
-
-
 <br><br>
-
 
 
 <button onclick="saveProduct()">
@@ -333,42 +363,47 @@ placeholder="销售价格">
 
 
 
-
-
-
-
-
-
-
-
-
 <!-- =====================
-新建商品
+1688采集
 ===================== -->
 
 
-<div id="newProduct"
+<div id="collector"
 class="panel"
 style="display:none">
 
 
 <h1>
-新建商品
+1688采集
 </h1>
 
 
 
-<p>
-通过1688链接自动采集商品
-</p>
+<h3>
+1688商品链接
+</h3>
+
+
+<input
+id="collectUrl"
+placeholder="粘贴1688商品详情链接">
 
 
 
-<button onclick="openCollector()">
+<br><br>
 
-进入1688采集
+
+<button onclick="startCollect()">
+
+开始采集
 
 </button>
+
+
+
+<div id="collectResult">
+
+</div>
 
 
 
@@ -382,11 +417,54 @@ style="display:none">
 
 
 
+<!-- =====================
+分类管理
+===================== -->
+
+
+<div id="category"
+class="panel"
+style="display:none">
+
+
+<h1>
+分类管理
+</h1>
+
+
+
+<input
+id="categoryName"
+placeholder="输入分类名称">
+
+
+
+<button>
+
+添加分类
+
+</button>
+
+
+
+<div id="categoryList">
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
 
 
 
 <!-- =====================
-素材管理
+图片库
 ===================== -->
 
 
@@ -396,9 +474,8 @@ style="display:none">
 
 
 <h1>
-素材管理
+图片库
 </h1>
-
 
 
 
@@ -431,7 +508,6 @@ Banner图片
 
 
 
-
 <input
 type="file"
 id="materialUpload">
@@ -440,11 +516,9 @@ id="materialUpload">
 
 <button onclick="uploadMaterial()">
 
-上传素材
+上传图片
 
 </button>
-
-
 
 
 
@@ -486,9 +560,8 @@ Banner图片
 </option>
 
 
+
 </select>
-
-
 
 
 
@@ -511,31 +584,19 @@ class="material-grid">
 
 
 
-
-
-
-
 <!-- =====================
-店铺装修
+Banner管理
 ===================== -->
 
 
-<div id="decorate"
+<div id="banner"
 class="panel"
 style="display:none">
 
 
 <h1>
-店铺装修
+Banner管理
 </h1>
-
-
-
-
-
-<h3>
-首页Banner
-</h3>
 
 
 
@@ -560,7 +621,29 @@ id="bannerUpload">
 
 
 
+</div>
 
+
+
+
+
+
+
+
+
+<!-- =====================
+首页装修
+===================== -->
+
+
+<div id="decorate"
+class="panel"
+style="display:none">
+
+
+<h1>
+首页装修
+</h1>
 
 
 
@@ -570,27 +653,23 @@ id="bannerUpload">
 </h3>
 
 
-<textarea id="notice">
 
-</textarea>
-
-
+<textarea
+id="notice"></textarea>
 
 
 
 
 
 <h3>
-首页模块标题
+首页标题
 </h3>
+
 
 
 <input
 id="homeTitle"
 placeholder="热门商品">
-
-
-
 
 
 
@@ -604,6 +683,45 @@ placeholder="热门商品">
 
 
 
+</div>
+
+
+
+
+
+
+
+
+
+<!-- =====================
+公告
+===================== -->
+
+
+<div id="notice"
+class="panel"
+style="display:none">
+
+
+<h1>
+店铺公告
+</h1>
+
+
+
+<textarea
+placeholder="输入公告内容">
+</textarea>
+
+
+
+<button>
+
+保存公告
+
+</button>
+
+
 
 </div>
 
@@ -615,12 +733,8 @@ placeholder="热门商品">
 
 
 
-
-
-
-
 <!-- =====================
-eBay同步
+eBay
 ===================== -->
 
 
@@ -634,30 +748,84 @@ eBay同步
 </h1>
 
 
-<button>
 
+<button>
 同步商品
-
 </button>
 
 
-<button>
 
+<button>
 同步库存
-
 </button>
 
 
-<button>
 
+<button>
 同步价格
-
 </button>
+
+
+
+<button>
+同步上下架
+</button>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<!-- =====================
+Facebook
+===================== -->
+
+
+<div id="facebook"
+class="panel"
+style="display:none">
+
+
+<h1>
+Facebook分享
+</h1>
+
+
+
+
+<select id="shareProduct">
+
+<option>
+选择商品
+</option>
+
+
+</select>
+
+
+
+
+<br><br>
 
 
 <button>
 
-同步上下架
+生成分享文案
+
+</button>
+
+
+
+<button>
+
+分享到Facebook
 
 </button>
 
@@ -671,8 +839,70 @@ eBay同步
 
 
 
+
+
+<!-- =====================
+系统设置
+===================== -->
+
+
+<div id="setting"
+class="panel"
+style="display:none">
+
+
+<h1>
+系统设置
+</h1>
+
+
+
+
+<h3>
+1688 API地址
+</h3>
+
+
+<input
+id="apiUrl"
+placeholder="https://你的API地址">
+
+
+
+
+
+<h3>
+网站名称
+</h3>
+
+
+<input
+id="siteName"
+placeholder="China Direct Shop">
+
+
+
+
+
+<button>
+
+保存设置
+
+</button>
+
+
+
 </div>
 
+
+
+
+
+
+
+
+
+</div>
 
 </div>
 
@@ -690,17 +920,19 @@ eBay同步
 function toggleMenu(id){
 
 
-let box =
-document.getElementById(id);
+let box=document.getElementById(id);
 
 
 if(box.style.display==="block"){
 
 box.style.display="none";
 
+
 }else{
 
+
 box.style.display="block";
+
 
 }
 
@@ -716,12 +948,15 @@ box.style.display="block";
 function openPage(id){
 
 
+
 document
 .querySelectorAll(".panel")
 .forEach(
 p=>{
 
+
 p.style.display="none";
+
 
 }
 
@@ -729,9 +964,16 @@ p.style.display="none";
 
 
 
-document
-.getElementById(id)
-.style.display="block";
+let page =
+document.getElementById(id);
+
+
+
+if(page){
+
+page.style.display="block";
+
+}
 
 
 }
@@ -742,18 +984,105 @@ document
 
 
 
-function openCollector(){
+
+async function startCollect(){
 
 
-window.location.href=
-"collector.html";
+let url =
+document.getElementById("collectUrl").value;
+
+
+
+if(!url){
+
+alert("请输入1688链接");
+
+return;
+
+}
+
+
+
+document.getElementById(
+"collectResult"
+).innerHTML=
+"正在采集中...";
+
+
+
+try{
+
+
+let res =
+await fetch(
+"https://你的1688-api地址/collect",
+{
+
+method:"POST",
+
+headers:{
+
+
+"Content-Type":
+"application/json"
+
+
+},
+
+
+body:
+JSON.stringify({
+
+url:url
+
+})
 
 
 }
+
+);
+
+
+
+let data =
+await res.json();
+
+
+
+console.log(data);
+
+
+
+document.getElementById(
+"collectResult"
+).innerHTML=
+"采集完成";
+
+
+}catch(e){
+
+
+console.log(e);
+
+
+document.getElementById(
+"collectResult"
+).innerHTML=
+"采集失败";
+
+
+}
+
+
+
+}
+
+
 
 
 
 </script>
+
 
 
 
@@ -768,6 +1097,5 @@ window.location.href=
 
 
 </body>
-
 
 </html>
