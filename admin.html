@@ -7,6 +7,7 @@
 
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 
+
 <title>
 CDS后台管理
 </title>
@@ -24,9 +25,10 @@ CDS后台管理
 <div class="admin-layout">
 
 
+
 <!-- 左侧菜单 -->
 
-<aside class="sidebar">
+<div class="sidebar">
 
 
 <h2>
@@ -34,31 +36,32 @@ CDS后台
 </h2>
 
 
+
 <ul>
 
 
-<li onclick="loadPage('products')">
+<li onclick="openModule('products')">
 
 📦 商品管理
 
 </li>
 
 
-<li onclick="loadPage('decoration')">
+<li onclick="openModule('decoration')">
 
 🎨 前端装修
 
 </li>
 
 
-<li onclick="loadPage('images')">
+<li onclick="openModule('images')">
 
 🖼 图片管理
 
 </li>
 
 
-<li onclick="loadPage('ebay')">
+<li onclick="openModule('ebay')">
 
 🛒 eBay同步
 
@@ -68,33 +71,27 @@ CDS后台
 </ul>
 
 
-</aside>
+
+</div>
 
 
 
 
-<!-- 右侧内容 -->
 
-<main class="content">
+<!-- 右侧 -->
 
-
-<div id="admin-content">
+<div class="main-content">
 
 
-<h1>
-欢迎进入后台管理
-</h1>
-
-
-<p>
-请选择左侧功能
-</p>
+<iframe
+id="module-frame"
+src="admin-products.html">
+</iframe>
 
 
 </div>
 
 
-</main>
 
 
 </div>
@@ -105,5 +102,6 @@ CDS后台
 
 
 </body>
+
 
 </html>
