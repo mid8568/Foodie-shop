@@ -7,11 +7,11 @@ console.log("admin.js启动");
 
 
 const SUPABASE_URL =
-"https://你的项目.supabase.co";
+"https://ukxxmxnubxjezkwbbxdr.supabase.co";
 
 
 const SUPABASE_KEY =
-"你的supabase key";
+"sb_publishable_2IFHfms3ombozpvZCvaeEg_2VZ2z5hJ";
 
 
 
