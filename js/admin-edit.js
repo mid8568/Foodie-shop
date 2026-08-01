@@ -1,14 +1,16 @@
 console.log(
-"商品编辑启动"
+"admin-edit.js启动"
 );
 
 
 
+// =======================
+// Supabase
+// =======================
 
 
 const SUPABASE_URL =
 "https://ukxxmxnubxjezkwbbxdr.supabase.co";
-
 
 
 const SUPABASE_KEY =
@@ -16,12 +18,11 @@ const SUPABASE_KEY =
 
 
 
-const db =
+const supabaseClient =
 supabase.createClient(
 SUPABASE_URL,
 SUPABASE_KEY
 );
-
 
 
 
@@ -37,19 +38,36 @@ let product=null;
 
 
 
+// =======================
+// 页面启动
+// =======================
+
+
 window.onload=function(){
 
 
 
 let params =
 new URLSearchParams(
-location.search
+window.location.search
 );
 
 
 
 productId =
 params.get("id");
+
+
+
+if(!productId){
+
+alert(
+"商品ID不存在"
+);
+
+return;
+
+}
 
 
 
@@ -70,7 +88,9 @@ loadProduct();
 
 
 
+// =======================
 // 加载商品
+// =======================
 
 
 async function loadProduct(){
@@ -82,7 +102,7 @@ let {
 data,
 error
 
-}=await db
+}=await supabaseClient
 
 
 .from("products")
@@ -103,11 +123,20 @@ productId
 
 
 
+
 if(error){
+
 
 console.log(error);
 
+
+alert(
+"商品加载失败"
+);
+
+
 return;
+
 
 }
 
@@ -174,18 +203,30 @@ renderImages();
 
 
 
-// 显示图片
+// =======================
+// 图片显示
+// =======================
 
 
 function renderImages(){
 
 
 
-mainImage.innerHTML =
+let main =
+document.getElementById(
+"mainImage"
+);
+
+
+
+main.innerHTML=
+
 
 `
 
-<img src="${product.image}" width="200">
+<img src="${product.image}"
+
+width="200">
 
 `;
 
@@ -194,18 +235,23 @@ mainImage.innerHTML =
 
 
 
-detailImages.innerHTML="";
+
+let box =
+document.getElementById(
+"detailImages"
+);
+
+
+
+box.innerHTML="";
 
 
 
 
 
 [
-
 product.image2,
-
 product.image3,
-
 product.image4
 
 ]
@@ -218,7 +264,7 @@ product.image4
 if(img){
 
 
-detailImages.innerHTML +=
+box.innerHTML +=
 
 
 `
@@ -226,10 +272,16 @@ detailImages.innerHTML +=
 <div>
 
 
-<img src="${img}" width="120">
+<img src="${img}"
+
+width="120">
 
 
-<button onclick="deleteImage('${img}')">
+
+<br>
+
+
+<button onclick="deleteDetailImage('${img}')">
 
 删除
 
@@ -260,61 +312,79 @@ detailImages.innerHTML +=
 
 
 
-
-
-// 保存修改
+// =======================
+// 保存商品
+// =======================
 
 
 async function saveProduct(){
 
 
 
-await db
-
-
-.from("products")
-
-
-.update({
+let update={
 
 
 
 name:
+
 name.value,
 
 
 
 name_en:
+
 name_en.value,
 
 
 
 description:
+
 description.value,
 
 
 
 description_en:
+
 description_en.value,
 
 
 
 cost_price:
+
 Number(cost_price.value),
 
 
 
 sale_price:
+
 Number(sale_price.value),
 
 
 
 stock_status:
+
 stock_status.value
 
 
 
-})
+};
+
+
+
+
+
+
+let {
+
+error
+
+}=await supabaseClient
+
+
+.from("products")
+
+
+.update(update)
 
 
 .eq(
@@ -326,8 +396,23 @@ productId
 
 
 
+if(error){
+
+
 alert(
-"保存成功"
+error.message
+);
+
+
+return;
+
+
+}
+
+
+
+alert(
+"修改成功"
 );
 
 
@@ -344,8 +429,66 @@ alert(
 
 
 
+// =======================
+// 自动计算销售价
+// =======================
 
+
+if(
+document.getElementById(
+"cost_price"
+)
+){
+
+
+cost_price.oninput=function(){
+
+
+
+let cost =
+Number(
+cost_price.value
+);
+
+
+
+if(cost){
+
+
+
+sale_price.value =
+
+
+(
+cost * 1.5
+)
+
+.toFixed(2);
+
+
+
+}
+
+
+
+};
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+// =======================
 // 上传主图
+// =======================
 
 
 async function uploadMainImage(){
@@ -358,8 +501,8 @@ mainUpload.files[0];
 
 
 if(!file)
-return;
 
+return;
 
 
 
@@ -382,7 +525,11 @@ file.name;
 
 
 
-await db.storage
+let {
+
+error
+
+}=await supabaseClient.storage
 
 
 .from(
@@ -400,11 +547,30 @@ file
 
 
 
+if(error){
+
+
+alert(
+error.message
+);
+
+
+return;
+
+
+}
+
+
+
+
+
+
+
 let {
 
 data
 
-}=db.storage
+}=supabaseClient.storage
 
 
 .from(
@@ -421,7 +587,8 @@ path
 
 
 
-await db
+
+await supabaseClient
 
 
 .from("products")
@@ -432,7 +599,6 @@ await db
 image:
 
 data.publicUrl
-
 
 })
 
@@ -448,7 +614,7 @@ productId
 
 
 alert(
-"主图更新成功"
+"主图替换成功"
 );
 
 
@@ -469,8 +635,9 @@ loadProduct();
 
 
 
-
-// 上传详情图
+// =======================
+// 上传详情图片
+// =======================
 
 
 async function uploadDetailImages(){
@@ -486,8 +653,23 @@ let update={};
 
 
 
-
 let index=2;
+
+
+
+
+
+if(product.image2)
+
+index=3;
+
+
+
+if(product.image3)
+
+index=4;
+
+
 
 
 
@@ -504,7 +686,9 @@ break;
 
 
 
+
 let path =
+
 
 "detail/"
 
@@ -520,7 +704,9 @@ file.name;
 
 
 
-await db.storage
+
+
+await supabaseClient.storage
 
 
 .from(
@@ -538,11 +724,12 @@ file
 
 
 
+
 let {
 
 data
 
-}=db.storage
+}=supabaseClient.storage
 
 
 .from(
@@ -559,10 +746,9 @@ path
 
 
 
+
 update[
-
 "image"+index
-
 ]
 =
 
@@ -570,9 +756,7 @@ data.publicUrl;
 
 
 
-
 index++;
-
 
 
 
@@ -584,7 +768,8 @@ index++;
 
 
 
-await db
+
+await supabaseClient
 
 
 .from("products")
@@ -625,14 +810,18 @@ loadProduct();
 
 
 
+// =======================
 // 删除详情图片
+// =======================
 
 
-async function deleteImage(url){
+async function deleteDetailImage(url){
 
 
 
 let update={};
+
+
 
 
 
@@ -641,9 +830,13 @@ if(product.image2===url)
 update.image2=null;
 
 
+
+
 if(product.image3===url)
 
 update.image3=null;
+
+
 
 
 if(product.image4===url)
@@ -655,7 +848,9 @@ update.image4=null;
 
 
 
-await db
+
+
+await supabaseClient
 
 
 .from("products")
@@ -673,8 +868,34 @@ productId
 
 
 
+
 loadProduct();
 
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+// =======================
+// 返回列表
+// =======================
+
+
+function backProducts(){
+
+
+window.location.href=
+
+"admin-products.html";
 
 
 }
