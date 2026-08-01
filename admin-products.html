@@ -1,20 +1,11 @@
 <!DOCTYPE html>
 
-<html lang="zh-CN">
+<html>
+
 
 <head>
 
-<meta charset="UTF-8">
-
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-
-
-<title>
-商品管理后台
-</title>
-
-
-<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/admin.css">
 
 </head>
 
@@ -22,62 +13,69 @@
 <body>
 
 
-<div class="container">
-
 
 <h1>
-🇨🇳 China Direct Shop
+商品管理
 </h1>
 
 
-<h2>
-商品管理后台
-</h2>
+
+<div>
 
 
-
-<button
-onclick="location.href='admin.html'">
-
-+ 添加商品
-
+<button>
++ 新建商品
 </button>
 
 
-<br><br>
+<button>
+批量删除
+</button>
+
+
+</div>
 
 
 
-<table width="100%" border="1">
+
+<table>
 
 
 <thead>
 
+
 <tr>
 
+
 <th>
-图片
+选择
 </th>
 
 
 <th>
-商品名称
+商品信息
 </th>
 
 
 <th>
-价格
+经营状态
 </th>
 
 
 <th>
-状态
+商品属性
+</th>
+
+
+<th>
+商品优化项
 </th>
 
 
 <th>
 操作
 </th>
+
 
 
 </tr>
@@ -87,18 +85,13 @@ onclick="location.href='admin.html'">
 
 
 
-<tbody id="productList">
+<tbody id="productTable">
 
 
 </tbody>
 
 
-
 </table>
-
-
-
-</div>
 
 
 
@@ -106,11 +99,9 @@ onclick="location.href='admin.html'">
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-
-<script src="js/products-admin.js"></script>
+<script src="js/admin-products.js"></script>
 
 
 </body>
-
 
 </html>
