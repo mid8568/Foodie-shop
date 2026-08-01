@@ -1,10 +1,12 @@
 <!DOCTYPE html>
-
 <html lang="zh-CN">
 
 <head>
 
 <meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
 
 <title>
 商品管理
@@ -15,6 +17,7 @@
 
 
 </head>
+
 
 
 <body>
@@ -32,13 +35,19 @@
 <div class="toolbar">
 
 
-<button onclick="openProductAdd()">
-+ 新建商品
+<input
+id="search"
+placeholder="搜索商品名称">
+
+
+<button onclick="searchProduct()">
+搜索
 </button>
 
 
-<button onclick="batchDelete()">
-批量删除
+
+<button onclick="addProduct()">
++ 添加商品
 </button>
 
 
@@ -47,36 +56,35 @@
 
 
 
-<table class="product-table">
+<table>
 
 
 <thead>
 
 <tr>
 
-
 <th>
-选择
+图片
 </th>
 
 
 <th>
-商品信息
+中文标题
 </th>
 
 
 <th>
-经营状态
+英文标题
 </th>
 
 
 <th>
-商品属性
+价格
 </th>
 
 
 <th>
-商品优化项
+状态
 </th>
 
 
@@ -92,13 +100,15 @@
 
 
 
-<tbody id="productTable">
+<tbody id="product-list">
 
 
 </tbody>
 
 
+
 </table>
+
 
 
 </div>
@@ -107,13 +117,146 @@
 
 
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<!-- 编辑窗口 -->
 
 
-<script src="js/admin-products.js"></script>
+<div
+id="edit-box"
+class="modal">
 
+
+<div class="edit-panel">
+
+
+<h2>
+编辑商品
+</h2>
+
+
+
+<label>
+中文标题
+</label>
+
+<input id="edit-name">
+
+
+
+<label>
+英文标题
+</label>
+
+<input id="edit-name-en">
+
+
+
+
+
+<label>
+主图
+</label>
+
+<img
+id="edit-image"
+class="preview">
+
+
+
+<input
+type="file"
+id="image-file">
+
+
+
+
+
+<label>
+商品描述
+</label>
+
+
+<textarea
+id="edit-description">
+</textarea>
+
+
+
+
+<label>
+价格
+</label>
+
+
+<input
+id="edit-price"
+type="number">
+
+
+
+
+
+<label>
+状态
+</label>
+
+
+<select
+id="edit-status">
+
+
+<option value="上架">
+上架
+</option>
+
+
+<option value="下架">
+下架
+</option>
+
+
+</select>
+
+
+
+
+
+<div class="buttons">
+
+
+<button onclick="saveProduct()">
+保存修改
+</button>
+
+
+<button onclick="closeEdit()">
+取消
+</button>
+
+
+</div>
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+</script>
+
+
+<script src="js/admin-products.js">
+</script>
 
 
 </body>
+
 
 </html>
