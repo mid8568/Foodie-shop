@@ -1,6 +1,4 @@
-console.log(
-"admin-edit.js启动"
-);
+console.log("admin-edit.js启动");
 
 
 
@@ -30,7 +28,7 @@ SUPABASE_KEY
 
 let productId=null;
 
-let product=null;
+let currentProduct=null;
 
 
 
@@ -59,15 +57,20 @@ params.get("id");
 
 
 
+
 if(!productId){
+
 
 alert(
 "商品ID不存在"
 );
 
+
 return;
 
+
 }
+
 
 
 
@@ -76,7 +79,6 @@ loadProduct();
 
 
 };
-
 
 
 
@@ -143,44 +145,82 @@ return;
 
 
 
-
-product=data;
-
+currentProduct=data;
 
 
 
 
-name.value =
+
+document.getElementById(
+"name"
+).value =
 data.name || "";
 
 
 
-name_en.value =
+
+
+document.getElementById(
+"name_en"
+).value =
 data.name_en || "";
 
 
 
-description.value =
+
+
+document.getElementById(
+"description"
+).value =
 data.description || "";
 
 
 
-description_en.value =
+
+
+if(
+document.getElementById(
+"description_en"
+)
+
+)
+
+{
+
+document.getElementById(
+"description_en"
+).value =
 data.description_en || "";
 
+}
 
 
-cost_price.value =
+
+
+
+
+document.getElementById(
+"cost_price"
+).value =
 data.cost_price || "";
 
 
 
-sale_price.value =
+
+
+document.getElementById(
+"sale_price"
+).value =
 data.sale_price || "";
 
 
 
-stock_status.value =
+
+
+
+document.getElementById(
+"stock_status"
+).value =
 data.stock_status || "上架";
 
 
@@ -204,8 +244,9 @@ renderImages();
 
 
 // =======================
-// 图片显示
+// 显示图片
 // =======================
+
 
 
 function renderImages(){
@@ -219,16 +260,22 @@ document.getElementById(
 
 
 
-main.innerHTML=
+if(main){
 
+
+main.innerHTML=
 
 `
 
-<img src="${product.image}"
+<img src="${currentProduct.image || ''}"
 
 width="200">
 
 `;
+
+
+
+}
 
 
 
@@ -243,25 +290,35 @@ document.getElementById(
 
 
 
+if(!box)
+
+return;
+
+
+
 box.innerHTML="";
 
 
 
 
 
+
 [
-product.image2,
-product.image3,
-product.image4
+
+currentProduct.image2,
+
+currentProduct.image3,
+
+currentProduct.image4
+
 
 ]
-
 
 .forEach(img=>{
 
 
-
 if(img){
+
 
 
 box.innerHTML +=
@@ -272,10 +329,7 @@ box.innerHTML +=
 <div>
 
 
-<img src="${img}"
-
-width="120">
-
+<img src="${img}" width="120">
 
 
 <br>
@@ -294,6 +348,7 @@ width="120">
 `;
 
 
+
 }
 
 
@@ -303,6 +358,8 @@ width="120">
 
 
 }
+
+
 
 
 
@@ -327,47 +384,79 @@ let update={
 
 name:
 
-name.value,
+document.getElementById(
+"name"
+).value,
 
 
 
 name_en:
 
-name_en.value,
+document.getElementById(
+"name_en"
+).value,
 
 
 
 description:
 
-description.value,
+document.getElementById(
+"description"
+).value,
 
 
 
 description_en:
 
-description_en.value,
+document.getElementById(
+"description_en"
+)
+
+?
+
+document.getElementById(
+"description_en"
+).value
+
+:
+
+"",
+
 
 
 
 cost_price:
 
-Number(cost_price.value),
+Number(
+document.getElementById(
+"cost_price"
+).value
+),
+
 
 
 
 sale_price:
 
-Number(sale_price.value),
+Number(
+document.getElementById(
+"sale_price"
+).value
+),
+
 
 
 
 stock_status:
 
-stock_status.value
+document.getElementById(
+"stock_status"
+).value
 
 
 
 };
+
 
 
 
@@ -396,6 +485,8 @@ productId
 
 
 
+
+
 if(error){
 
 
@@ -411,70 +502,18 @@ return;
 
 
 
+
+
 alert(
 "修改成功"
 );
 
 
 
-}
-
-
-
-
-
-
-
-
-
-
-
-// =======================
-// 自动计算销售价
-// =======================
-
-
-if(
-document.getElementById(
-"cost_price"
-)
-){
-
-
-cost_price.oninput=function(){
-
-
-
-let cost =
-Number(
-cost_price.value
-);
-
-
-
-if(cost){
-
-
-
-sale_price.value =
-
-
-(
-cost * 1.5
-)
-
-.toFixed(2);
-
 
 
 }
 
-
-
-};
-
-
-}
 
 
 
@@ -491,18 +530,23 @@ cost * 1.5
 // =======================
 
 
+
 async function uploadMainImage(){
 
 
 
 let file =
-mainUpload.files[0];
+document.getElementById(
+"mainUpload"
+).files[0];
+
 
 
 
 if(!file)
 
 return;
+
 
 
 
@@ -565,7 +609,6 @@ return;
 
 
 
-
 let {
 
 data
@@ -587,7 +630,6 @@ path
 
 
 
-
 await supabaseClient
 
 
@@ -596,9 +638,11 @@ await supabaseClient
 
 .update({
 
+
 image:
 
 data.publicUrl
+
 
 })
 
@@ -619,6 +663,7 @@ alert(
 
 
 
+
 loadProduct();
 
 
@@ -635,9 +680,11 @@ loadProduct();
 
 
 
+
 // =======================
 // 上传详情图片
 // =======================
+
 
 
 async function uploadDetailImages(){
@@ -645,11 +692,15 @@ async function uploadDetailImages(){
 
 
 let files =
-detailUpload.files;
+document.getElementById(
+"detailUpload"
+).files;
 
 
 
 let update={};
+
+
 
 
 
@@ -659,13 +710,12 @@ let index=2;
 
 
 
-if(product.image2)
+if(currentProduct.image2)
 
 index=3;
 
 
-
-if(product.image3)
+if(currentProduct.image3)
 
 index=4;
 
@@ -674,8 +724,9 @@ index=4;
 
 
 
-
-for(let file of files){
+for(
+let file of files
+){
 
 
 
@@ -687,8 +738,8 @@ break;
 
 
 
-let path =
 
+let path =
 
 "detail/"
 
@@ -699,7 +750,6 @@ Date.now()
 +
 
 file.name;
-
 
 
 
@@ -746,7 +796,6 @@ path
 
 
 
-
 update[
 "image"+index
 ]
@@ -761,8 +810,8 @@ index++;
 
 
 
-}
 
+}
 
 
 
@@ -825,25 +874,23 @@ let update={};
 
 
 
-if(product.image2===url)
+if(currentProduct.image2===url)
 
 update.image2=null;
 
 
 
 
-if(product.image3===url)
+if(currentProduct.image3===url)
 
 update.image3=null;
 
 
 
 
-if(product.image4===url)
+if(currentProduct.image4===url)
 
 update.image4=null;
-
-
 
 
 
@@ -863,7 +910,6 @@ await supabaseClient
 "id",
 productId
 );
-
 
 
 
@@ -891,6 +937,7 @@ loadProduct();
 
 
 function backProducts(){
+
 
 
 window.location.href=
