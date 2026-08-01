@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="zh-CN">
 
 
@@ -24,19 +25,14 @@ China Direct Shop Admin
 <body>
 
 
+
 <div class="admin-layout">
 
 
 
-
-
-<!-- ======================
-     左侧菜单
-====================== -->
-
+<!-- 左侧菜单 -->
 
 <div class="sidebar">
-
 
 
 <h2>
@@ -47,13 +43,8 @@ China Direct Shop Admin
 
 
 
-<!-- 商品管理 -->
-
-
 <button onclick="toggleMenu('productMenu')">
-
 商品管理 ▼
-
 </button>
 
 
@@ -62,21 +53,15 @@ China Direct Shop Admin
 class="submenu">
 
 
-
 <button onclick="openPage('products')">
-
 商品列表
-
 </button>
 
 
 
-<button onclick="openNewProduct()">
-
+<button onclick="openPage('newProduct')">
 新建商品
-
 </button>
-
 
 
 </div>
@@ -86,33 +71,18 @@ class="submenu">
 
 
 
-
-<!-- 素材管理 -->
-
-
 <button onclick="openPage('materials')">
-
 素材管理
-
 </button>
 
 
 
 
-
-
-
-
-
-<!-- 店铺管理 -->
 
 
 <button onclick="toggleMenu('shopMenu')">
-
 店铺管理 ▼
-
 </button>
-
 
 
 
@@ -120,13 +90,9 @@ class="submenu">
 class="submenu">
 
 
-
 <button onclick="openPage('decorate')">
-
 店铺装修
-
 </button>
-
 
 
 </div>
@@ -134,17 +100,10 @@ class="submenu">
 
 
 
-
-
-
-
-<!-- ebay -->
 
 
 <button onclick="openPage('ebay')">
-
 eBay同步
-
 </button>
 
 
@@ -159,15 +118,7 @@ eBay同步
 
 
 
-
-
-
-
-
-<!-- ======================
-     右侧内容
-====================== -->
-
+<!-- 主内容 -->
 
 <div class="main">
 
@@ -177,9 +128,9 @@ eBay同步
 
 
 
-<!-- ======================
-商品列表
-====================== -->
+<!-- =====================
+商品管理
+===================== -->
 
 
 <div id="products"
@@ -187,14 +138,8 @@ class="panel">
 
 
 <h1>
-商品管理
+商品列表
 </h1>
-
-
-
-<h3>
-选择商品
-</h3>
 
 
 
@@ -202,9 +147,7 @@ class="panel">
 
 
 <option>
-
 请选择商品
-
 </option>
 
 
@@ -215,14 +158,12 @@ class="panel">
 
 
 
-
 <h3>
-商品标题
+商品中文标题
 </h3>
 
 
 <input id="name">
-
 
 
 
@@ -241,11 +182,9 @@ class="panel">
 
 
 
-
 <h3>
 主图
 </h3>
-
 
 
 <div id="mainImage"
@@ -261,6 +200,13 @@ id="mainUpload">
 
 
 
+<button>
+
+替换主图
+
+</button>
+
+
 
 
 
@@ -270,25 +216,26 @@ id="mainUpload">
 </h3>
 
 
-
 <div id="detailImages"
 class="images">
-
 
 </div>
 
 
 
+
 <input
-
 type="file"
-
 id="detailUpload"
-
 multiple>
 
 
 
+<button>
+
+添加详情图片
+
+</button>
 
 
 
@@ -306,7 +253,6 @@ multiple>
 
 
 
-
 <textarea id="description_en">
 
 </textarea>
@@ -317,37 +263,21 @@ multiple>
 
 
 
-
-
 <h3>
-价格管理
+价格
 </h3>
 
 
 
 <input
-
 id="cost_price"
-
 placeholder="采购成本">
 
 
-<input
 
+<input
 id="sale_price"
-
 placeholder="销售价格">
-
-
-
-<input
-
-id="profit_rate"
-
-readonly
-
-placeholder="利润率">
-
 
 
 
@@ -355,7 +285,7 @@ placeholder="利润率">
 
 
 <h3>
-商品状态
+状态
 </h3>
 
 
@@ -397,17 +327,24 @@ placeholder="利润率">
 
 
 
-
-
-
 </div>
 
 
 
-<!-- ======================
+
+
+
+
+
+
+
+
+
+
+
+<!-- =====================
 新建商品
-跳转1688采集
-====================== -->
+===================== -->
 
 
 <div id="newProduct"
@@ -420,10 +357,9 @@ style="display:none">
 </h1>
 
 
+
 <p>
-
 通过1688链接自动采集商品
-
 </p>
 
 
@@ -449,9 +385,9 @@ style="display:none">
 
 
 
-<!-- ======================
+<!-- =====================
 素材管理
-====================== -->
+===================== -->
 
 
 <div id="materials"
@@ -465,24 +401,25 @@ style="display:none">
 
 
 
-<h3>
-上传素材
-</h3>
 
 
 <select id="uploadType">
+
 
 <option>
 商品主图
 </option>
 
+
 <option>
 详情图片
 </option>
 
+
 <option>
 Banner图片
 </option>
+
 
 <option>
 其他
@@ -490,6 +427,8 @@ Banner图片
 
 
 </select>
+
+
 
 
 
@@ -501,7 +440,7 @@ id="materialUpload">
 
 <button onclick="uploadMaterial()">
 
-上传图片
+上传素材
 
 </button>
 
@@ -512,38 +451,37 @@ id="materialUpload">
 
 
 <h3>
-素材分类
-
+图片分类
 </h3>
 
 
 
-<select 
-id="materialCategory"
+<select id="materialCategory"
 onchange="filterMaterials()">
 
 
-<option value="全部">
+
+<option>
 全部
 </option>
 
 
-<option value="商品主图">
+<option>
 商品主图
 </option>
 
 
-<option value="详情图片">
+<option>
 详情图片
 </option>
 
 
-<option value="Banner图片">
+<option>
 Banner图片
 </option>
 
 
-<option value="其他">
+<option>
 其他
 </option>
 
@@ -556,11 +494,9 @@ Banner图片
 
 
 
-
 <div id="materialList"
 class="material-grid">
 
-
 </div>
 
 
@@ -573,9 +509,15 @@ class="material-grid">
 
 
 
-<!-- ======================
+
+
+
+
+
+
+<!-- =====================
 店铺装修
-====================== -->
+===================== -->
 
 
 <div id="decorate"
@@ -591,42 +533,30 @@ style="display:none">
 
 
 
-
-
 <h3>
-首页 Banner
+首页Banner
 </h3>
+
 
 
 <div id="bannerPreview"
 class="preview">
 
-
 </div>
 
 
+
 <input
-
 type="file"
-
 id="bannerUpload">
 
 
 
+<button onclick="uploadBanner()">
 
+上传Banner
 
-
-
-<h3>
-首页推荐商品
-</h3>
-
-
-
-<div id="recommendProducts">
-
-</div>
-
+</button>
 
 
 
@@ -640,12 +570,9 @@ id="bannerUpload">
 </h3>
 
 
-
 <textarea id="notice">
 
 </textarea>
-
-
 
 
 
@@ -658,11 +585,8 @@ id="bannerUpload">
 </h3>
 
 
-
 <input
-
 id="homeTitle"
-
 placeholder="热门商品">
 
 
@@ -672,12 +596,11 @@ placeholder="热门商品">
 
 
 
-<button>
+<button onclick="saveDecoration()">
 
 保存装修
 
 </button>
-
 
 
 
@@ -696,9 +619,9 @@ placeholder="热门商品">
 
 
 
-<!-- ======================
+<!-- =====================
 eBay同步
-====================== -->
+===================== -->
 
 
 <div id="ebay"
@@ -711,33 +634,11 @@ eBay同步
 </h1>
 
 
-
-<select>
-
-
-<option>
-
-选择商品
-
-</option>
-
-
-</select>
-
-
-
-
-<br><br>
-
-
-
-
 <button>
 
 同步商品
 
 </button>
-
 
 
 <button>
@@ -747,13 +648,11 @@ eBay同步
 </button>
 
 
-
 <button>
 
 同步价格
 
 </button>
-
 
 
 <button>
@@ -765,11 +664,6 @@ eBay同步
 
 
 </div>
-
-
-
-
-
 
 
 
@@ -793,28 +687,20 @@ eBay同步
 <script>
 
 
-// 菜单展开
-
-
 function toggleMenu(id){
 
 
-let menu=document.getElementById(id);
+let box =
+document.getElementById(id);
 
 
+if(box.style.display==="block"){
 
-if(menu.style.display==="block"){
+box.style.display="none";
 
-menu.style.display="none";
+}else{
 
-
-}
-
-else{
-
-
-menu.style.display="block";
-
+box.style.display="block";
 
 }
 
@@ -825,8 +711,6 @@ menu.style.display="block";
 
 
 
-
-// 页面切换
 
 
 function openPage(id){
@@ -835,12 +719,14 @@ function openPage(id){
 document
 .querySelectorAll(".panel")
 .forEach(
-item=>{
+p=>{
 
-item.style.display="none";
+p.style.display="none";
 
+}
 
-});
+);
+
 
 
 document
@@ -850,22 +736,6 @@ document
 
 }
 
-
-
-
-
-
-
-// 新建商品
-
-
-function openNewProduct(){
-
-
-openPage("newProduct");
-
-
-}
 
 
 
@@ -884,6 +754,7 @@ window.location.href=
 
 
 </script>
+
 
 
 
