@@ -22,9 +22,24 @@ SUPABASE_KEY
 
 
 
+
+// 1688 API
+// 后面部署服务器以后修改这里
+
+const API_URL =
+"http://localhost:3000";
+
+
+
+
+
 let currentProduct=null;
 
+
 let materials=[];
+
+
+
 
 
 
@@ -46,6 +61,13 @@ loadMaterials();
 
 
 loadStoreConfig();
+
+
+loadCategories();
+
+
+loadSystem();
+
 
 
 };
@@ -78,14 +100,18 @@ error
 
 .from("products")
 
+
 .select("*")
+
 
 .order(
 "created_at",
 {
 ascending:false
 }
+
 );
+
 
 
 
@@ -102,6 +128,7 @@ return;
 
 
 
+
 let select =
 document.getElementById(
 "productSelect"
@@ -109,12 +136,23 @@ document.getElementById(
 
 
 
+if(!select)
+return;
+
+
+
+
+
 select.innerHTML=
+
 `
+
 <option>
 请选择商品
 </option>
+
 `;
+
 
 
 
@@ -128,8 +166,10 @@ document.createElement(
 );
 
 
+
 option.value =
 product.id;
+
 
 
 option.textContent =
@@ -147,12 +187,17 @@ select.appendChild(option);
 
 
 
-select.onchange=
+
+select.onchange =
 loadProduct;
 
 
 
 }
+
+
+
+
 
 
 
@@ -170,7 +215,6 @@ loadProduct;
 async function loadProduct(){
 
 
-
 let id =
 productSelect.value;
 
@@ -178,6 +222,7 @@ productSelect.value;
 
 if(!id)
 return;
+
 
 
 
@@ -192,12 +237,15 @@ error
 
 .from("products")
 
+
 .select("*")
+
 
 .eq(
 "id",
 id
 )
+
 
 .single();
 
@@ -217,6 +265,8 @@ return;
 
 
 currentProduct=data;
+
+
 
 
 
@@ -258,6 +308,7 @@ data.stock_status || "上架";
 
 
 
+
 mainImage.innerHTML=
 
 `
@@ -270,23 +321,31 @@ mainImage.innerHTML=
 
 
 
+
 detailImages.innerHTML="";
 
 
 
+
+
 [
+
 data.image2,
+
 data.image3,
+
 data.image4
 
-]
-.forEach(img=>{
+
+].forEach(img=>{
 
 
 if(img){
 
 
-detailImages.innerHTML+=
+
+detailImages.innerHTML +=
+
 
 `
 
@@ -305,8 +364,8 @@ detailImages.innerHTML+=
 
 </div>
 
-
 `;
+
 
 
 }
@@ -316,7 +375,11 @@ detailImages.innerHTML+=
 
 
 
+
+
 }
+
+
 
 
 
@@ -337,13 +400,17 @@ detailImages.innerHTML+=
 async function saveProduct(){
 
 
+
 if(!currentProduct){
+
 
 alert(
 "请选择商品"
 );
 
+
 return;
+
 
 }
 
@@ -351,6 +418,7 @@ return;
 
 
 let update={
+
 
 
 name:
@@ -410,56 +478,52 @@ currentProduct.id
 
 
 
+
 if(error){
+
 
 alert(error.message);
 
+
 return;
 
+
 }
+
+
 
 
 
 alert(
-"修改成功"
+"商品修改成功"
 );
 
 
 
+loadProducts();
+
+
+
 }
-
-
-
-
-
-
-
-
-
-
-
 
 // =======================
 // 主图上传
 // =======================
 
 
-mainUpload.onchange=
-async function(){
-
+mainUpload.onchange = async function(){
 
 
 let file =
 mainUpload.files[0];
 
 
-
-if(!file)return;
-
-
+if(!file)
+return;
 
 
-let path=
+
+let path =
 
 "products/"
 
@@ -501,9 +565,12 @@ file
 
 if(error){
 
+
 alert(error.message);
 
+
 return;
+
 
 }
 
@@ -555,6 +622,8 @@ currentProduct.id
 
 
 
+
+
 alert(
 "主图更新成功"
 );
@@ -562,6 +631,7 @@ alert(
 
 
 loadProduct();
+
 
 
 };
@@ -581,9 +651,7 @@ loadProduct();
 // =======================
 
 
-detailUpload.onchange=
-async function(){
-
+detailUpload.onchange = async function(){
 
 
 let files =
@@ -595,11 +663,12 @@ let urls=[];
 
 
 
+
+
 for(let file of files){
 
 
-
-let path=
+let path =
 
 "detail/"
 
@@ -610,6 +679,7 @@ Date.now()
 +
 
 file.name;
+
 
 
 
@@ -629,6 +699,9 @@ await supabaseClient
 path,
 file
 );
+
+
+
 
 
 
@@ -653,6 +726,8 @@ path
 
 
 
+
+
 urls.push(
 data.publicUrl
 );
@@ -665,23 +740,34 @@ data.publicUrl
 
 
 
+
+
 let update={};
+
+
 
 
 
 if(urls[0])
 
-update.image2=urls[0];
+update.image2 =
+urls[0];
+
 
 
 if(urls[1])
 
-update.image3=urls[1];
+update.image3 =
+urls[1];
+
 
 
 if(urls[2])
 
-update.image4=urls[2];
+update.image4 =
+urls[2];
+
+
 
 
 
@@ -703,6 +789,8 @@ currentProduct.id
 
 
 
+
+
 alert(
 "详情图片添加成功"
 );
@@ -710,6 +798,7 @@ alert(
 
 
 loadProduct();
+
 
 
 };
@@ -724,7 +813,10 @@ loadProduct();
 
 
 
+// =======================
 // 删除详情图片
+// =======================
+
 
 async function deleteDetailImage(url){
 
@@ -734,9 +826,11 @@ let update={};
 
 
 
+
 if(currentProduct.image2===url)
 
 update.image2=null;
+
 
 
 if(currentProduct.image3===url)
@@ -744,9 +838,12 @@ if(currentProduct.image3===url)
 update.image3=null;
 
 
+
 if(currentProduct.image4===url)
 
 update.image4=null;
+
+
 
 
 
@@ -768,7 +865,9 @@ currentProduct.id
 
 
 
+
 loadProduct();
+
 
 
 }
@@ -785,7 +884,7 @@ loadProduct();
 
 
 // =======================
-// 素材管理
+// 素材中心
 // =======================
 
 
@@ -809,11 +908,17 @@ error
 
 
 .order(
+
 "created_at",
+
 {
+
 ascending:false
+
 }
+
 );
+
 
 
 
@@ -821,15 +926,20 @@ ascending:false
 
 if(error){
 
+
 console.log(error);
 
+
 return;
+
 
 }
 
 
 
-materials=data;
+
+materials=data || [];
+
 
 
 renderMaterials(
@@ -839,6 +949,8 @@ renderMaterials(
 
 
 }
+
+
 
 
 
@@ -857,6 +969,12 @@ document.getElementById(
 
 
 
+if(!box)
+return;
+
+
+
+
 box.innerHTML="";
 
 
@@ -869,7 +987,9 @@ materials
 
 
 if(type==="全部")
+
 return true;
+
 
 
 return item.type===type;
@@ -882,7 +1002,8 @@ return item.type===type;
 .forEach(item=>{
 
 
-box.innerHTML+=
+
+box.innerHTML +=
 
 
 `
@@ -903,6 +1024,7 @@ ${item.type}
 </p>
 
 
+
 <button onclick="copyUrl('${item.url}')">
 
 复制
@@ -920,6 +1042,7 @@ ${item.type}
 
 </div>
 
+
 `;
 
 
@@ -936,17 +1059,25 @@ ${item.type}
 
 
 
+
+
+
+
 function filterMaterials(){
 
 
 
 renderMaterials(
+
 materialCategory.value
+
 );
 
 
 
 }
+
+
 
 
 
@@ -968,12 +1099,15 @@ materialUpload.files[0];
 
 
 
-if(!file)return;
+if(!file)
+return;
 
 
 
 
-let path=
+
+
+let path =
 
 "media/"
 
@@ -989,7 +1123,13 @@ file.name;
 
 
 
-await supabaseClient
+
+
+let {
+
+error
+
+}=await supabaseClient
 
 
 .storage
@@ -1004,6 +1144,21 @@ await supabaseClient
 path,
 file
 );
+
+
+
+
+
+if(error){
+
+
+alert(error.message);
+
+
+return;
+
+
+}
 
 
 
@@ -1032,6 +1187,9 @@ path
 
 
 
+
+
+
 await supabaseClient
 
 
@@ -1040,21 +1198,24 @@ await supabaseClient
 
 .insert({
 
-
 url:
+
 data.publicUrl,
 
 
 name:
+
 file.name,
 
 
 type:
+
 uploadType.value
 
 
 
 });
+
 
 
 
@@ -1078,7 +1239,16 @@ loadMaterials();
 
 
 
+
+
+
+
+
+// 删除素材
+
+
 async function deleteMaterial(id){
+
 
 
 await supabaseClient
@@ -1097,7 +1267,10 @@ id
 
 
 
+
+
 loadMaterials();
+
 
 
 }
@@ -1106,10 +1279,21 @@ loadMaterials();
 
 
 
+
+
+
+
+
+
+// 复制链接
+
+
 function copyUrl(url){
 
 
+
 navigator.clipboard.writeText(url);
+
 
 
 alert(
@@ -1117,6 +1301,7 @@ alert(
 );
 
 
+
 }
 
 
@@ -1128,81 +1313,8 @@ alert(
 
 
 // =======================
-// 店铺装修
+// Banner
 // =======================
-
-
-async function loadStoreConfig(){
-
-
-
-let {
-
-data
-
-}=await supabaseClient
-
-
-.from("store_config")
-
-
-.select("*")
-
-
-.eq(
-"id",
-1
-)
-
-
-.single();
-
-
-
-
-if(!data)
-return;
-
-
-
-
-notice.value=
-data.notice || "";
-
-
-
-homeTitle.value=
-data.home_title || "";
-
-
-
-
-
-if(data.banner){
-
-
-bannerPreview.innerHTML=
-
-`
-
-<img src="${data.banner}" width="300">
-
-`;
-
-}
-
-
-}
-
-
-
-
-
-
-
-
-
-// 上传Banner
 
 
 async function uploadBanner(){
@@ -1213,13 +1325,16 @@ let file =
 bannerUpload.files[0];
 
 
+
 if(!file)
+
 return;
 
 
 
 
-let path=
+
+let path =
 
 "banner/"
 
@@ -1230,6 +1345,7 @@ Date.now()
 +
 
 file.name;
+
 
 
 
@@ -1250,6 +1366,7 @@ await supabaseClient
 path,
 file
 );
+
 
 
 
@@ -1279,6 +1396,8 @@ path
 
 
 
+
+
 await supabaseClient
 
 
@@ -1288,7 +1407,9 @@ await supabaseClient
 .update({
 
 banner:
+
 data.publicUrl
+
 
 })
 
@@ -1297,6 +1418,7 @@ data.publicUrl
 "id",
 1
 );
+
 
 
 
@@ -1313,6 +1435,116 @@ loadStoreConfig();
 
 
 }
+// =======================
+// 店铺装修
+// =======================
+
+
+async function loadStoreConfig(){
+
+
+
+let {
+
+data,
+error
+
+}=await supabaseClient
+
+
+.from("store_config")
+
+
+.select("*")
+
+
+.eq(
+"id",
+1
+)
+
+
+.single();
+
+
+
+
+if(error){
+
+console.log(error);
+
+return;
+
+}
+
+
+
+
+
+if(!data)
+return;
+
+
+
+
+
+
+let noticeBox =
+document.getElementById(
+"notice"
+);
+
+
+
+let titleBox =
+document.getElementById(
+"homeTitle"
+);
+
+
+
+if(noticeBox)
+
+noticeBox.value =
+data.notice || "";
+
+
+
+if(titleBox)
+
+titleBox.value =
+data.home_title || "";
+
+
+
+
+
+
+let bannerBox =
+document.getElementById(
+"bannerPreview"
+);
+
+
+
+if(
+bannerBox &&
+data.banner
+){
+
+
+bannerBox.innerHTML=
+
+`
+
+<img src="${data.banner}" width="300">
+
+`;
+
+}
+
+
+}
 
 
 
@@ -1321,10 +1553,31 @@ loadStoreConfig();
 
 
 
-// 保存装修
+
+
+
+
+// 保存首页装修
 
 
 async function saveDecoration(){
+
+
+
+let noticeBox =
+document.getElementById(
+"notice"
+);
+
+
+
+let titleBox =
+document.getElementById(
+"homeTitle"
+);
+
+
+
 
 
 
@@ -1336,16 +1589,23 @@ await supabaseClient
 
 .update({
 
+
 notice:
-notice.value,
+
+noticeBox.value,
+
 
 
 home_title:
-homeTitle.value,
+
+titleBox.value,
+
 
 
 updated_at:
+
 new Date()
+
 
 
 })
@@ -1359,9 +1619,660 @@ new Date()
 
 
 
+
 alert(
 "保存成功"
 );
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+// =======================
+// 1688采集
+// =======================
+
+
+
+async function startCollect(){
+
+
+
+let url =
+document.getElementById(
+"collectUrl"
+).value;
+
+
+
+
+
+if(!url){
+
+
+alert(
+"请输入1688链接"
+);
+
+
+return;
+
+
+}
+
+
+
+
+
+let result =
+document.getElementById(
+"collectResult"
+);
+
+
+
+
+
+if(result)
+
+result.innerHTML =
+"正在采集...";
+
+
+
+
+
+
+
+
+try{
+
+
+let response =
+
+await fetch(
+
+API_URL + "/collect",
+
+{
+
+
+method:"POST",
+
+
+headers:{
+
+
+"Content-Type":
+
+"application/json"
+
+
+},
+
+
+
+body:
+
+
+JSON.stringify({
+
+url:url
+
+})
+
+
+}
+
+
+);
+
+
+
+
+
+
+let data =
+await response.json();
+
+
+
+
+
+console.log(data);
+
+
+
+
+
+if(result)
+
+result.innerHTML =
+"采集完成";
+
+
+
+
+alert(
+"采集完成"
+);
+
+
+
+
+
+loadProducts();
+
+
+
+
+}
+
+catch(error){
+
+
+
+console.log(error);
+
+
+
+if(result)
+
+result.innerHTML =
+"采集失败";
+
+
+
+alert(
+"采集失败"
+);
+
+
+
+}
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+// =======================
+// 分类管理
+// =======================
+
+
+
+async function loadCategories(){
+
+
+
+let {
+
+data,
+error
+
+}=await supabaseClient
+
+
+.from("categories")
+
+
+.select("*")
+
+
+.order(
+"id",
+{
+
+ascending:false
+
+}
+
+);
+
+
+
+
+
+if(error){
+
+console.log(error);
+
+return;
+
+}
+
+
+
+
+
+let box =
+document.getElementById(
+"categoryList"
+);
+
+
+
+
+
+if(!box)
+return;
+
+
+
+
+
+box.innerHTML="";
+
+
+
+
+
+
+data.forEach(item=>{
+
+
+
+box.innerHTML +=
+
+
+`
+
+<p>
+
+${item.name}
+
+</p>
+
+
+`;
+
+
+
+});
+
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+async function addCategory(){
+
+
+
+let name =
+document.getElementById(
+"categoryName"
+).value;
+
+
+
+
+
+if(!name){
+
+
+alert(
+"请输入分类名称"
+);
+
+
+return;
+
+
+}
+
+
+
+
+
+
+
+await supabaseClient
+
+
+.from("categories")
+
+
+.insert({
+
+
+name:name
+
+
+});
+
+
+
+
+
+document.getElementById(
+"categoryName"
+).value="";
+
+
+
+
+
+loadCategories();
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+// =======================
+// 系统设置
+// =======================
+
+
+
+async function loadSystem(){
+
+
+
+let {
+
+data
+
+}=await supabaseClient
+
+
+.from("system_config")
+
+
+.select("*")
+
+
+.eq(
+"id",
+1
+)
+
+
+.single();
+
+
+
+
+
+
+if(!data)
+
+return;
+
+
+
+
+
+
+let api =
+document.getElementById(
+"apiUrl"
+);
+
+
+
+let site =
+document.getElementById(
+"siteName"
+);
+
+
+
+
+
+if(api)
+
+api.value =
+data.api_url || "";
+
+
+
+
+if(site)
+
+site.value =
+data.site_name || "";
+
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+async function saveSystem(){
+
+
+
+await supabaseClient
+
+
+.from("system_config")
+
+
+.upsert({
+
+
+id:1,
+
+
+api_url:
+
+
+document.getElementById(
+"apiUrl"
+).value,
+
+
+
+site_name:
+
+
+document.getElementById(
+"siteName"
+).value
+
+
+
+});
+
+
+
+
+
+
+alert(
+"设置保存成功"
+);
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+// =======================
+// Facebook分享
+// =======================
+
+
+
+async function loadShareProducts(){
+
+
+
+let {
+
+data
+
+}=await supabaseClient
+
+
+.from("products")
+
+
+.select(
+"id,name"
+);
+
+
+let box =
+document.getElementById(
+"shareProduct"
+);
+
+
+
+if(!box)
+return;
+
+
+
+
+box.innerHTML="";
+
+
+
+data.forEach(item=>{
+
+
+box.innerHTML +=
+
+
+`
+
+<option value="${item.id}">
+
+${item.name}
+
+</option>
+
+`;
+
+
+
+});
+
+
+
+}
+
+
+
+
+
+
+
+
+function createFacebookShare(){
+
+
+
+let id =
+document.getElementById(
+"shareProduct"
+).value;
+
+
+
+
+
+let url =
+
+window.location.origin
+
++
+
+"/Foodie-shop/product.html?id="
+
++
+
+id;
+
+
+
+
+
+
+let text =
+
+"China Direct Shop\n\n"
+
++
+
+url;
+
+
+
+
+
+
+navigator.clipboard.writeText(text);
+
+
+
+
+alert(
+"分享内容已复制"
+);
+
 
 
 }
