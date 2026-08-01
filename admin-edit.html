@@ -5,17 +5,19 @@
 
 <head>
 
+
 <meta charset="UTF-8">
+
 
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 
 
 <title>
-编辑商品
+商品编辑
 </title>
 
 
-<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/admin.css">
 
 
 </head>
@@ -25,92 +27,193 @@
 <body>
 
 
-<div class="container">
-
 
 <h1>
-🇨🇳 China Direct Shop
+商品编辑
 </h1>
 
 
-<h2>
-编辑商品
-</h2>
+
+
+
+<h3>
+商品中文标题
+</h3>
+
+
+<input id="name">
 
 
 
 
-<div class="admin-box">
+
+
+<h3>
+商品英文标题
+</h3>
+
+
+<input id="name_en">
 
 
 
-<input id="name_en" placeholder="英文名称">
 
 
-<input id="category" placeholder="分类">
 
 
-<label>
-更换商品图片
-</label>
+
+<h3>
+主图
+</h3>
 
 
-<input 
+
+<div id="mainImage">
+
+
+</div>
+
+
+
+<input
 type="file"
-id="imageFile"
-accept="image/*">
+id="mainUpload">
 
 
 
-<img 
-id="preview"
-width="150">
+<button onclick="uploadMainImage()">
+
+替换主图
+
+</button>
 
 
 
 
 
-<textarea 
-id="description_en"
-placeholder="英文介绍">
+
+
+
+<h3>
+详情图片
+</h3>
+
+
+
+<div id="detailImages">
+
+
+</div>
+
+
+
+
+
+<input
+type="file"
+id="detailUpload"
+multiple>
+
+
+
+<button onclick="uploadDetailImages()">
+
+增加详情图片
+
+</button>
+
+
+
+
+
+
+
+
+
+
+<h3>
+商品描述
+</h3>
+
+
+
+<textarea
+id="description"
+rows="8">
+
 </textarea>
 
 
 
 
 
-<input 
-id="price"
-placeholder="价格">
+
+<h3>
+英文描述
+</h3>
+
+
+
+<textarea
+id="description_en"
+rows="8">
+
+</textarea>
 
 
 
 
 
-<input 
-id="ebay_url"
-placeholder="eBay链接">
 
 
+
+<h3>
+价格
+</h3>
+
+
+
+<input
+id="cost_price"
+placeholder="采购成本">
+
+
+
+<input
+id="sale_price"
+placeholder="销售价格">
+
+
+
+
+
+
+
+
+
+<h3>
+销售状态
+</h3>
 
 
 
 <select id="stock_status">
 
 
-<option value="上架">
+<option>
 上架
 </option>
 
 
-<option value="下架">
+<option>
 下架
 </option>
 
 
-<option value="缺货">
+<option>
 缺货
 </option>
+
 
 
 </select>
@@ -120,7 +223,14 @@ placeholder="eBay链接">
 
 
 
-<button onclick="updateProduct()">
+
+
+<br><br>
+
+
+
+
+<button onclick="saveProduct()">
 
 保存修改
 
@@ -129,16 +239,14 @@ placeholder="eBay链接">
 
 
 
-<p id="message"></p>
+
+<button onclick="history.back()">
+
+返回商品列表
+
+</button>
 
 
-
-
-</div>
-
-
-
-</div>
 
 
 
@@ -148,6 +256,7 @@ placeholder="eBay链接">
 
 
 <script src="js/admin-edit.js"></script>
+
 
 
 </body>
