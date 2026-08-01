@@ -1,14 +1,18 @@
-// =========================
+console.log("admin.js启动");
+
+
+// =======================
 // Supabase配置
-// =========================
-console.log("admin.js加载");
+// =======================
+
 
 const SUPABASE_URL =
-"https://ukxxmxnubxjezkwbbxdr.supabase.co";
+"https://你的项目.supabase.co";
 
 
 const SUPABASE_KEY =
-"sb_publishable_2IFHfms3ombozpvZCvaeEg_2VZ2z5hJ";
+"你的supabase key";
+
 
 
 const supabaseClient =
@@ -19,32 +23,78 @@ SUPABASE_KEY
 
 
 
+
+
 let currentProduct=null;
 
 
 
 
 
-// ========================
-// 加载商品列表
-// ========================
+
+// =======================
+// 页面加载
+// =======================
+
+
+window.onload=function(){
+
+
+loadProducts();
+
+
+};
+
+
+
+
+
+
+
+
+
+// =======================
+// 获取商品列表
+// =======================
+
 
 async function loadProducts(){
 
 
-let {data,error}=await supabaseClient
+
+const {
+
+data,
+error
+
+}=await supabaseClient
+
 .from("products")
-.select("*")
-.order("created_at",{ascending:false});
+
+.select(
+"id,name"
+)
+
+.order(
+"created_at",
+{
+ascending:false
+}
+
+);
+
+
 
 
 
 if(error){
 
 console.log(error);
+
 return;
 
 }
+
 
 
 
@@ -55,24 +105,37 @@ document.getElementById(
 
 
 
-data.forEach(p=>{
+data.forEach(product=>{
 
 
 let option=
-document.createElement("option");
+document.createElement(
+"option"
+);
 
 
-option.value=p.id;
+
+option.value=
+product.id;
+
 
 option.innerHTML=
-p.name;
+product.name;
+
 
 
 select.appendChild(option);
 
 
-
 });
+
+
+
+
+
+select.onchange=
+loadProduct;
+
 
 
 }
@@ -80,30 +143,64 @@ select.appendChild(option);
 
 
 
-// ========================
-// 加载商品
-// ========================
+
+
+
+
+
+// =======================
+// 加载商品详情
+// =======================
 
 
 async function loadProduct(){
 
 
+
 let id=
-document.getElementById(
-"productSelect"
-).value;
+productSelect.value;
 
 
 
-if(!id)return;
+if(!id)
+return;
 
 
 
-let {data}=await supabaseClient
+
+
+let {
+
+data,
+error
+
+}=await supabaseClient
+
+
 .from("products")
+
 .select("*")
-.eq("id",id)
+
+.eq(
+"id",
+id
+)
+
 .single();
+
+
+
+
+
+
+if(error){
+
+alert(error.message);
+
+return;
+
+}
+
 
 
 
@@ -111,24 +208,37 @@ currentProduct=data;
 
 
 
-name.value=data.name || "";
 
-name_en.value=data.name_en || "";
+
+
+name.value=
+data.name || "";
+
+
+
+name_en.value=
+data.name_en || "";
+
+
 
 description.value=
 data.description || "";
+
 
 
 description_en.value=
 data.description_en || "";
 
 
+
 cost_price.value=
 data.cost_price || "";
 
 
+
 sale_price.value=
 data.sale_price || "";
+
 
 
 stock_status.value=
@@ -138,12 +248,25 @@ data.stock_status || "上架";
 
 
 
-mainImagePreview.innerHTML=
+// 主图
+
+
+mainImage.innerHTML=
 `
+
+
 <img src="${data.image}">
+
+
 `;
 
 
+
+
+
+
+
+// 详情图
 
 
 detailImages.innerHTML="";
@@ -156,15 +279,21 @@ data.image3,
 data.image4
 
 ]
+
 .forEach(img=>{
 
 
 if(img){
 
+
 detailImages.innerHTML+=
+
+
 `
-<img src="${img}" width="120">
+<img src="${img}">
+
 `;
+
 
 }
 
@@ -173,7 +302,6 @@ detailImages.innerHTML+=
 
 
 
-
 }
 
 
@@ -184,18 +312,19 @@ detailImages.innerHTML+=
 
 
 
-// ========================
-// 修改商品
-// ========================
+// =======================
+// 保存商品
+// =======================
 
 
-async function updateProduct(){
+async function saveProduct(){
+
 
 
 if(!currentProduct){
 
 alert(
-"请选择商品"
+"请先选择商品"
 );
 
 return;
@@ -208,10 +337,13 @@ return;
 let update={
 
 
-name:name.value,
+
+name:
+name.value,
 
 
-name_en:name_en.value,
+name_en:
+name_en.value,
 
 
 description:
@@ -223,15 +355,16 @@ description_en.value,
 
 
 cost_price:
-cost_price.value,
+Number(cost_price.value),
 
 
 sale_price:
-sale_price.value,
+Number(sale_price.value),
 
 
 stock_status:
 stock_status.value
+
 
 
 };
@@ -240,11 +373,20 @@ stock_status.value
 
 
 
-let {error}=await supabaseClient
+
+
+let {
+
+error
+
+}=await supabaseClient
+
 
 .from("products")
 
+
 .update(update)
+
 
 .eq(
 "id",
@@ -254,16 +396,21 @@ currentProduct.id
 
 
 
+
+
+
 if(error){
 
-alert(error.message);
+alert(
+error.message
+);
 
 }
 else{
 
 
 alert(
-"保存成功"
+"商品修改成功"
 );
 
 
@@ -271,6 +418,8 @@ alert(
 
 
 
+
+
 }
 
 
@@ -279,19 +428,26 @@ alert(
 
 
 
-// ========================
+
+
+// =======================
 // 利润计算
-// ========================
+// =======================
 
 
-function calcPrice(){
+cost_price.oninput=function(){
+
 
 
 let cost=
-Number(cost_price.value);
+Number(
+cost_price.value
+);
 
 
-if(!cost)return;
+
+if(!cost)
+return;
 
 
 
@@ -301,6 +457,7 @@ let rate=30;
 
 let sale=
 cost/(1-rate/100);
+
 
 
 
@@ -322,4 +479,268 @@ rate+"%";
 
 
 
-loadProducts();
+
+
+// =======================
+// 上传主图
+// =======================
+
+
+mainUpload.onchange=async function(e){
+
+
+let file=
+e.target.files[0];
+
+
+
+if(!file)
+return;
+
+
+
+
+
+let path=
+Date.now()
++
+"_"
++
+file.name;
+
+
+
+
+
+let {
+
+error
+
+}=await supabaseClient
+
+
+.storage
+
+.from(
+"product-images"
+)
+
+.upload(
+path,
+file
+);
+
+
+
+
+
+if(error){
+
+alert(error.message);
+
+return;
+
+}
+
+
+
+
+
+let {
+
+data:urlData
+
+}=supabaseClient
+
+.storage
+
+.from(
+"product-images"
+)
+
+.getPublicUrl(
+path
+);
+
+
+
+
+
+await supabaseClient
+
+
+.from("products")
+
+
+.update({
+
+image:
+urlData.publicUrl
+
+})
+
+
+.eq(
+"id",
+currentProduct.id
+);
+
+
+
+
+
+alert(
+"主图更新成功"
+);
+
+
+loadProduct();
+
+
+};
+
+
+
+
+
+
+
+
+
+// =======================
+// 上传详情图片
+// =======================
+
+
+detailUpload.onchange=
+async function(e){
+
+
+
+let files=
+e.target.files;
+
+
+
+let urls=[];
+
+
+
+
+for(let file of files){
+
+
+
+let path=
+Date.now()
++
+file.name;
+
+
+
+await supabaseClient
+
+
+.storage
+
+
+.from(
+"product-images"
+)
+
+
+.upload(
+path,
+file
+);
+
+
+
+
+
+let {
+
+data
+
+}=supabaseClient
+
+
+.storage
+
+
+.from(
+"product-images"
+)
+
+
+.getPublicUrl(
+path
+);
+
+
+
+urls.push(
+data.publicUrl
+);
+
+
+}
+
+
+
+
+
+
+let update={};
+
+
+
+
+
+if(urls[0])
+
+update.image2=urls[0];
+
+
+if(urls[1])
+
+update.image3=urls[1];
+
+
+if(urls[2])
+
+update.image4=urls[2];
+
+
+
+
+
+
+await supabaseClient
+
+
+.from("products")
+
+
+.update(update)
+
+
+.eq(
+"id",
+currentProduct.id
+);
+
+
+
+
+
+alert(
+"详情图片更新成功"
+);
+
+
+
+loadProduct();
+
+
+};
