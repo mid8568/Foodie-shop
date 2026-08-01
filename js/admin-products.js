@@ -1,107 +1,644 @@
-<!DOCTYPE html>
-
-<html>
-
-
-<head>
-
-<link rel="stylesheet" href="css/admin.css">
-
-</head>
-
-
-<body>
+console.log(
+"admin-products.js启动"
+);
 
 
 
-<h1>
-商品管理
-</h1>
+// =======================
+// Supabase
+// =======================
+
+
+const SUPABASE_URL =
+"https://ukxxmxnubxjezkwbbxdr.supabase.co";
+
+
+const SUPABASE_KEY =
+"sb_publishable_2IFHfms3ombozpvZCvaeEg_2VZ2z5hJ";
+
+
+
+const supabaseClient =
+supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
+
+
+
+
+
+let products=[];
+
+
+
+
+
+
+
+
+
+window.onload=function(){
+
+
+loadProducts();
+
+
+};
+
+
+
+
+
+
+
+
+
+// =======================
+// 加载商品列表
+// =======================
+
+
+
+async function loadProducts(){
+
+
+
+let {
+
+data,
+error
+
+}=await supabaseClient
+
+
+.from("products")
+
+
+.select("*")
+
+
+.order(
+"created_at",
+{
+ascending:false
+}
+);
+
+
+
+
+
+
+if(error){
+
+
+console.log(error);
+
+
+return;
+
+
+}
+
+
+
+
+
+products=data || [];
+
+
+
+renderProducts();
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+// =======================
+// 渲染商品
+// =======================
+
+
+
+function renderProducts(){
+
+
+
+let box =
+document.getElementById(
+"productTable"
+);
+
+
+
+box.innerHTML="";
+
+
+
+
+
+products.forEach(product=>{
+
+
+
+box.innerHTML +=
+
+
+
+`
+
+<tr>
+
+
+
+<td>
+
+
+<input type="checkbox"
+value="${product.id}">
+
+
+</td>
+
+
+
+
+
+
+<td>
+
+
+<div class="product-info">
+
+
+<img
+
+src="${product.image || ''}"
+
+width="80"
+
+height="80">
+
+
 
 
 
 <div>
 
 
-<button>
-+ 新建商品
-</button>
+
+<p>
+
+${product.name || "未命名商品"}
+
+</p>
 
 
-<button>
-批量删除
-</button>
+
+<p>
+
+${product.name_en || ""}
+
+</p>
+
+
+
+</div>
 
 
 </div>
 
 
 
-
-<table>
-
-
-<thead>
+</td>
 
 
-<tr>
 
 
-<th>
-选择
-</th>
 
 
-<th>
-商品信息
-</th>
 
 
-<th>
-经营状态
-</th>
+<td>
 
 
-<th>
-商品属性
-</th>
+
+<span>
 
 
-<th>
-商品优化项
-</th>
+${product.stock_status || "未设置"}
 
 
-<th>
-操作
-</th>
+</span>
+
+
+
+</td>
+
+
+
+
+
+
+
+
+<td>
+
+
+
+分类：
+
+${product.category || "无"}
+
+
+<br>
+
+
+采购：
+
+${product.cost_price || 0}
+
+
+
+<br>
+
+
+售价：
+
+${product.sale_price || 0}
+
+
+
+</td>
+
+
+
+
+
+
+
+
+<td>
+
+
+${
+
+product.seo_title
+
+?
+
+"已优化"
+
+:
+
+"未设置"
+
+}
+
+
+
+</td>
+
+
+
+
+
+
+
+
+<td>
+
+
+
+<button
+
+onclick="editProduct(${product.id})">
+
+
+编辑
+
+</button>
+
+
+
+
+<button
+
+onclick="deleteProduct(${product.id})">
+
+
+删除
+
+</button>
+
+
+
+</td>
+
 
 
 
 </tr>
 
 
-</thead>
+
+`;
 
 
 
-<tbody id="productTable">
+});
 
 
-</tbody>
 
-
-</table>
-
+}
 
 
 
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<script src="js/admin-products.js"></script>
 
 
-</body>
 
-</html>
+
+
+// =======================
+// 编辑商品
+// =======================
+
+
+
+function editProduct(id){
+
+
+
+window.location.href =
+
+
+"admin-edit.html?id="+id;
+
+
+
+}
+
+
+
+
+
+
+
+
+
+// =======================
+// 删除商品
+// =======================
+
+
+
+async function deleteProduct(id){
+
+
+
+if(
+
+!confirm(
+"确定删除这个商品?"
+)
+
+)
+
+return;
+
+
+
+
+
+
+let {
+
+error
+
+}=await supabaseClient
+
+
+.from("products")
+
+
+.delete()
+
+
+.eq(
+"id",
+id
+);
+
+
+
+
+
+
+if(error){
+
+
+alert(
+error.message
+);
+
+
+return;
+
+
+}
+
+
+
+
+
+alert(
+"删除成功"
+);
+
+
+
+loadProducts();
+
+
+
+}
+
+
+
+
+
+
+
+
+
+// =======================
+// 搜索商品
+// =======================
+
+
+
+async function searchProducts(){
+
+
+
+let keyword =
+
+document.getElementById(
+"searchInput"
+).value;
+
+
+
+
+
+
+let {
+
+data,
+error
+
+}=await supabaseClient
+
+
+.from("products")
+
+
+.select("*")
+
+
+.or(
+
+`
+
+name.ilike.%${keyword}%,
+
+name_en.ilike.%${keyword}%
+
+`
+
+);
+
+
+
+
+
+
+if(error)
+
+return;
+
+
+
+
+products=data;
+
+
+
+renderProducts();
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+// =======================
+// 批量删除
+// =======================
+
+
+
+async function batchDelete(){
+
+
+
+let ids=[];
+
+
+
+document
+
+.querySelectorAll(
+"#productTable input[type=checkbox]:checked"
+)
+
+.forEach(box=>{
+
+
+ids.push(
+Number(box.value)
+);
+
+
+});
+
+
+
+
+
+
+if(ids.length===0){
+
+
+alert(
+"请选择商品"
+);
+
+
+return;
+
+
+}
+
+
+
+
+
+await supabaseClient
+
+
+.from("products")
+
+
+.delete()
+
+
+.in(
+"id",
+ids
+);
+
+
+
+
+
+alert(
+"删除完成"
+);
+
+
+
+loadProducts();
+
+
+
+}
