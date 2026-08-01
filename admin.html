@@ -1,183 +1,157 @@
 <!DOCTYPE html>
-
 <html lang="zh-CN">
-
 
 <head>
 
 <meta charset="UTF-8">
-
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 
-
 <title>
-China Direct Shop Admin
+China Direct Shop 管理后台
 </title>
-
 
 <link rel="stylesheet" href="css/style.css">
 
-
 </head>
-
 
 
 <body>
 
 
-
-<div class="container">
-
+<div class="admin-layout">
 
 
-<h1>
-🇨🇳 China Direct Shop
-</h1>
 
+<!-- 左侧菜单 -->
+
+<aside class="sidebar">
 
 <h2>
-商品管理后台
+🇨🇳 CDS后台
 </h2>
 
 
+<button onclick="showPanel('products')">
+商品管理
+</button>
 
 
-
-<form class="admin-box">
-
-
-
-<!-- 商品基本信息 -->
+<button onclick="showPanel('decorate')">
+前端装修
+</button>
 
 
-<h3>
-商品信息
-</h3>
+<button onclick="showPanel('seo')">
+SEO设置
+</button>
 
 
-<input
-id="name"
-placeholder="商品中文名称"
->
+<button onclick="showPanel('ebay')">
+eBay管理
+</button>
 
 
-
-<input
-id="name_en"
-placeholder="英文商品名称"
->
-
-
-
-
-<input
-id="category"
-placeholder="商品分类"
->
+</aside>
 
 
 
 
 
-
-<!-- =====================
-图片管理
-===================== -->
+<!-- 主区域 -->
 
 
-<h3>
-图片管理
-</h3>
+<main class="content">
+
+
+
+
+
+<!-- 商品管理 -->
+
+
+<section id="products">
+
+
+<h1>
+商品编辑
+</h1>
+
+
+
+<input id="productId" type="hidden">
 
 
 
 <label>
+商品标题
+</label>
+
+<input id="name">
+
+
+
+<label>
+英文标题
+</label>
+
+<input id="name_en">
+
+
+
+
+
+<h3>
 主图片
-</label>
+</h3>
 
 
-
-<div
-id="mainEditImage"
+<div id="mainImagePreview"
 class="image-box">
-
 </div>
 
 
-
-<input
-
+<input 
 type="file"
-
-id="imageFile"
-
-accept="image/*"
-
->
+id="mainImage">
 
 
 
 
 
 
-
-<br>
-
-
-
-<label>
-
+<h3>
 详情图片
-
-</label>
-
+</h3>
 
 
 
-<div
-
-id="detailEditImages"
-
+<div id="detailImages"
 class="image-box">
-
 </div>
 
 
 
-
 <input
-
 type="file"
-
-id="detailFiles"
-
-accept="image/*"
-
-multiple
-
->
+id="detailImageUpload"
+multiple>
 
 
 
 
 
-
-
-<!-- 商品介绍 -->
 
 
 <h3>
-商品描述
+商品介绍
 </h3>
 
 
+<textarea id="description">
+</textarea>
 
-<textarea
 
-id="description"
-
-placeholder="中文商品介绍">
-
+<textarea id="description_en">
 </textarea>
 
 
@@ -185,193 +159,169 @@ placeholder="中文商品介绍">
 
 
 
-<textarea
-
-id="description_en"
-
-placeholder="英文商品介绍">
-
-</textarea>
-
-
-
-
-
-
-
-<!-- 价格 -->
-
-
 <h3>
-价格管理
+价格
 </h3>
 
 
-
 <input
-
-id="price"
-
-placeholder="销售价格 USD"
-
->
-
-
-
-
-<input
-
-id="currency"
-
-value="USD"
-
-placeholder="货币"
-
->
-
-
-
-
-
-<input
-
 id="cost_price"
-
 placeholder="采购成本"
-
-oninput="calcPrice()"
-
->
-
-
-
-
+oninput="calcPrice()">
 
 
 <input
+id="sale_price"
+placeholder="销售价格">
 
+
+<input
 id="profit_rate"
-
-placeholder="利润率"
-
 readonly
-
->
-
+placeholder="利润率">
 
 
 
 
 
-
-<!-- 供应商 -->
 
 
 <h3>
-供应商信息
+供应商
+
 </h3>
 
 
+<input id="supplier">
 
-<input
-
-id="supplier"
-
-placeholder="1688供应商名称"
-
->
+<input 
+id="1688_url"
+placeholder="1688链接">
 
 
 
 
 
-
-<input
-
-id="supplier_url"
-
-placeholder="1688商品链接"
-
->
-
-
-
-
-
-
-
-<input
-
-id="supplier_contact"
-
-placeholder="供应商联系方式"
-
->
-
-
-
-
-
-
-
-<!-- eBay -->
 
 
 <h3>
-eBay信息
+商品状态
+
 </h3>
 
 
+<select id="stock_status">
+
+<option>
+上架
+</option>
+
+
+<option>
+下架
+</option>
+
+
+<option>
+缺货
+</option>
+
+
+</select>
+
+
+
+
+
+<button onclick="updateProduct()">
+
+保存修改
+
+</button>
+
+
+
+</section>
+
+
+
+
+
+
+
+
+
+<!-- 前端装修 -->
+
+
+<section 
+id="decorate"
+style="display:none">
+
+
+<h1>
+网站装修
+</h1>
+
+
+
+<h3>
+首页Banner
+</h3>
+
+
+<div id="bannerPreview"
+class="image-box">
+</div>
+
 
 <input
-
-id="ebay_item_id"
-
-placeholder="eBay商品ID"
-
->
+type="file"
+id="bannerUpload">
 
 
 
 
 
+<h3>
+首页标题
 
-
-<input
-
-id="ebay_url"
-
-placeholder="eBay购买链接"
-
->
-
-
-
-
-
+</h3>
 
 
 <input
-
-id="ebay_title"
-
-placeholder="eBay标题"
-
->
+id="homeTitle"
+placeholder="例如：中国精选商品直供">
 
 
 
 
 
 
+<h3>
+首页公告
 
-<input
+</h3>
 
-id="ebay_category"
 
-placeholder="eBay分类"
+<textarea
+id="notice">
+</textarea>
 
->
+
+
+
+
+
+<button onclick="saveDecoration()">
+
+保存装修
+
+</button>
+
+
+
+</section>
 
 
 
@@ -384,116 +334,80 @@ placeholder="eBay分类"
 <!-- SEO -->
 
 
-<h3>
-SEO
-</h3>
+<section 
+id="seo"
+style="display:none">
 
+
+<h1>
+SEO设置
+</h1>
 
 
 <input
-
 id="seo_title"
-
-placeholder="SEO标题"
-
->
-
-
-
-
+placeholder="网站标题">
 
 
 <textarea
-
 id="seo_description"
-
-placeholder="SEO描述">
-
+placeholder="网站描述">
 </textarea>
 
 
 
-
-
-
-
-
-
-<!-- 状态 -->
-
-
-<h3>
-商品状态
-</h3>
-
-
-
-<select id="stock_status">
-
-
-<option value="上架">
-
-上架
-
-</option>
-
-
-
-<option value="下架">
-
-下架
-
-</option>
-
-
-
-<option value="缺货">
-
-缺货
-
-</option>
-
-
-</select>
-
-
-
-
-
-
-
-<br><br>
-
-
-
-
-
-<button
-
-type="button"
-
-onclick="addProduct()">
-
-保存商品
-
+<button>
+保存SEO
 </button>
 
 
 
+</section>
 
 
 
 
-<p id="message"></p>
 
 
 
 
 
-</form>
+<!-- ebay -->
+
+
+<section 
+id="ebay"
+style="display:none">
+
+
+<h1>
+eBay管理
+</h1>
+
+
+<input
+id="ebay_item_id"
+placeholder="eBay商品ID">
+
+
+<input
+id="ebay_url"
+placeholder="eBay链接">
+
+
+<button>
+同步eBay状态
+</button>
 
 
 
+</section>
+
+
+
+
+
+</main>
 
 
 </div>
@@ -502,14 +416,32 @@ onclick="addProduct()">
 
 
 
-
-
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 
 <script src="js/admin.js"></script>
 
+
+<script>
+
+
+function showPanel(id){
+
+
+document.querySelectorAll("main section")
+.forEach(
+e=>e.style.display="none"
+);
+
+
+document.getElementById(id)
+.style.display="block";
+
+
+}
+
+
+
+</script>
 
 
 </body>
