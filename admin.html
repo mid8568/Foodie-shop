@@ -4,15 +4,19 @@
 <head>
 
 <meta charset="UTF-8">
+
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 
 <title>
-China Direct Shop 管理后台
+China Direct Shop Admin
 </title>
 
-<link rel="stylesheet" href="css/style.css">
+
+<link rel="stylesheet" href="css/admin.css">
+
 
 </head>
+
 
 
 <body>
@@ -24,43 +28,57 @@ China Direct Shop 管理后台
 
 <!-- 左侧菜单 -->
 
-<aside class="sidebar">
+<div class="sidebar">
+
 
 <h2>
 🇨🇳 CDS后台
 </h2>
 
 
-<button onclick="showPanel('products')">
+
+<button onclick="openPage('products')">
 商品管理
 </button>
 
 
-<button onclick="showPanel('decorate')">
+
+<button onclick="openPage('decorate')">
 前端装修
 </button>
 
 
-<button onclick="showPanel('seo')">
+
+<button onclick="openPage('images')">
+图片管理
+</button>
+
+
+
+<button onclick="openPage('seo')">
 SEO设置
 </button>
 
 
-<button onclick="showPanel('ebay')">
-eBay管理
+
+<button onclick="openPage('ebay')">
+eBay同步
 </button>
 
 
-</aside>
+
+</div>
 
 
 
 
 
-<!-- 主区域 -->
 
 
-<main class="content">
+<!-- 右侧内容 -->
+
+
+<div class="main">
 
 
 
@@ -69,30 +87,42 @@ eBay管理
 <!-- 商品管理 -->
 
 
-<section id="products">
+<div id="products"
+class="panel">
 
 
 <h1>
-商品编辑
+商品管理
 </h1>
 
 
 
-<input id="productId" type="hidden">
+<select id="productSelect">
+
+<option>
+选择商品
+</option>
+
+
+</select>
 
 
 
-<label>
+
+
+<h3>
 商品标题
-</label>
+</h3>
 
 <input id="name">
 
 
 
-<label>
+
+
+<h3>
 英文标题
-</label>
+</h3>
 
 <input id="name_en">
 
@@ -101,19 +131,20 @@ eBay管理
 
 
 <h3>
-主图片
+主图
 </h3>
 
 
-<div id="mainImagePreview"
-class="image-box">
+<div id="mainImage"
+class="preview">
+
+
 </div>
 
 
 <input 
 type="file"
-id="mainImage">
-
+id="mainUpload">
 
 
 
@@ -124,18 +155,18 @@ id="mainImage">
 </h3>
 
 
-
 <div id="detailImages"
-class="image-box">
+class="images">
+
+
 </div>
 
 
 
-<input
+<input 
 type="file"
-id="detailImageUpload"
-multiple>
-
+multiple
+id="detailUpload">
 
 
 
@@ -143,16 +174,20 @@ multiple>
 
 
 <h3>
-商品介绍
+商品描述
 </h3>
 
 
-<textarea id="description">
+<textarea
+id="description">
 </textarea>
 
 
-<textarea id="description_en">
+
+<textarea
+id="description_en">
 </textarea>
+
 
 
 
@@ -161,18 +196,20 @@ multiple>
 
 <h3>
 价格
+
+
 </h3>
 
 
-<input
+<input 
 id="cost_price"
-placeholder="采购成本"
-oninput="calcPrice()">
+placeholder="采购成本">
 
 
-<input
+<input 
 id="sale_price"
 placeholder="销售价格">
+
 
 
 <input
@@ -184,29 +221,8 @@ placeholder="利润率">
 
 
 
-
-
 <h3>
-供应商
-
-</h3>
-
-
-<input id="supplier">
-
-<input 
-id="1688_url"
-placeholder="1688链接">
-
-
-
-
-
-
-
-<h3>
-商品状态
-
+状态
 </h3>
 
 
@@ -216,24 +232,23 @@ placeholder="1688链接">
 上架
 </option>
 
-
 <option>
 下架
 </option>
 
-
 <option>
 缺货
 </option>
-
 
 </select>
 
 
 
 
+<br><br>
 
-<button onclick="updateProduct()">
+
+<button onclick="saveProduct()">
 
 保存修改
 
@@ -241,7 +256,8 @@ placeholder="1688链接">
 
 
 
-</section>
+</div>
+
 
 
 
@@ -254,45 +270,46 @@ placeholder="1688链接">
 <!-- 前端装修 -->
 
 
-<section 
-id="decorate"
+<div id="decorate"
+class="panel"
 style="display:none">
 
 
 <h1>
-网站装修
+前端装修
 </h1>
 
 
 
 <h3>
-首页Banner
+首页 Banner 图片
 </h3>
 
 
-<div id="bannerPreview"
-class="image-box">
+<div
+id="banner"
+class="preview">
+
 </div>
 
 
-<input
-type="file"
-id="bannerUpload">
+
+<input type="file">
+
 
 
 
 
 
 <h3>
-首页标题
-
+首页推荐商品
 </h3>
 
 
-<input
-id="homeTitle"
-placeholder="例如：中国精选商品直供">
+<div id="recommend">
 
+
+</div>
 
 
 
@@ -300,7 +317,6 @@ placeholder="例如：中国精选商品直供">
 
 <h3>
 首页公告
-
 </h3>
 
 
@@ -313,7 +329,20 @@ id="notice">
 
 
 
-<button onclick="saveDecoration()">
+<h3>
+首页模块标题
+</h3>
+
+
+<input
+id="homeTitle"
+placeholder="热门商品">
+
+
+
+
+
+<button>
 
 保存装修
 
@@ -321,7 +350,40 @@ id="notice">
 
 
 
-</section>
+</div>
+
+
+
+
+
+
+
+
+
+<!-- 图片管理 -->
+
+
+<div id="images"
+class="panel"
+style="display:none">
+
+
+<h1>
+图片管理
+</h1>
+
+
+<input
+placeholder="搜索商品">
+
+
+<div id="imageCenter">
+
+</div>
+
+
+
+</div>
 
 
 
@@ -334,8 +396,8 @@ id="notice">
 <!-- SEO -->
 
 
-<section 
-id="seo"
+<div id="seo"
+class="panel"
 style="display:none">
 
 
@@ -345,15 +407,12 @@ SEO设置
 
 
 <input
-id="seo_title"
 placeholder="网站标题">
 
 
 <textarea
-id="seo_description"
 placeholder="网站描述">
 </textarea>
-
 
 
 <button>
@@ -361,8 +420,7 @@ placeholder="网站描述">
 </button>
 
 
-
-</section>
+</div>
 
 
 
@@ -375,39 +433,52 @@ placeholder="网站描述">
 <!-- ebay -->
 
 
-<section 
-id="ebay"
+<div id="ebay"
+class="panel"
 style="display:none">
 
 
 <h1>
-eBay管理
+eBay同步
 </h1>
 
 
-<input
-id="ebay_item_id"
-placeholder="eBay商品ID">
+
+<select>
+
+<option>
+选择商品
+</option>
+
+</select>
 
 
-<input
-id="ebay_url"
-placeholder="eBay链接">
+
+<br><br>
 
 
 <button>
-同步eBay状态
+同步商品
 </button>
 
 
 
-</section>
+<button>
+同步库存
+</button>
 
 
 
+<button>
+同步价格
+</button>
 
 
-</main>
+
+<button>
+同步上下架
+</button>
+
 
 
 </div>
@@ -416,26 +487,37 @@ placeholder="eBay链接">
 
 
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<script src="js/admin.js"></script>
+
+</div>
+
+
+
+</div>
+
+
+
 
 
 <script>
 
 
-function showPanel(id){
+function openPage(id){
 
 
-document.querySelectorAll("main section")
+document
+.querySelectorAll(".panel")
 .forEach(
-e=>e.style.display="none"
+e=>{
+e.style.display="none";
+}
 );
 
 
-document.getElementById(id)
-.style.display="block";
 
+document
+.getElementById(id)
+.style.display="block";
 
 }
 
@@ -444,7 +526,13 @@ document.getElementById(id)
 </script>
 
 
-</body>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="js/admin.js"></script>
+
+
+
+</body>
 
 </html>
