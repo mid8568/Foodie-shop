@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 
+
 <head>
 
 <meta charset="UTF-8">
 
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
+
 
 <title>
 China Direct Shop Admin
@@ -26,9 +28,15 @@ China Direct Shop Admin
 
 
 
-<!-- 左侧菜单 -->
+
+
+<!-- ======================
+     左侧菜单
+====================== -->
+
 
 <div class="sidebar">
+
 
 
 <h2>
@@ -37,32 +45,36 @@ China Direct Shop Admin
 
 
 
+
+
+<!-- 商品管理 -->
+
+
+<button onclick="toggleMenu('productMenu')">
+
+商品管理 ▼
+
+</button>
+
+
+
+<div id="productMenu"
+class="submenu">
+
+
+
 <button onclick="openPage('products')">
-商品管理
+
+商品列表
+
 </button>
 
 
 
-<button onclick="openPage('decorate')">
-前端装修
-</button>
+<button onclick="openNewProduct()">
 
+新建商品
 
-
-<button onclick="openPage('images')">
-图片管理
-</button>
-
-
-
-<button onclick="openPage('seo')">
-SEO设置
-</button>
-
-
-
-<button onclick="openPage('ebay')">
-eBay同步
 </button>
 
 
@@ -75,7 +87,86 @@ eBay同步
 
 
 
-<!-- 右侧内容 -->
+<!-- 素材管理 -->
+
+
+<button onclick="openPage('materials')">
+
+素材管理
+
+</button>
+
+
+
+
+
+
+
+
+
+<!-- 店铺管理 -->
+
+
+<button onclick="toggleMenu('shopMenu')">
+
+店铺管理 ▼
+
+</button>
+
+
+
+
+<div id="shopMenu"
+class="submenu">
+
+
+
+<button onclick="openPage('decorate')">
+
+店铺装修
+
+</button>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+<!-- ebay -->
+
+
+<button onclick="openPage('ebay')">
+
+eBay同步
+
+</button>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- ======================
+     右侧内容
+====================== -->
 
 
 <div class="main">
@@ -84,7 +175,11 @@ eBay同步
 
 
 
-<!-- 商品管理 -->
+
+
+<!-- ======================
+商品列表
+====================== -->
 
 
 <div id="products"
@@ -97,10 +192,19 @@ class="panel">
 
 
 
+<h3>
+选择商品
+</h3>
+
+
+
 <select id="productSelect">
 
+
 <option>
-选择商品
+
+请选择商品
+
 </option>
 
 
@@ -110,11 +214,16 @@ class="panel">
 
 
 
+
+
 <h3>
 商品标题
 </h3>
 
+
 <input id="name">
+
+
 
 
 
@@ -124,7 +233,10 @@ class="panel">
 英文标题
 </h3>
 
+
 <input id="name_en">
+
+
 
 
 
@@ -135,16 +247,19 @@ class="panel">
 </h3>
 
 
+
 <div id="mainImage"
 class="preview">
-
 
 </div>
 
 
-<input 
+
+<input
 type="file"
 id="mainUpload">
+
+
 
 
 
@@ -155,6 +270,7 @@ id="mainUpload">
 </h3>
 
 
+
 <div id="detailImages"
 class="images">
 
@@ -163,10 +279,16 @@ class="images">
 
 
 
-<input 
+<input
+
 type="file"
-multiple
-id="detailUpload">
+
+id="detailUpload"
+
+multiple>
+
+
+
 
 
 
@@ -178,15 +300,18 @@ id="detailUpload">
 </h3>
 
 
-<textarea
-id="description">
+<textarea id="description">
+
 </textarea>
 
 
 
-<textarea
-id="description_en">
+
+<textarea id="description_en">
+
 </textarea>
+
+
 
 
 
@@ -195,52 +320,67 @@ id="description_en">
 
 
 <h3>
-价格
-
-
+价格管理
 </h3>
 
 
-<input 
+
+<input
+
 id="cost_price"
+
 placeholder="采购成本">
 
 
-<input 
+<input
+
 id="sale_price"
+
 placeholder="销售价格">
 
 
 
 <input
+
 id="profit_rate"
+
 readonly
+
 placeholder="利润率">
 
 
 
 
 
+
+
 <h3>
-状态
+商品状态
 </h3>
 
 
 <select id="stock_status">
 
+
 <option>
 上架
 </option>
+
 
 <option>
 下架
 </option>
 
+
 <option>
 缺货
 </option>
 
+
 </select>
+
+
+
 
 
 
@@ -248,9 +388,61 @@ placeholder="利润率">
 <br><br>
 
 
+
 <button onclick="saveProduct()">
 
 保存修改
+
+</button>
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- ======================
+新建商品
+跳转1688采集
+====================== -->
+
+
+<div id="newProduct"
+class="panel"
+style="display:none">
+
+
+<h1>
+新建商品
+</h1>
+
+
+<p>
+
+通过1688链接自动采集商品
+
+</p>
+
+
+
+<button onclick="openCollector()">
+
+进入1688采集
 
 </button>
 
@@ -267,7 +459,91 @@ placeholder="利润率">
 
 
 
-<!-- 前端装修 -->
+
+
+<!-- ======================
+素材管理
+====================== -->
+
+
+<div id="materials"
+class="panel"
+style="display:none">
+
+
+<h1>
+素材管理
+</h1>
+
+
+
+<select id="materialCategory">
+
+
+<option>
+
+全部图片
+
+</option>
+
+
+<option>
+
+商品主图
+
+</option>
+
+
+
+<option>
+
+详情图片
+
+</option>
+
+
+
+<option>
+
+Banner图片
+
+</option>
+
+
+
+</select>
+
+
+
+
+
+
+<div id="materialList"
+class="images">
+
+
+</div>
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- ======================
+店铺装修
+====================== -->
 
 
 <div id="decorate"
@@ -276,25 +552,33 @@ style="display:none">
 
 
 <h1>
-前端装修
+店铺装修
 </h1>
 
 
 
+
+
+
+
 <h3>
-首页 Banner 图片
+首页 Banner
 </h3>
 
 
-<div
-id="banner"
+<div id="bannerPreview"
 class="preview">
+
 
 </div>
 
 
+<input
 
-<input type="file">
+type="file"
+
+id="bannerUpload">
+
 
 
 
@@ -306,10 +590,14 @@ class="preview">
 </h3>
 
 
-<div id="recommend">
 
+<div id="recommendProducts">
 
 </div>
+
+
+
+
 
 
 
@@ -320,9 +608,13 @@ class="preview">
 </h3>
 
 
-<textarea
-id="notice">
+
+<textarea id="notice">
+
 </textarea>
+
+
+
 
 
 
@@ -334,9 +626,15 @@ id="notice">
 </h3>
 
 
+
 <input
+
 id="homeTitle"
+
 placeholder="热门商品">
+
+
+
 
 
 
@@ -350,37 +648,6 @@ placeholder="热门商品">
 
 
 
-</div>
-
-
-
-
-
-
-
-
-
-<!-- 图片管理 -->
-
-
-<div id="images"
-class="panel"
-style="display:none">
-
-
-<h1>
-图片管理
-</h1>
-
-
-<input
-placeholder="搜索商品">
-
-
-<div id="imageCenter">
-
-</div>
-
 
 
 </div>
@@ -393,44 +660,13 @@ placeholder="搜索商品">
 
 
 
-<!-- SEO -->
-
-
-<div id="seo"
-class="panel"
-style="display:none">
-
-
-<h1>
-SEO设置
-</h1>
-
-
-<input
-placeholder="网站标题">
-
-
-<textarea
-placeholder="网站描述">
-</textarea>
-
-
-<button>
-保存SEO
-</button>
-
-
-</div>
 
 
 
 
-
-
-
-
-
-<!-- ebay -->
+<!-- ======================
+eBay同步
+====================== -->
 
 
 <div id="ebay"
@@ -446,37 +682,52 @@ eBay同步
 
 <select>
 
+
 <option>
+
 选择商品
+
 </option>
 
+
 </select>
+
 
 
 
 <br><br>
 
 
+
+
 <button>
+
 同步商品
+
 </button>
 
 
 
 <button>
+
 同步库存
+
 </button>
 
 
 
 <button>
+
 同步价格
+
 </button>
 
 
 
 <button>
+
 同步上下架
+
 </button>
 
 
@@ -489,11 +740,19 @@ eBay同步
 
 
 
+
+
+
+
+
+</div>
+
+
 </div>
 
 
 
-</div>
+
 
 
 
@@ -502,22 +761,91 @@ eBay同步
 <script>
 
 
+// 菜单展开
+
+
+function toggleMenu(id){
+
+
+let menu=document.getElementById(id);
+
+
+
+if(menu.style.display==="block"){
+
+menu.style.display="none";
+
+
+}
+
+else{
+
+
+menu.style.display="block";
+
+
+}
+
+
+}
+
+
+
+
+
+
+// 页面切换
+
+
 function openPage(id){
 
 
 document
 .querySelectorAll(".panel")
 .forEach(
-e=>{
-e.style.display="none";
-}
-);
+item=>{
 
+item.style.display="none";
+
+
+});
 
 
 document
 .getElementById(id)
 .style.display="block";
+
+
+}
+
+
+
+
+
+
+
+// 新建商品
+
+
+function openNewProduct(){
+
+
+openPage("newProduct");
+
+
+}
+
+
+
+
+
+
+function openCollector(){
+
+
+window.location.href=
+"collector.html";
+
 
 }
 
@@ -527,12 +855,16 @@ document
 
 
 
+
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 
 <script src="js/admin.js"></script>
 
 
 
 </body>
+
 
 </html>
