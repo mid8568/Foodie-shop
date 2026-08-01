@@ -21,6 +21,8 @@ background:#f5f6fa;
 
 
 
+/* 后台整体 */
+
 .admin-layout{
 
 display:flex;
@@ -32,18 +34,25 @@ min-height:100vh;
 
 
 
-/* 左侧菜单 */
+/* ======================
+   左侧菜单
+====================== */
+
 
 .sidebar{
 
 
 width:230px;
 
+height:100vh;
+
 background:#111827;
 
 color:white;
 
 padding:20px;
+
+flex-shrink:0;
 
 
 }
@@ -52,9 +61,15 @@ padding:20px;
 
 .sidebar h2{
 
+
 text-align:center;
 
-margin-bottom:40px;
+margin:0;
+
+padding-bottom:35px;
+
+font-size:22px;
+
 
 }
 
@@ -62,11 +77,13 @@ margin-bottom:40px;
 
 .sidebar ul{
 
+
+list-style:none;
+
 padding:0;
 
 margin:0;
 
-list-style:none;
 
 }
 
@@ -75,15 +92,18 @@ list-style:none;
 .sidebar li{
 
 
-padding:15px;
+padding:15px 18px;
 
-margin-bottom:10px;
+margin-bottom:12px;
 
 border-radius:8px;
 
 cursor:pointer;
 
+font-size:16px;
+
 transition:.2s;
+
 
 }
 
@@ -101,13 +121,57 @@ background:#2563eb;
 
 
 
-/* 内容区域 */
+
+/* ======================
+   右侧区域
+====================== */
 
 
-.content{
+.main-content{
 
 
 flex:1;
+
+height:100vh;
+
+padding:0;
+
+overflow:hidden;
+
+
+}
+
+
+
+
+/* iframe */
+
+#module-frame{
+
+
+width:100%;
+
+height:100%;
+
+border:none;
+
+background:#f5f6fa;
+
+
+}
+
+
+
+
+
+
+/* ======================
+   子页面通用
+====================== */
+
+
+.product-page{
+
 
 padding:30px;
 
@@ -116,16 +180,276 @@ padding:30px;
 
 
 
-#admin-content{
+
+.product-page h1{
+
+
+margin-top:0;
+
+font-size:26px;
+
+
+}
+
+
+
+
+
+
+/* 工具栏 */
+
+
+.toolbar{
 
 
 background:white;
 
+padding:20px;
+
 border-radius:12px;
+
+margin-bottom:20px;
+
+
+}
+
+
+
+.toolbar input{
+
+
+width:300px;
+
+height:38px;
+
+padding:0 12px;
+
+border:1px solid #ddd;
+
+border-radius:6px;
+
+
+}
+
+
+
+button{
+
+
+border:none;
+
+background:#2563eb;
+
+color:white;
+
+padding:8px 16px;
+
+border-radius:6px;
+
+cursor:pointer;
+
+}
+
+
+button:hover{
+
+
+opacity:.85;
+
+
+}
+
+
+
+
+
+
+
+/* 商品表 */
+
+
+table{
+
+
+width:100%;
+
+background:white;
+
+border-collapse:collapse;
+
+border-radius:12px;
+
+overflow:hidden;
+
+
+}
+
+
+
+th{
+
+
+background:#f3f4f6;
+
+padding:14px;
+
+text-align:center;
+
+
+}
+
+
+
+td{
+
+
+padding:14px;
+
+border-bottom:1px solid #eee;
+
+text-align:center;
+
+
+}
+
+
+
+
+.table-image{
+
+
+width:60px;
+
+height:60px;
+
+object-fit:cover;
+
+border-radius:6px;
+
+
+}
+
+
+
+
+
+/* ======================
+ 编辑弹窗
+====================== */
+
+
+.modal{
+
+
+display:none;
+
+position:fixed;
+
+top:0;
+
+left:0;
+
+right:0;
+
+bottom:0;
+
+background:rgba(0,0,0,.45);
+
+align-items:center;
+
+justify-content:center;
+
+
+}
+
+
+
+
+.edit-panel{
+
+
+background:white;
+
+width:500px;
 
 padding:30px;
 
-min-height:500px;
+border-radius:12px;
+
+
+}
+
+
+
+.edit-panel label{
+
+
+display:block;
+
+margin-top:15px;
+
+margin-bottom:5px;
+
+
+}
+
+
+
+
+.edit-panel input,
+.edit-panel textarea,
+.edit-panel select{
+
+
+width:100%;
+
+padding:10px;
+
+border:1px solid #ddd;
+
+border-radius:6px;
+
+
+}
+
+
+
+.edit-panel textarea{
+
+
+height:120px;
+
+resize:none;
+
+
+}
+
+
+
+.preview{
+
+
+width:100px;
+
+height:100px;
+
+object-fit:cover;
+
+margin:10px 0;
+
+
+}
+
+
+
+.buttons{
+
+
+margin-top:20px;
+
+display:flex;
+
+gap:15px;
 
 
 }
