@@ -1,10 +1,14 @@
-// =========================
-// Supabase
-// =========================
+console.log(
+"商品编辑启动"
+);
+
+
+
 
 
 const SUPABASE_URL =
 "https://ukxxmxnubxjezkwbbxdr.supabase.co";
+
 
 
 const SUPABASE_KEY =
@@ -12,7 +16,7 @@ const SUPABASE_KEY =
 
 
 
-const client =
+const db =
 supabase.createClient(
 SUPABASE_URL,
 SUPABASE_KEY
@@ -22,43 +26,63 @@ SUPABASE_KEY
 
 
 
-// 当前商品ID
+
+let productId=null;
+
+let product=null;
 
 
-const id =
 
+
+
+
+
+window.onload=function(){
+
+
+
+let params =
 new URLSearchParams(
 location.search
-)
-
-.get("id");
+);
 
 
 
-
-
-let oldImage="";
-
-
+productId =
+params.get("id");
 
 
 
-// =========================
+loadProduct();
+
+
+
+};
+
+
+
+
+
+
+
+
+
+
+
+
 // 加载商品
-// =========================
 
 
 async function loadProduct(){
 
 
 
-const {
+let {
 
 data,
-
 error
 
-}=await client
+}=await db
 
 
 .from("products")
@@ -67,7 +91,10 @@ error
 .select("*")
 
 
-.eq("id",id)
+.eq(
+"id",
+productId
+)
 
 
 .single();
@@ -78,7 +105,7 @@ error
 
 if(error){
 
-alert(error.message);
+console.log(error);
 
 return;
 
@@ -87,139 +114,52 @@ return;
 
 
 
-oldImage=data.image;
 
+product=data;
 
 
-document.getElementById(
-"name_en"
-).value=data.name_en || "";
 
 
 
-document.getElementById(
-"category"
-).value=data.category || "";
+name.value =
+data.name || "";
 
 
 
-document.getElementById(
-"description_en"
-).value=data.description_en || "";
+name_en.value =
+data.name_en || "";
 
 
 
-document.getElementById(
-"price"
-).value=data.price || "";
+description.value =
+data.description || "";
 
 
 
-document.getElementById(
-"ebay_url"
-).value=data.ebay_url || "";
+description_en.value =
+data.description_en || "";
 
 
 
-document.getElementById(
-"stock_status"
-).value=data.stock_status || "上架";
+cost_price.value =
+data.cost_price || "";
 
 
 
-document.getElementById(
-"preview"
-).src=data.image;
+sale_price.value =
+data.sale_price || "";
 
 
 
-}
+stock_status.value =
+data.stock_status || "上架";
 
 
 
 
 
+renderImages();
 
-// =========================
-// 上传新图片
-// =========================
-
-
-async function uploadNewImage(){
-
-
-
-const file=
-
-document.getElementById(
-"imageFile"
-)
-.files[0];
-
-
-
-if(!file){
-
-return oldImage;
-
-}
-
-
-
-
-const fileName=
-
-Date.now()
-+
-"_"
-+
-file.name;
-
-
-
-
-
-
-const {
-
-error
-
-}=await client.storage
-
-
-.from(
-"product-images"
-)
-
-
-.upload(
-fileName,
-file
-);
-
-
-
-
-
-if(error){
-
-alert(error.message);
-
-return oldImage;
-
-}
-
-
-
-
-
-return SUPABASE_URL
-
-+
-"/storage/v1/object/public/product-images/"
-
-+
-fileName;
 
 
 }
@@ -232,44 +172,104 @@ fileName;
 
 
 
-// =========================
+
+
+// 显示图片
+
+
+function renderImages(){
+
+
+
+mainImage.innerHTML =
+
+`
+
+<img src="${product.image}" width="200">
+
+`;
+
+
+
+
+
+
+detailImages.innerHTML="";
+
+
+
+
+
+[
+
+product.image2,
+
+product.image3,
+
+product.image4
+
+]
+
+
+.forEach(img=>{
+
+
+
+if(img){
+
+
+detailImages.innerHTML +=
+
+
+`
+
+<div>
+
+
+<img src="${img}" width="120">
+
+
+<button onclick="deleteImage('${img}')">
+
+删除
+
+</button>
+
+
+</div>
+
+
+`;
+
+
+}
+
+
+
+});
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
 // 保存修改
-// =========================
 
 
-async function updateProduct(){
-
-
-
-const message=
-
-document.getElementById(
-"message"
-);
+async function saveProduct(){
 
 
 
-message.innerHTML=
-"保存中...";
-
-
-
-
-
-const image=
-
-await uploadNewImage();
-
-
-
-
-
-
-const {
-
-error
-
-}=await client
+await db
 
 
 .from("products")
@@ -278,51 +278,39 @@ error
 .update({
 
 
+
+name:
+name.value,
+
+
+
 name_en:
-
-document.getElementById(
-"name_en"
-).value,
+name_en.value,
 
 
-category:
 
-document.getElementById(
-"category"
-).value,
+description:
+description.value,
 
-
-image:image,
 
 
 description_en:
-
-document.getElementById(
-"description_en"
-).value,
+description_en.value,
 
 
-price:
 
-Number(
-document.getElementById(
-"price"
-).value
-),
+cost_price:
+Number(cost_price.value),
 
 
-ebay_url:
 
-document.getElementById(
-"ebay_url"
-).value,
+sale_price:
+Number(sale_price.value),
+
 
 
 stock_status:
-
-document.getElementById(
-"stock_status"
-).value
+stock_status.value
 
 
 
@@ -331,7 +319,80 @@ document.getElementById(
 
 .eq(
 "id",
-id
+productId
+);
+
+
+
+
+
+alert(
+"保存成功"
+);
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+// 上传主图
+
+
+async function uploadMainImage(){
+
+
+
+let file =
+mainUpload.files[0];
+
+
+
+if(!file)
+return;
+
+
+
+
+
+
+let path =
+
+"products/"
+
++
+
+Date.now()
+
++
+
+file.name;
+
+
+
+
+
+
+await db.storage
+
+
+.from(
+"product-images"
+)
+
+
+.upload(
+path,
+file
 );
 
 
@@ -339,14 +400,61 @@ id
 
 
 
-if(error){
+let {
+
+data
+
+}=db.storage
 
 
-message.innerHTML=
-"修改失败："+error.message;
+.from(
+"product-images"
+)
 
 
-return;
+.getPublicUrl(
+path
+);
+
+
+
+
+
+
+await db
+
+
+.from("products")
+
+
+.update({
+
+image:
+
+data.publicUrl
+
+
+})
+
+
+.eq(
+"id",
+productId
+);
+
+
+
+
+
+
+alert(
+"主图更新成功"
+);
+
+
+
+loadProduct();
+
 
 
 }
@@ -355,16 +463,218 @@ return;
 
 
 
-message.innerHTML=
-"修改成功";
+
+
+
+
+
+
+
+// 上传详情图
+
+
+async function uploadDetailImages(){
+
+
+
+let files =
+detailUpload.files;
+
+
+
+let update={};
+
+
+
+
+let index=2;
+
+
+
+
+
+for(let file of files){
+
+
+
+if(index>4)
+
+break;
+
+
+
+
+let path =
+
+"detail/"
+
++
+
+Date.now()
+
++
+
+file.name;
+
+
+
+
+
+await db.storage
+
+
+.from(
+"product-images"
+)
+
+
+.upload(
+path,
+file
+);
+
+
+
+
+
+
+let {
+
+data
+
+}=db.storage
+
+
+.from(
+"product-images"
+)
+
+
+.getPublicUrl(
+path
+);
+
+
+
+
+
+
+update[
+
+"image"+index
+
+]
+=
+
+data.publicUrl;
+
+
+
+
+index++;
+
+
 
 
 
 }
 
+
+
+
+
+
+await db
+
+
+.from("products")
+
+
+.update(update)
+
+
+.eq(
+"id",
+productId
+);
+
+
+
+
+
+
+alert(
+"详情图片添加成功"
+);
+
+
+
+loadProduct();
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+// 删除详情图片
+
+
+async function deleteImage(url){
+
+
+
+let update={};
+
+
+
+if(product.image2===url)
+
+update.image2=null;
+
+
+if(product.image3===url)
+
+update.image3=null;
+
+
+if(product.image4===url)
+
+update.image4=null;
+
+
+
+
+
+
+await db
+
+
+.from("products")
+
+
+.update(update)
+
+
+.eq(
+"id",
+productId
+);
 
 
 
 
 
 loadProduct();
+
+
+
+}
