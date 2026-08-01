@@ -1,347 +1,107 @@
-// =========================
-// Supabase
-// =========================
+<!DOCTYPE html>
 
-console.log("products-admin.js 已加载");
+<html>
 
 
-const SUPABASE_URL =
-"https://ukxxmxnubxjezkwbbxdr.supabase.co";
+<head>
+
+<link rel="stylesheet" href="css/admin.css">
+
+</head>
 
 
-const SUPABASE_KEY =
-"sb_publishable_2IFHfms3ombozpvZCvaeEg_2VZ2z5hJ";
-
-
-const client =
-supabase.createClient(
-SUPABASE_URL,
-SUPABASE_KEY
-);
+<body>
 
 
 
-
-// =========================
-// 加载商品
-// =========================
-
-async function loadProducts(){
-
-
-console.log("开始读取products");
+<h1>
+商品管理
+</h1>
 
 
 
-const {
-
-data,
-
-error
-
-}=await client
-
-.from("products")
-
-.select("*")
-
-.order(
-"id",
-{
-ascending:false
-}
-);
+<div>
 
 
-
-console.log(
-"商品数据:",
-data
-);
+<button>
++ 新建商品
+</button>
 
 
-console.log(
-"错误:",
-error
-);
+<button>
+批量删除
+</button>
 
 
-
-if(error){
-
-alert(error.message);
-
-return;
-
-}
-
-
-
-const box =
-document.getElementById(
-"productList"
-);
-
-
-
-if(!box){
-
-console.log(
-"没有找到productList"
-);
-
-return;
-
-}
-
-
-
-box.innerHTML="";
+</div>
 
 
 
 
-data.forEach(product=>{
+<table>
 
 
-box.innerHTML += `
+<thead>
 
 
 <tr>
 
 
-<td>
-
-<img
-
-src="${product.image || ''}"
-
-width="80"
-
-height="80">
-
-</td>
+<th>
+选择
+</th>
 
 
-
-<td>
-
-${product.name || ""}
-
-</td>
+<th>
+商品信息
+</th>
 
 
-
-<td>
-
-${product.price || 0}
-
-${product.currency || ""}
-
-</td>
+<th>
+经营状态
+</th>
 
 
-
-<td>
-
-${product.stock_status || ""}
-
-</td>
+<th>
+商品属性
+</th>
 
 
-
-<td>
-
-
-
-<button
-
-onclick="editProduct(${product.id})">
-
-编辑
-
-</button>
+<th>
+商品优化项
+</th>
 
 
-
-<button
-
-onclick="deleteProduct(${product.id})">
-
-删除
-
-</button>
-
-
-
-<button
-
-onclick="changeStatus(${product.id},'${product.stock_status}')">
-
-上下架
-
-</button>
-
-
-
-</td>
+<th>
+操作
+</th>
 
 
 
 </tr>
 
 
-`;
+</thead>
 
 
 
-});
+<tbody id="productTable">
 
 
+</tbody>
 
-}
 
+</table>
 
 
 
 
-// =========================
-// 编辑
-// =========================
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-function editProduct(id){
+<script src="js/admin-products.js"></script>
 
 
-location.href =
-"admin.html?id="+id;
+</body>
 
-
-}
-
-
-
-
-
-// =========================
-// 删除
-// =========================
-
-
-async function deleteProduct(id){
-
-
-if(
-!confirm("确定删除?")
-)
-
-return;
-
-
-
-const {
-
-error
-
-}=await client
-
-
-.from("products")
-
-
-.delete()
-
-
-.eq(
-"id",
-id
-);
-
-
-
-if(error){
-
-alert(error.message);
-
-return;
-
-}
-
-
-
-loadProducts();
-
-
-}
-
-
-
-
-
-// =========================
-// 上下架
-// =========================
-
-
-async function changeStatus(
-id,
-status
-){
-
-
-let newStatus =
-status==="上架"
-?
-"下架"
-:
-"上架";
-
-
-
-
-const {
-
-error
-
-}=await client
-
-
-.from("products")
-
-
-.update({
-
-stock_status:newStatus
-
-})
-
-
-.eq(
-"id",
-id
-);
-
-
-
-if(error){
-
-alert(error.message);
-
-return;
-
-}
-
-
-
-loadProducts();
-
-
-}
-
-
-
-
-
-// 启动
-
-loadProducts();
+</html>
