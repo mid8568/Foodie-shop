@@ -14,6 +14,7 @@ CDS后台管理
 
 <link rel="stylesheet" href="css/admin.css">
 
+
 </head>
 
 
@@ -23,56 +24,48 @@ CDS后台管理
 <div class="admin-layout">
 
 
-
 <!-- 左侧菜单 -->
 
 <aside class="sidebar">
 
 
 <h2>
-🇨🇳 CDS后台
+CDS后台
 </h2>
 
 
-
-<button 
-class="menu-btn active"
-onclick="openPage(this,'products')">
-商品管理
-</button>
+<ul>
 
 
+<li onclick="loadPage('products')">
 
-<button 
-class="menu-btn"
-onclick="openPage(this,'decorate')">
-前端装修
-</button>
+📦 商品管理
 
+</li>
 
 
-<button 
-class="menu-btn"
-onclick="openPage(this,'images')">
-图片管理
-</button>
+<li onclick="loadPage('decoration')">
+
+🎨 前端装修
+
+</li>
 
 
+<li onclick="loadPage('images')">
 
-<button 
-class="menu-btn"
-onclick="openPage(this,'seo')">
-SEO设置
-</button>
+🖼 图片管理
 
+</li>
 
 
-<button 
-class="menu-btn"
-onclick="openPage(this,'ebay')">
-eBay同步
-</button>
+<li onclick="loadPage('ebay')">
 
+🛒 eBay同步
+
+</li>
+
+
+</ul>
 
 
 </aside>
@@ -80,102 +73,35 @@ eBay同步
 
 
 
+<!-- 右侧内容 -->
 
-<!-- 主区域 -->
-
-<main class="main">
+<main class="content">
 
 
-<iframe
+<div id="admin-content">
 
-id="contentFrame"
 
-src="admin-products.html">
+<h1>
+欢迎进入后台管理
+</h1>
 
-</iframe>
+
+<p>
+请选择左侧功能
+</p>
+
+
+</div>
 
 
 </main>
-
-
 
 
 </div>
 
 
 
-
-
-
-<script>
-
-
-function openPage(btn,page){
-
-
-/*
-切换菜单状态
-*/
-
-
-document
-.querySelectorAll(".menu-btn")
-.forEach(
-item=>{
-item.classList.remove("active");
-}
-);
-
-
-
-btn.classList.add("active");
-
-
-
-
-let frame =
-document.getElementById(
-"contentFrame"
-);
-
-
-
-let pages={
-
-products:
-"admin-products.html",
-
-
-decorate:
-"admin-decorate.html",
-
-
-images:
-"admin-images.html",
-
-
-seo:
-"admin-seo.html",
-
-
-ebay:
-"admin-ebay.html"
-
-};
-
-
-
-frame.src =
-pages[page];
-
-
-
-}
-
-
-
-</script>
-
+<script src="js/admin.js"></script>
 
 
 </body>
