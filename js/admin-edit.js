@@ -3,7 +3,6 @@ console.log(
 );
 
 
-
 // =======================
 // Supabase
 // =======================
@@ -17,13 +16,11 @@ const SUPABASE_KEY =
 "sb_publishable_2IFHfms3ombozpvZCvaeEg_2VZ2z5hJ";
 
 
-
 const supabaseClient =
 supabase.createClient(
 SUPABASE_URL,
 SUPABASE_KEY
 );
-
 
 
 
@@ -39,19 +36,15 @@ window.location.search
 );
 
 
-
 const productId =
 params.get("id");
 
 
 
 
-
 // 图片数组
 
-
 let mainImages=[];
-
 
 let detailImages=[];
 
@@ -62,7 +55,7 @@ let detailImages=[];
 
 
 // =======================
-// 页面加载
+// 初始化
 // =======================
 
 
@@ -74,9 +67,7 @@ document.addEventListener(
 loadProduct();
 
 
-
 });
-
 
 
 
@@ -91,7 +82,6 @@ loadProduct();
 
 
 async function loadProduct(){
-
 
 
 const {
@@ -115,13 +105,12 @@ productId
 
 
 
-
 if(error){
 
 console.log(error);
 
 alert(
-"商品加载失败"
+"加载失败"
 );
 
 return;
@@ -134,8 +123,7 @@ console.log(data);
 
 
 
-
-// 基础字段
+// 普通字段
 
 
 setValue(
@@ -144,12 +132,10 @@ data.name
 );
 
 
-
 setValue(
 "name_en",
 data.name_en
 );
-
 
 
 setValue(
@@ -158,12 +144,10 @@ data.category
 );
 
 
-
 setValue(
 "1688_url",
 data["1688_url"]
 );
-
 
 
 setValue(
@@ -172,12 +156,10 @@ data.supplier
 );
 
 
-
 setValue(
 "supplier_url",
 data.supplier_url
 );
-
 
 
 setValue(
@@ -191,7 +173,6 @@ setValue(
 "description",
 data.description
 );
-
 
 
 setValue(
@@ -244,11 +225,8 @@ data.seo_description
 
 
 
-// 规格JSON
-
 
 setValue(
-
 "specifications",
 
 JSON.stringify(
@@ -265,7 +243,6 @@ null,
 
 
 
-
 // =======================
 // 主图
 // =======================
@@ -274,24 +251,29 @@ null,
 mainImages=[];
 
 
-if(data.image)
-mainImages.push(data.image);
+[
+data.image,
+data.image2,
+data.image3,
+data.image4
+
+]
+.forEach(url=>{
 
 
-if(data.image2)
-mainImages.push(data.image2);
+if(url){
+
+mainImages.push(url);
+
+}
 
 
-if(data.image3)
-mainImages.push(data.image3);
-
-
-if(data.image4)
-mainImages.push(data.image4);
+});
 
 
 
 renderMainImages();
+
 
 
 
@@ -304,7 +286,20 @@ renderMainImages();
 
 
 detailImages =
-data.detail_images || [];
+
+Array.isArray(
+data.detail_images
+)
+
+?
+
+data.detail_images
+
+:
+
+[];
+
+
 
 
 renderDetailImages();
@@ -322,7 +317,7 @@ renderDetailImages();
 
 
 // =======================
-// 显示主图
+// 渲染主图
 // =======================
 
 
@@ -349,14 +344,14 @@ document.createElement(
 );
 
 
-div.className=
+div.className =
 "image-item";
 
 
 
-div.innerHTML=
+div.innerHTML = `
 
-`
+
 <img src="${url}">
 
 
@@ -365,6 +360,8 @@ div.innerHTML=
 删除
 
 </button>
+
+
 `;
 
 
@@ -374,7 +371,6 @@ box.appendChild(div);
 
 
 });
-
 
 
 }
@@ -388,7 +384,7 @@ box.appendChild(div);
 
 
 // =======================
-// 显示详情图
+// 渲染详情图
 // =======================
 
 
@@ -416,15 +412,14 @@ document.createElement(
 );
 
 
-
-div.className=
+div.className =
 "image-item";
 
 
 
-div.innerHTML=
+div.innerHTML = `
 
-`
+
 <img src="${url}">
 
 
@@ -433,6 +428,7 @@ div.innerHTML=
 删除
 
 </button>
+
 
 `;
 
@@ -449,24 +445,28 @@ box.appendChild(div);
 }
 
 
+
+
+
+
+
+
+
 // =======================
-// 删除Storage图片
+// 删除 Storage 文件
 // =======================
 
 
 async function deleteStorageImage(url){
 
 
-
 if(!url){
 
-return;
+return false;
 
 }
 
 
-
-// 获取文件路径
 
 let path =
 url.split(
@@ -478,13 +478,13 @@ url.split(
 if(!path){
 
 console.log(
-"无法解析图片路径"
+"路径错误",
+url
 );
 
-return;
+return false;
 
 }
-
 
 
 
@@ -511,9 +511,10 @@ path
 if(error){
 
 console.log(
-"删除Storage失败",
+"Storage删除失败",
 error
 );
+
 
 return false;
 
@@ -527,10 +528,14 @@ path
 );
 
 
+
 return true;
 
 
 }
+
+
+
 
 
 
@@ -546,19 +551,33 @@ async function deleteMainImage(index){
 
 
 
+if(
+!confirm(
+"确定删除主图?"
+)
+
+){
+
+return;
+
+}
+
+
+
 let url =
 mainImages[index];
 
 
 
-let ok =
+let result =
 await deleteStorageImage(
 url
 );
 
 
 
-if(ok){
+if(result){
+
 
 
 mainImages.splice(
@@ -575,7 +594,9 @@ renderMainImages();
 }
 
 
+
 }
+
 
 
 
@@ -593,19 +614,39 @@ async function deleteDetailImage(index){
 
 
 
+if(
+!confirm(
+"确定删除详情图片?"
+)
+
+){
+
+return;
+
+}
+
+
+
 let url =
 detailImages[index];
 
 
 
-let ok =
+console.log(
+"删除详情图:",
+url
+);
+
+
+
+let result =
 await deleteStorageImage(
 url
 );
 
 
 
-if(ok){
+if(result){
 
 
 detailImages.splice(
@@ -615,8 +656,14 @@ index,
 
 
 
-renderDetailImages();
+console.log(
+"剩余详情图片:",
+detailImages
+);
 
+
+
+renderDetailImages();
 
 
 }
@@ -645,10 +692,10 @@ async function uploadFile(file){
 let filename =
 
 Date.now()
-+
-"_"
-+
-file.name;
+
++"_"
+
++file.name;
 
 
 
@@ -680,8 +727,6 @@ console.log(error);
 return null;
 
 }
-
-
 
 
 
@@ -739,10 +784,15 @@ e.target.files
 
 
 
-for(let file of files){
+for(
+let file of files
+){
 
 
-if(mainImages.length>=4){
+
+if(
+mainImages.length>=4
+){
 
 alert(
 "主图最多4张"
@@ -751,6 +801,7 @@ alert(
 break;
 
 }
+
 
 
 let url =
@@ -803,7 +854,9 @@ e.target.files
 
 
 
-for(let file of files){
+for(
+let file of files
+){
 
 
 
@@ -846,8 +899,16 @@ async function saveProduct(){
 
 
 
-let specifications={};
+console.log(
+"保存详情图片:",
+detailImages
+);
 
+
+
+
+
+let specifications={};
 
 
 try{
@@ -869,7 +930,7 @@ value(
 
 
 alert(
-"规格JSON格式错误"
+"规格JSON错误"
 );
 
 
@@ -883,38 +944,24 @@ return;
 
 
 
-
 let updateData={
 
 
 
-name:
-
-value("name"),
+name:value("name"),
 
 
+name_en:value("name_en"),
 
-name_en:
 
-value("name_en"),
+category:value("category"),
 
 
 
-category:
-
-value("category"),
+description:value("description"),
 
 
-
-description:
-
-value("description"),
-
-
-
-description_en:
-
-value("description_en"),
+description_en:value("description_en"),
 
 
 
@@ -942,15 +989,11 @@ value("stock_quantity")
 
 
 
-status:
-
-value("status"),
+status:value("status"),
 
 
 
-stock_status:
-
-value("status"),
+stock_status:value("status"),
 
 
 
@@ -992,11 +1035,12 @@ value("seo_description"),
 
 specifications:
 
+
+
 specifications,
 
 
 
-// 图片
 
 
 image:
@@ -1004,14 +1048,17 @@ image:
 mainImages[0] || "",
 
 
+
 image2:
 
 mainImages[1] || "",
 
 
+
 image3:
 
 mainImages[2] || "",
+
 
 
 image4:
@@ -1020,9 +1067,14 @@ mainImages[3] || "",
 
 
 
+
 detail_images:
 
+JSON.parse(
+JSON.stringify(
 detailImages
+)
+)
 
 
 
@@ -1033,9 +1085,9 @@ detailImages
 
 
 
-
-
 const {
+
+data,
 
 error
 
@@ -1043,13 +1095,16 @@ error
 
 .from("products")
 
-.update(updateData)
+.update(
+updateData
+)
 
 .eq(
 "id",
 productId
-);
+)
 
+.select();
 
 
 
@@ -1074,13 +1129,21 @@ return;
 
 
 
+
+console.log(
+"更新结果:",
+data
+);
+
+
+
 alert(
 "保存成功"
 );
 
 
 
-location.href=
+location.href =
 "admin-products.html";
 
 
@@ -1127,7 +1190,11 @@ document.getElementById(id);
 
 
 return el ?
-el.value :
+
+el.value
+
+:
+
 "";
 
 
@@ -1138,10 +1205,11 @@ el.value :
 
 
 
+
 function backList(){
 
 
-location.href=
+location.href =
 "admin-products.html";
 
 
