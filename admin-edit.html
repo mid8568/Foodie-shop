@@ -1,31 +1,28 @@
 <!DOCTYPE html>
-
 <html lang="zh-CN">
-
 
 <head>
 
-
 <meta charset="UTF-8">
-
 
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 
 
 <title>
-商品编辑
+编辑商品
 </title>
 
 
-<link rel="stylesheet" href="css/admin.css">
+<link rel="stylesheet" href="css/product-edit.css">
 
 
 </head>
 
 
-
 <body>
 
+
+<div class="edit-page">
 
 
 <h1>
@@ -34,73 +31,67 @@
 
 
 
+<!-- 基础信息 -->
+
+<div class="card">
 
 
-<h3>
-商品中文标题
-</h3>
+<h2>
+商品信息
+</h2>
 
+
+
+<label>
+中文标题
+</label>
 
 <input id="name">
 
 
 
-
-
-
-<h3>
-商品英文标题
-</h3>
-
+<label>
+英文标题
+</label>
 
 <input id="name_en">
 
 
 
+<label>
+商品描述
+</label>
+
+<textarea id="description"></textarea>
 
 
 
+<label>
+价格
+</label>
 
-
-<h3>
-主图
-</h3>
-
-
-
-<div id="mainImage">
-
-
-</div>
+<input id="price">
 
 
 
-<input
-type="file"
-id="mainUpload">
+<label>
+状态
+</label>
 
 
+<select id="status">
 
-<button onclick="uploadMainImage()">
-
-替换主图
-
-</button>
-
+<option value="上架">
+上架
+</option>
 
 
+<option value="下架">
+下架
+</option>
 
 
-
-
-
-<h3>
-详情图片
-</h3>
-
-
-
-<div id="detailImages">
+</select>
 
 
 </div>
@@ -109,9 +100,52 @@ id="mainUpload">
 
 
 
+<!-- 主图 -->
+
+<div class="card">
+
+
+<h2>
+商品主图（4张）
+</h2>
+
+
+<div id="main-images"
+class="image-box">
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+<!-- 详情图片 -->
+
+<div class="card">
+
+
+<h2>
+商品详情图片
+</h2>
+
+
+
+<div id="detail-images"
+class="image-box">
+
+
+</div>
+
+
+
 <input
 type="file"
-id="detailUpload"
+id="detail-upload"
 multiple>
 
 
@@ -124,113 +158,16 @@ multiple>
 
 
 
+</div>
 
 
 
 
 
 
-
-<h3>
-商品描述
-</h3>
-
-
-
-<textarea
-id="description"
-rows="8">
-
-</textarea>
-
-
-
-
-
-
-<h3>
-英文描述
-</h3>
-
-
-
-<textarea
-id="description_en"
-rows="8">
-
-</textarea>
-
-
-
-
-
-
-
-
-<h3>
-价格
-</h3>
-
-
-
-<input
-id="cost_price"
-placeholder="采购成本">
-
-
-
-<input
-id="sale_price"
-placeholder="销售价格">
-
-
-
-
-
-
-
-
-
-<h3>
-销售状态
-</h3>
-
-
-
-<select id="stock_status">
-
-
-<option>
-上架
-</option>
-
-
-<option>
-下架
-</option>
-
-
-<option>
-缺货
-</option>
-
-
-
-</select>
-
-
-
-
-
-
-
-
-<br><br>
-
-
-
-
-<button onclick="saveProduct()">
+<button
+class="save-btn"
+onclick="saveProduct()">
 
 保存修改
 
@@ -238,15 +175,7 @@ placeholder="销售价格">
 
 
 
-
-
-<button onclick="history.back()">
-
-返回商品列表
-
-</button>
-
-
+</div>
 
 
 
@@ -255,8 +184,7 @@ placeholder="销售价格">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 
-<script src="js/admin-edit.js"></script>
-
+<script src="js/product-edit.js"></script>
 
 
 </body>
