@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+
+<title>
+图片管理
+</title>
+
+
+<link rel="stylesheet" href="css/admin-images.css">
+
+
+</head>
+
+
+<body>
+
+
+<div class="page">
+
+
+<h1>
+图片管理
+</h1>
+
+
+
+<div class="toolbar">
+
+
+<input
+id="search"
+placeholder="搜索商品名称">
+
+
+<button onclick="searchImages()">
+搜索
+</button>
+
+
+</div>
+
+
+
+
+
+<div id="image-list">
+
+
+</div>
+
+
+
+
+</div>
+
+
+
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+</script>
+
+
+<script src="js/admin-images.js">
+</script>
+
+
+</body>
+
+
+</html>
