@@ -1,18 +1,20 @@
 <!DOCTYPE html>
+
 <html lang="zh-CN">
 
 
 <head>
 
+
 <meta charset="UTF-8">
+
 
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 
 
 <title>
-编辑商品
+商品编辑
 </title>
-
 
 
 <link rel="stylesheet" href="css/admin-edit.css">
@@ -30,38 +32,27 @@
 
 
 
-<div class="top-bar">
-
-
-<button onclick="backProducts()">
-
-← 返回商品列表
-
-</button>
-
-
 <h1>
 商品编辑
 </h1>
 
 
-</div>
+
+
+<div class="edit-container">
 
 
 
-
-
-<!-- 商品信息 -->
-
-
-<div class="card">
+<!-- 基础信息 -->
 
 
 <h2>
-商品信息
+基础信息
 </h2>
 
 
+
+<div class="form-group">
 
 <label>
 中文标题
@@ -69,9 +60,12 @@
 
 <input id="name">
 
+</div>
 
 
 
+
+<div class="form-group">
 
 <label>
 英文标题
@@ -79,62 +73,51 @@
 
 <input id="name_en">
 
+</div>
 
 
 
 
-
-<label>
-商品描述
-</label>
-
-
-<textarea id="description"></textarea>
+<div class="row">
 
 
 
-
-
+<div class="form-group">
 
 <label>
-价格
+商品分类
 </label>
 
+<input id="category">
 
-<input 
-id="price"
-type="number">
-
+</div>
 
 
 
+<div class="form-group">
 
 <label>
 状态
 </label>
 
 
-
 <select id="status">
 
-
 <option value="上架">
-
 上架
-
 </option>
 
 
 <option value="下架">
-
 下架
-
 </option>
 
 
 </select>
 
 
+</div>
+
 
 </div>
 
@@ -142,30 +125,75 @@ type="number">
 
 
 
-
-
-
-<!-- 主图 -->
-
-
-<div class="card">
+<!-- 1688 -->
 
 
 <h2>
-商品主图（4张）
+供应信息
 </h2>
 
 
 
-<div 
-id="main-images"
-class="image-box">
+<div class="form-group">
+
+<label>
+1688商品链接
+</label>
+
+
+<input id="1688_url">
+
+</div>
+
+
+
+
+<div class="row">
+
+
+<div class="form-group">
+
+<label>
+供应商
+</label>
+
+
+<input id="supplier">
 
 
 </div>
 
 
 
+
+<div class="form-group">
+
+<label>
+供应商链接
+</label>
+
+
+<input id="supplier_url">
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+<div class="form-group">
+
+<label>
+供应商联系方式
+</label>
+
+<input id="supplier_contact">
+
+
 </div>
 
 
@@ -175,45 +203,47 @@ class="image-box">
 
 
 
-<!-- 详情图片 -->
-
-
-<div class="card">
+<!-- 图片 -->
 
 
 <h2>
-详情图片
+商品图片
 </h2>
 
 
 
-<div
-id="detail-images"
-class="image-box">
+<div class="main-image-box">
 
 
-</div>
+<img id="main-image"
+class="preview-image">
 
 
-
-
-
-<input
-
+<input 
 type="file"
-
-id="detail-upload"
-
-multiple>
+id="image-file">
 
 
 
-<button onclick="uploadDetailImages()">
+</div>
 
-增加详情图片
 
-</button>
 
+
+
+<div class="image-list">
+
+
+<img id="image2"
+class="small-image">
+
+
+<img id="image3"
+class="small-image">
+
+
+<img id="image4"
+class="small-image">
 
 
 </div>
@@ -224,6 +254,188 @@ multiple>
 
 
 
+<h3>
+详情图片
+</h3>
+
+
+<div id="detail-images"
+class="detail-images">
+
+</div>
+
+
+
+
+
+
+
+<!-- 描述 -->
+
+
+<h2>
+商品描述
+</h2>
+
+
+
+<div class="form-group">
+
+<textarea
+id="description">
+</textarea>
+
+</div>
+
+
+
+
+
+<div class="form-group">
+
+<textarea
+id="description_en">
+</textarea>
+
+</div>
+
+
+
+
+
+
+
+<!-- 价格 -->
+
+
+<h2>
+价格库存
+</h2>
+
+
+
+<div class="row">
+
+
+<div class="form-group">
+
+<label>
+采购成本
+</label>
+
+
+<input 
+id="cost_price"
+type="number">
+
+
+</div>
+
+
+
+
+<div class="form-group">
+
+<label>
+销售价格
+</label>
+
+
+<input 
+id="sale_price"
+type="number">
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+<div class="form-group">
+
+<label>
+库存数量
+</label>
+
+
+<input 
+id="stock_quantity"
+type="number">
+
+
+</div>
+
+
+
+
+
+
+<!-- 规格 -->
+
+
+<h2>
+商品规格
+</h2>
+
+
+<div class="form-group">
+
+
+<textarea
+id="specifications">
+
+</textarea>
+
+
+</div>
+
+
+
+
+
+
+
+<!-- SEO -->
+
+
+<h2>
+SEO
+</h2>
+
+
+<div class="form-group">
+
+<label>
+SEO标题
+</label>
+
+<input id="seo_title">
+
+</div>
+
+
+
+<div class="form-group">
+
+<label>
+SEO描述
+</label>
+
+<textarea id="seo_description"></textarea>
+
+</div>
+
+
+
+
+
+
+
+<div class="buttons">
 
 
 <button
@@ -232,14 +444,32 @@ class="save-btn"
 
 onclick="saveProduct()">
 
-
 保存修改
-
 
 </button>
 
 
 
+
+<button
+
+class="back-btn"
+
+onclick="backList()">
+
+返回列表
+
+</button>
+
+
+
+</div>
+
+
+
+
+
+</div>
 
 
 </div>
@@ -251,10 +481,13 @@ onclick="saveProduct()">
 
 
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+</script>
 
 
-<script src="js/admin-edit.js"></script>
+<script src="js/admin-edit.js">
+</script>
+
 
 
 </body>
