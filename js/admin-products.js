@@ -212,7 +212,22 @@ class="table-image"
 
 <td>
 
+
 ${item.name || ""}
+
+
+<br>
+
+
+<a 
+href="${item['1688_url'] || '#'}"
+target="_blank"
+style="font-size:12px;color:#666;">
+
+1688链接
+
+</a>
+
 
 </td>
 
@@ -234,12 +249,30 @@ ${item.price || 0}
 
 </td>
 
+<td>
 
+${item.stock_quantity || 0}
+
+</td>
 
 
 <td>
 
+
+<button
+
+onclick="toggleStatus(
+'${item.id}',
+'${item.stock_status}'
+)"
+
+>
+
 ${item.stock_status || "下架"}
+
+
+</button>
+
 
 </td>
 
@@ -390,6 +423,70 @@ searchProduct;
 
 window.addProduct =
 addProduct;
+window.toggleStatus =
+toggleStatus;
+// =======================
+// 切换上下架
+// =======================
+
+
+async function toggleStatus(
+id,
+status
+){
+
+
+let newStatus =
+status==="上架"
+?
+"下架"
+:
+"上架";
+
+
+
+const {
+
+error
+
+}=await supabaseClient
+
+.from("products")
+
+.update({
+
+stock_status:newStatus
+
+})
+
+.eq(
+"id",
+id
+);
+
+
+
+if(error){
+
+console.log(error);
+
+alert(
+"修改失败"
+);
+
+return;
+
+}
+
+
+
+loadProducts(
+currentKeyword,
+currentPage
+);
+
+
+}
 // =======================
 // 分页
 // =======================
