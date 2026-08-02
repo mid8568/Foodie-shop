@@ -3,6 +3,7 @@ console.log(
 );
 
 
+
 // =======================
 // Supabase
 // =======================
@@ -26,6 +27,7 @@ SUPABASE_KEY
 
 
 
+
 // =======================
 // 商品ID
 // =======================
@@ -37,12 +39,22 @@ window.location.search
 );
 
 
+
 const productId =
 params.get("id");
 
 
 
-let oldImage="";
+
+
+// 图片数组
+
+
+let mainImages=[];
+
+
+let detailImages=[];
+
 
 
 
@@ -59,21 +71,13 @@ document.addEventListener(
 ()=>{
 
 
-if(!productId){
-
-alert(
-"商品ID不存在"
-);
-
-return;
-
-}
-
-
 loadProduct();
 
 
+
 });
+
+
 
 
 
@@ -117,7 +121,7 @@ if(error){
 console.log(error);
 
 alert(
-"加载失败"
+"商品加载失败"
 );
 
 return;
@@ -131,13 +135,7 @@ console.log(data);
 
 
 
-oldImage =
-data.image || "";
-
-
-
-
-// 基础
+// 基础字段
 
 
 setValue(
@@ -146,10 +144,12 @@ data.name
 );
 
 
+
 setValue(
 "name_en",
 data.name_en
 );
+
 
 
 setValue(
@@ -157,18 +157,6 @@ setValue(
 data.category
 );
 
-
-
-setValue(
-"status",
-data.status || data.stock_status
-);
-
-
-
-
-
-// 1688
 
 
 setValue(
@@ -199,94 +187,6 @@ data.supplier_contact
 
 
 
-
-
-
-// 图片
-
-
-document.getElementById(
-"main-image"
-).src =
-data.image || "";
-
-
-
-document.getElementById(
-"image2"
-).src =
-data.image2 || "";
-
-
-
-document.getElementById(
-"image3"
-).src =
-data.image3 || "";
-
-
-
-document.getElementById(
-"image4"
-).src =
-data.image4 || "";
-
-
-
-
-
-// 详情图片
-
-
-let box =
-document.getElementById(
-"detail-images"
-);
-
-
-box.innerHTML="";
-
-
-
-if(
-Array.isArray(
-data.detail_images
-)
-){
-
-
-data.detail_images.forEach(url=>{
-
-
-let img =
-document.createElement(
-"img"
-);
-
-
-img.src=url;
-
-
-img.className=
-"small-image";
-
-
-box.appendChild(img);
-
-
-
-});
-
-
-}
-
-
-
-
-
-// 描述
-
-
 setValue(
 "description",
 data.description
@@ -299,13 +199,6 @@ setValue(
 data.description_en
 );
 
-
-
-
-
-
-
-// 价格
 
 
 setValue(
@@ -329,30 +222,11 @@ data.stock_quantity
 
 
 
-
-
-
-
-// 规格
-
-
 setValue(
-"specifications",
-
-JSON.stringify(
-data.specifications || {},
-null,
-2
-)
-
+"status",
+data.status || data.stock_status
 );
 
-
-
-
-
-
-// SEO
 
 
 setValue(
@@ -369,6 +243,74 @@ data.seo_description
 
 
 
+
+// 规格JSON
+
+
+setValue(
+
+"specifications",
+
+JSON.stringify(
+data.specifications || {},
+null,
+2
+)
+
+);
+
+
+
+
+
+
+
+
+// =======================
+// 主图
+// =======================
+
+
+mainImages=[];
+
+
+if(data.image)
+mainImages.push(data.image);
+
+
+if(data.image2)
+mainImages.push(data.image2);
+
+
+if(data.image3)
+mainImages.push(data.image3);
+
+
+if(data.image4)
+mainImages.push(data.image4);
+
+
+
+renderMainImages();
+
+
+
+
+
+
+// =======================
+// 详情图
+// =======================
+
+
+detailImages =
+data.detail_images || [];
+
+
+renderDetailImages();
+
+
+
 }
 
 
@@ -380,21 +322,255 @@ data.seo_description
 
 
 // =======================
-// 设置值
+// 显示主图
 // =======================
 
 
-function setValue(id,value){
+function renderMainImages(){
 
 
-let el =
-document.getElementById(id);
+const box =
+document.getElementById(
+"main-images"
+);
 
 
-if(el){
+box.innerHTML="";
 
-el.value =
-value || "";
+
+
+mainImages.forEach(
+(url,index)=>{
+
+
+let div =
+document.createElement(
+"div"
+);
+
+
+div.className=
+"image-item";
+
+
+
+div.innerHTML=
+
+`
+<img src="${url}">
+
+
+<button onclick="deleteMainImage(${index})">
+
+删除
+
+</button>
+`;
+
+
+
+box.appendChild(div);
+
+
+
+});
+
+
+
+}
+
+
+
+
+
+
+
+
+
+// =======================
+// 显示详情图
+// =======================
+
+
+function renderDetailImages(){
+
+
+const box =
+document.getElementById(
+"detail-images"
+);
+
+
+
+box.innerHTML="";
+
+
+
+detailImages.forEach(
+(url,index)=>{
+
+
+let div =
+document.createElement(
+"div"
+);
+
+
+
+div.className=
+"image-item";
+
+
+
+div.innerHTML=
+
+`
+<img src="${url}">
+
+
+<button onclick="deleteDetailImage(${index})">
+
+删除
+
+</button>
+
+`;
+
+
+
+box.appendChild(div);
+
+
+
+});
+
+
+
+}
+
+
+// =======================
+// 删除Storage图片
+// =======================
+
+
+async function deleteStorageImage(url){
+
+
+
+if(!url){
+
+return;
+
+}
+
+
+
+// 获取文件路径
+
+let path =
+url.split(
+"/product-images/"
+)[1];
+
+
+
+if(!path){
+
+console.log(
+"无法解析图片路径"
+);
+
+return;
+
+}
+
+
+
+
+const {
+
+error
+
+}=await supabaseClient
+
+.storage
+
+.from(
+"product-images"
+)
+
+.remove(
+[
+path
+]
+);
+
+
+
+if(error){
+
+console.log(
+"删除Storage失败",
+error
+);
+
+return false;
+
+}
+
+
+
+console.log(
+"Storage删除成功:",
+path
+);
+
+
+return true;
+
+
+}
+
+
+
+
+
+
+// =======================
+// 删除主图
+// =======================
+
+
+async function deleteMainImage(index){
+
+
+
+let url =
+mainImages[index];
+
+
+
+let ok =
+await deleteStorageImage(
+url
+);
+
+
+
+if(ok){
+
+
+mainImages.splice(
+index,
+1
+);
+
+
+
+renderMainImages();
+
+
 
 }
 
@@ -408,29 +584,71 @@ value || "";
 
 
 
-
 // =======================
-// 上传主图
+// 删除详情图
 // =======================
 
 
-async function uploadImage(file){
+async function deleteDetailImage(index){
 
 
 
-if(!file){
+let url =
+detailImages[index];
 
-return oldImage;
+
+
+let ok =
+await deleteStorageImage(
+url
+);
+
+
+
+if(ok){
+
+
+detailImages.splice(
+index,
+1
+);
+
+
+
+renderDetailImages();
+
+
 
 }
+
+
+
+}
+
+
+
+
+
+
+
+
+
+// =======================
+// 上传图片
+// =======================
+
+
+async function uploadFile(file){
 
 
 
 let filename =
 
 Date.now()
-
-+"_"+file.name;
++
+"_"
++
+file.name;
 
 
 
@@ -455,14 +673,14 @@ file
 
 
 
-
 if(error){
 
 console.log(error);
 
-return oldImage;
+return null;
 
 }
+
 
 
 
@@ -501,6 +719,125 @@ return data.publicUrl;
 
 
 // =======================
+// 主图上传
+// =======================
+
+
+document
+.getElementById(
+"main-image-upload"
+)
+.addEventListener(
+"change",
+async(e)=>{
+
+
+let files =
+Array.from(
+e.target.files
+);
+
+
+
+for(let file of files){
+
+
+if(mainImages.length>=4){
+
+alert(
+"主图最多4张"
+);
+
+break;
+
+}
+
+
+let url =
+await uploadFile(file);
+
+
+
+if(url){
+
+mainImages.push(url);
+
+}
+
+
+}
+
+
+
+renderMainImages();
+
+
+});
+
+
+
+
+
+
+
+
+
+// =======================
+// 详情图上传
+// =======================
+
+
+document
+.getElementById(
+"detail-image-upload"
+)
+.addEventListener(
+"change",
+async(e)=>{
+
+
+let files =
+Array.from(
+e.target.files
+);
+
+
+
+for(let file of files){
+
+
+
+let url =
+await uploadFile(file);
+
+
+
+if(url){
+
+detailImages.push(url);
+
+}
+
+
+}
+
+
+
+renderDetailImages();
+
+
+
+});
+
+
+
+
+
+
+
+
+
+// =======================
 // 保存
 // =======================
 
@@ -509,35 +846,8 @@ async function saveProduct(){
 
 
 
-let image =
-oldImage;
-
-
-
-
-let file =
-
-document.getElementById(
-"image-file"
-)
-
-.files[0];
-
-
-
-
-if(file){
-
-image =
-await uploadImage(file);
-
-}
-
-
-
-
-
 let specifications={};
+
 
 
 try{
@@ -547,11 +857,12 @@ specifications =
 
 JSON.parse(
 
-document.getElementById(
+value(
 "specifications"
-).value
+)
 
 );
+
 
 
 }catch(e){
@@ -572,7 +883,8 @@ return;
 
 
 
-const updateData={
+
+let updateData={
 
 
 
@@ -678,15 +990,44 @@ value("seo_description"),
 
 
 
+specifications:
+
 specifications,
 
 
 
-image:image
+// 图片
+
+
+image:
+
+mainImages[0] || "",
+
+
+image2:
+
+mainImages[1] || "",
+
+
+image3:
+
+mainImages[2] || "",
+
+
+image4:
+
+mainImages[3] || "",
+
+
+
+detail_images:
+
+detailImages
 
 
 
 };
+
 
 
 
@@ -702,9 +1043,7 @@ error
 
 .from("products")
 
-.update(
-updateData
-)
+.update(updateData)
 
 .eq(
 "id",
@@ -716,18 +1055,22 @@ productId
 
 
 
+
 if(error){
 
+
 console.log(error);
+
 
 alert(
 "保存失败"
 );
 
+
 return;
 
-}
 
+}
 
 
 
@@ -750,6 +1093,32 @@ location.href=
 
 
 
+
+
+// =======================
+// 工具
+// =======================
+
+
+function setValue(id,val){
+
+
+let el =
+document.getElementById(id);
+
+
+if(el){
+
+el.value =
+val || "";
+
+}
+
+
+}
+
+
+
 function value(id){
 
 
@@ -769,13 +1138,6 @@ el.value :
 
 
 
-
-
-// =======================
-// 返回
-// =======================
-
-
 function backList(){
 
 
@@ -789,9 +1151,19 @@ location.href=
 
 
 
+
+
 window.saveProduct =
 saveProduct;
 
 
 window.backList =
 backList;
+
+
+window.deleteMainImage =
+deleteMainImage;
+
+
+window.deleteDetailImage =
+deleteDetailImage;
