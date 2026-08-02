@@ -4,9 +4,8 @@ console.log(
 
 
 
-// =======================
+
 // Supabase
-// =======================
 
 
 const SUPABASE_URL =
@@ -15,6 +14,7 @@ const SUPABASE_URL =
 
 const SUPABASE_KEY =
 "sb_publishable_2IFHfms3ombozpvZCvaeEg_2VZ2z5hJ";
+
 
 
 const supabaseClient =
@@ -26,15 +26,10 @@ SUPABASE_KEY
 
 
 
+
 let products=[];
 
 
-
-
-
-// =======================
-// 初始化
-// =======================
 
 
 document.addEventListener(
@@ -42,7 +37,7 @@ document.addEventListener(
 ()=>{
 
 
-loadImages();
+loadProducts();
 
 
 });
@@ -53,24 +48,24 @@ loadImages();
 
 
 
+// 加载商品
 
 
-// =======================
-// 加载图片
-// =======================
+async function loadProducts(){
 
 
-async function loadImages(keyword=""){
+let {
 
+data,
 
-let query =
+error
 
-supabaseClient
+}=await supabaseClient
 
 .from("products")
 
 .select(
-"id,name,image,image2,image3,image4,detail_images"
+"id,name,image"
 )
 
 .order(
@@ -82,34 +77,6 @@ ascending:false
 
 
 
-
-
-if(keyword){
-
-
-query =
-query.ilike(
-"name",
-"%"+keyword+"%"
-);
-
-
-}
-
-
-
-
-
-const {
-
-data,
-
-error
-
-}=await query;
-
-
-
 if(error){
 
 console.log(error);
@@ -120,13 +87,10 @@ return;
 
 
 
-products =
-data || [];
+products=data;
 
 
-
-renderImages();
-
+renderProducts();
 
 
 }
@@ -138,309 +102,85 @@ renderImages();
 
 
 
-
-// =======================
-// 渲染
-// =======================
+// 商品列表
 
 
-function renderImages(){
+function renderProducts(){
 
 
-const box =
+let box =
 document.getElementById(
-"image-list"
+"image-product-list"
 );
+
 
 
 box.innerHTML="";
 
 
 
-
 products.forEach(
-product=>{
+item=>{
 
 
-let div =
-document.createElement(
-"div"
-);
 
+box.innerHTML += `
 
-div.className =
-"product-box";
 
+<tr>
 
 
+<td>
 
-let html = `
+<img
 
+src="${item.image || ''}"
 
-<div class="product-title">
-
-${product.name}
-
-</div>
-
-
-`;
-
-
-
-
-
-html += `
-
-<div class="label">
-主图
-</div>
-
-<div class="image-group">
-
-`;
-
-
-
-
-
-let main=[
-
-product.image,
-
-product.image2,
-
-product.image3,
-
-product.image4
-
-];
-
-
-
-
-
-main.forEach(
-(url,index)=>{
-
-
-if(url){
-
-
-html += imageHTML(
-
-url,
-
-"主图"+(index+1),
-
-product.id,
-
-"main",
-
-index
-
-);
-
-
-}
-
-
-
-});
-
-
-
-html += `
-
-</div>
-
-`;
-
-
-
-
-
-
-
-html += `
-
-
-<div class="label">
-
-详情图
-
-</div>
-
-
-<div class="image-group">
-
-`;
-
-
-
-
-
-(product.detail_images || [])
-
-.forEach(
-(url,index)=>{
-
-
-html += imageHTML(
-
-url,
-
-"详情"+(index+1),
-
-product.id,
-
-"detail",
-
-index
-
-);
-
-
-});
-
-
-
-
-
-html += `
-
-</div>
-
-`;
-
-
-
-
-
-
-div.innerHTML=html;
-
-
-box.appendChild(div);
-
-
-
-});
-
-
-}
-
-
-
-
-
-
-
-
-
-// =======================
-// 图片组件
-// =======================
-
-function imageHTML(
-url,
-title,
-id,
-type,
-index
-){
-
-
-return `
-
-
-<div class="image-item">
-
-
-<label>
-
-
-<input
-
-class="image-check"
-
-type="checkbox"
-
-data-url="${url}"
-
-data-id="${id}"
-
-data-type="${type}"
-
-data-index="${index}"
-
+class="table-image"
 
 >
 
 
-</label>
+</td>
 
 
 
+<td>
 
-<img src="${url}">
+${item.name}
 
-
-<div>
-
-${title}
-
-</div>
+</td>
 
 
+
+<td>
 
 
 <button
 
-onclick="deleteImage(
-'${url}',
-${id},
-'${type}',
-${index}
-)"
+onclick="openImages(${item.id})"
 
 >
 
-删除
+查看图片
 
 </button>
 
 
+</td>
 
-</div>
+
+
+</tr>
 
 
 `;
 
-}
 
 
-
-// =======================
-// 删除Storage
-// =======================
+});
 
 
-async function deleteStorageImage(url){
-
-
-
-let path =
-
-url.split(
-"/product-images/"
-)[1];
-
-
-
-if(!path){
-
-return false;
 
 }
 
@@ -448,23 +188,37 @@ return false;
 
 
 
-const {
+
+
+
+
+
+// 打开图片
+
+
+async function openImages(id){
+
+
+
+let {
+
+data,
 
 error
 
 }=await supabaseClient
 
-.storage
+.from("products")
 
-.from(
-"product-images"
+.select("*")
+
+.eq(
+"id",
+id
 )
 
-.remove(
-[
-path
-]
-);
+.single();
+
 
 
 
@@ -472,46 +226,6 @@ if(error){
 
 console.log(error);
 
-return false;
-
-}
-
-
-
-return true;
-
-
-}
-
-
-
-
-
-
-
-
-
-// =======================
-// 单个删除
-// =======================
-
-
-async function deleteImage(
-url,
-id,
-type,
-index
-){
-
-
-
-if(
-!confirm(
-"确定删除?"
-)
-
-){
-
 return;
 
 }
@@ -519,143 +233,69 @@ return;
 
 
 
-await deleteStorageImage(
-url
+
+document.getElementById(
+"product-box"
+)
+.style.display="none";
+
+
+
+
+document.getElementById(
+"image-detail-box"
+)
+.style.display="block";
+
+
+
+
+document.getElementById(
+"current-product-name"
+)
+.innerText =
+data.name;
+
+
+
+
+
+
+
+let main=[];
+
+
+if(data.image)
+main.push(data.image);
+
+
+if(data.image2)
+main.push(data.image2);
+
+
+if(data.image3)
+main.push(data.image3);
+
+
+if(data.image4)
+main.push(data.image4);
+
+
+
+
+
+renderImages(
+"main-images",
+main
 );
 
 
 
-await updateProductImage(
 
-id,
 
-type,
-
-index
-
-);
-
-
-
-loadImages();
-
-
-
-}
-
-
-
-
-
-
-
-
-
-// =======================
-// 更新商品图片
-// =======================
-
-
-async function updateProductImage(
-
-id,
-
-type,
-
-index
-
-){
-
-
-
-let product =
-
-products.find(
-p=>p.id==id
-);
-
-
-
-let main=[
-
-product.image,
-
-product.image2,
-
-product.image3,
-
-product.image4
-
-];
-
-
-
-let detail=[
-
-...(product.detail_images || [])
-
-];
-
-
-
-
-
-if(type==="main"){
-
-
-main.splice(
-index,
-1
-);
-
-
-}
-
-
-
-if(type==="detail"){
-
-
-detail.splice(
-index,
-1
-);
-
-
-}
-
-
-
-
-
-
-await supabaseClient
-
-.from("products")
-
-.update({
-
-image:
-main[0]||"",
-
-image2:
-main[1]||"",
-
-image3:
-main[2]||"",
-
-image4:
-main[3]||"",
-
-detail_images:
-detail
-
-
-})
-
-.eq(
-"id",
-id
+renderImages(
+"detail-images",
+data.detail_images || []
 );
 
 
@@ -670,280 +310,45 @@ id
 
 
 
-// =======================
-// 全选
-// =======================
+// 显示图片
 
 
-function selectAllImages(){
+function renderImages(boxId,list){
 
 
-
-let list =
-
-document.querySelectorAll(
-".image-check"
+let box =
+document.getElementById(
+boxId
 );
 
 
 
-let all =
-
-Array.from(list)
-
-.every(
-x=>x.checked
-);
+box.innerHTML="";
 
 
 
 list.forEach(
-x=>{
-
-x.checked=!all;
-
-}
-
-);
+url=>{
 
 
-
-}
-
+box.innerHTML +=`
 
 
+<div class="image-card">
 
 
+<img src="${url}">
 
 
+</div>
 
 
-// =======================
-// 批量删除
-// =======================
-
-
-async function batchDeleteImages(){
-
-let checked =
-
-Array.from(
-document.querySelectorAll(
-".image-check"
-)
-
-)
-.filter(
-item=>item.checked
-);
-
-
-console.log(
-"选中的图片:",
-checked
-);
-
-
-
-if(
-checked.length===0
-){
-
-alert(
-"请选择图片"
-);
-
-return;
-
-}
-
-
-
-if(
-!confirm(
-"确定批量删除?"
-)
-
-){
-
-return;
-
-}
-
-
-
-
-let groups={};
-
-
-
-
-checked.forEach(
-item=>{
-
-
-let id =
-item.dataset.id;
-
-
-
-if(!groups[id]){
-
-groups[id]=[];
-
-}
-
-
-
-groups[id].push({
-
-url:item.dataset.url,
-
-type:item.dataset.type,
-
-index:Number(
-item.dataset.index
-)
-
-});
-
+`;
 
 
 });
 
 
-
-
-
-
-
-for(
-let id in groups
-){
-
-
-let product =
-
-products.find(
-p=>p.id==id
-);
-
-
-
-let main=[
-
-product.image,
-
-product.image2,
-
-product.image3,
-
-product.image4
-
-];
-
-
-
-let detail=[
-
-...(product.detail_images || [])
-
-];
-
-
-
-
-
-for(
-let item of groups[id]
-){
-
-
-await deleteStorageImage(
-item.url
-);
-
-
-
-if(item.type==="main"){
-
-main[item.index]=null;
-
-}
-
-
-
-if(item.type==="detail"){
-
-detail[item.index]=null;
-
-}
-
-
-
-}
-
-
-
-main =
-main.filter(x=>x);
-
-
-detail =
-detail.filter(x=>x);
-
-
-
-
-
-
-
-await supabaseClient
-
-.from("products")
-
-.update({
-
-image:
-main[0]||"",
-
-image2:
-main[1]||"",
-
-image3:
-main[2]||"",
-
-image4:
-main[3]||"",
-
-detail_images:
-detail
-
-})
-
-.eq(
-"id",
-Number(id)
-);
-
-
-
-}
-
-
-
-
-
-alert(
-"删除完成"
-);
-
-
-
-loadImages();
-
-
-
 }
 
 
@@ -952,41 +357,33 @@ loadImages();
 
 
 
-
-// =======================
-// 搜索
-// =======================
+// 返回
 
 
-function searchImages(){
+function backProducts(){
 
-
-let keyword =
 
 document.getElementById(
-"search"
-).value;
+"product-box"
+)
+.style.display="block";
 
 
-loadImages(keyword);
 
+document.getElementById(
+"image-detail-box"
+)
+.style.display="none";
 
 
 }
 
 
 
-window.searchImages =
-searchImages;
+
+window.openImages =
+openImages;
 
 
-window.deleteImage =
-deleteImage;
-
-
-window.selectAllImages =
-selectAllImages;
-
-
-window.batchDeleteImages =
-batchDeleteImages;
+window.backProducts =
+backProducts;
