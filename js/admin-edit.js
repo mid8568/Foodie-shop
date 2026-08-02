@@ -27,7 +27,7 @@ SUPABASE_KEY
 
 
 // =======================
-// 当前商品ID
+// 商品ID
 // =======================
 
 
@@ -42,7 +42,8 @@ params.get("id");
 
 
 
-let oldImage = "";
+let oldImage="";
+
 
 
 
@@ -61,7 +62,7 @@ document.addEventListener(
 if(!productId){
 
 alert(
-"没有商品ID"
+"商品ID不存在"
 );
 
 return;
@@ -72,8 +73,8 @@ return;
 loadProduct();
 
 
-}
-);
+});
+
 
 
 
@@ -113,17 +114,13 @@ productId
 
 if(error){
 
-
 console.log(error);
 
-
 alert(
-"商品加载失败"
+"加载失败"
 );
 
-
 return;
-
 
 }
 
@@ -133,79 +130,248 @@ console.log(data);
 
 
 
+
 oldImage =
 data.image || "";
 
 
 
 
-document.getElementById(
-"name"
-).value =
-data.name || "";
+// 基础
 
 
-
-document.getElementById(
-"name_en"
-).value =
-data.name_en || "";
-
+setValue(
+"name",
+data.name
+);
 
 
-document.getElementById(
-"description"
-).value =
-data.description || "";
+setValue(
+"name_en",
+data.name_en
+);
 
 
-
-document.getElementById(
-"price"
-).value =
-data.price || "";
-
-
-
-if(
-document.getElementById("cost_price")
-){
-
-document.getElementById(
-"cost_price"
-).value =
-data.cost_price || "";
-
-}
-
-
-
-document.getElementById(
-"status"
-).value =
-data.stock_status || "下架";
-
-
-
-
-
-let img =
-document.getElementById(
-"preview"
+setValue(
+"category",
+data.category
 );
 
 
 
-if(img){
+setValue(
+"status",
+data.status || data.stock_status
+);
 
-img.src =
-oldImage;
+
+
+
+
+// 1688
+
+
+setValue(
+"1688_url",
+data["1688_url"]
+);
+
+
+
+setValue(
+"supplier",
+data.supplier
+);
+
+
+
+setValue(
+"supplier_url",
+data.supplier_url
+);
+
+
+
+setValue(
+"supplier_contact",
+data.supplier_contact
+);
+
+
+
+
+
+
+// 图片
+
+
+document.getElementById(
+"main-image"
+).src =
+data.image || "";
+
+
+
+document.getElementById(
+"image2"
+).src =
+data.image2 || "";
+
+
+
+document.getElementById(
+"image3"
+).src =
+data.image3 || "";
+
+
+
+document.getElementById(
+"image4"
+).src =
+data.image4 || "";
+
+
+
+
+
+// 详情图片
+
+
+let box =
+document.getElementById(
+"detail-images"
+);
+
+
+box.innerHTML="";
+
+
+
+if(
+Array.isArray(
+data.detail_images
+)
+){
+
+
+data.detail_images.forEach(url=>{
+
+
+let img =
+document.createElement(
+"img"
+);
+
+
+img.src=url;
+
+
+img.className=
+"small-image";
+
+
+box.appendChild(img);
+
+
+
+});
+
 
 }
 
 
 
+
+
+// 描述
+
+
+setValue(
+"description",
+data.description
+);
+
+
+
+setValue(
+"description_en",
+data.description_en
+);
+
+
+
+
+
+
+
+// 价格
+
+
+setValue(
+"cost_price",
+data.cost_price
+);
+
+
+
+setValue(
+"sale_price",
+data.sale_price
+);
+
+
+
+setValue(
+"stock_quantity",
+data.stock_quantity
+);
+
+
+
+
+
+
+
+// 规格
+
+
+setValue(
+"specifications",
+
+JSON.stringify(
+data.specifications || {},
+null,
+2
+)
+
+);
+
+
+
+
+
+
+// SEO
+
+
+setValue(
+"seo_title",
+data.seo_title
+);
+
+
+
+setValue(
+"seo_description",
+data.seo_description
+);
+
+
+
 }
+
+
 
 
 
@@ -214,7 +380,37 @@ oldImage;
 
 
 // =======================
-// 上传图片
+// 设置值
+// =======================
+
+
+function setValue(id,value){
+
+
+let el =
+document.getElementById(id);
+
+
+if(el){
+
+el.value =
+value || "";
+
+}
+
+
+}
+
+
+
+
+
+
+
+
+
+// =======================
+// 上传主图
 // =======================
 
 
@@ -230,11 +426,12 @@ return oldImage;
 
 
 
-const fileName =
+let filename =
 
 Date.now()
 
 +"_"+file.name;
+
 
 
 
@@ -252,28 +449,18 @@ error
 )
 
 .upload(
-
-fileName,
-
+filename,
 file
-
 );
+
 
 
 
 if(error){
 
-
 console.log(error);
 
-
-alert(
-"图片上传失败"
-);
-
-
 return oldImage;
-
 
 }
 
@@ -285,9 +472,7 @@ const {
 
 data
 
-}=
-
-supabaseClient
+}=supabaseClient
 
 .storage
 
@@ -296,7 +481,7 @@ supabaseClient
 )
 
 .getPublicUrl(
-fileName
+filename
 );
 
 
@@ -314,8 +499,9 @@ return data.publicUrl;
 
 
 
+
 // =======================
-// 保存商品
+// 保存
 // =======================
 
 
@@ -323,24 +509,60 @@ async function saveProduct(){
 
 
 
-let image = oldImage;
+let image =
+oldImage;
 
 
 
 
-const file =
+let file =
 
 document.getElementById(
 "image-file"
-).files[0];
+)
+
+.files[0];
+
 
 
 
 if(file){
 
-
 image =
 await uploadImage(file);
+
+}
+
+
+
+
+
+let specifications={};
+
+
+try{
+
+
+specifications =
+
+JSON.parse(
+
+document.getElementById(
+"specifications"
+).value
+
+);
+
+
+}catch(e){
+
+
+alert(
+"规格JSON格式错误"
+);
+
+
+return;
 
 
 }
@@ -348,64 +570,124 @@ await uploadImage(file);
 
 
 
-const updateData = {
+
+
+const updateData={
+
 
 
 name:
 
-document.getElementById(
-"name"
-).value,
+value("name"),
+
 
 
 name_en:
 
-document.getElementById(
-"name_en"
-).value,
+value("name_en"),
+
+
+
+category:
+
+value("category"),
 
 
 
 description:
 
-document.getElementById(
-"description"
-).value,
+value("description"),
 
 
 
-price:
+description_en:
 
-Number(
-document.getElementById(
-"price"
-).value
-),
+value("description_en"),
 
 
 
 cost_price:
 
 Number(
-document.getElementById(
-"cost_price"
-).value || 0
+value("cost_price")
 ),
+
+
+
+sale_price:
+
+Number(
+value("sale_price")
+),
+
+
+
+stock_quantity:
+
+Number(
+value("stock_quantity")
+),
+
+
+
+status:
+
+value("status"),
 
 
 
 stock_status:
 
-document.getElementById(
-"status"
-).value,
+value("status"),
+
+
+
+"1688_url":
+
+value("1688_url"),
+
+
+
+supplier:
+
+value("supplier"),
+
+
+
+supplier_url:
+
+value("supplier_url"),
+
+
+
+supplier_contact:
+
+value("supplier_contact"),
+
+
+
+seo_title:
+
+value("seo_title"),
+
+
+
+seo_description:
+
+value("seo_description"),
+
+
+
+specifications,
 
 
 
 image:image
 
 
+
 };
+
 
 
 
@@ -420,7 +702,9 @@ error
 
 .from("products")
 
-.update(updateData)
+.update(
+updateData
+)
 
 .eq(
 "id",
@@ -431,36 +715,55 @@ productId
 
 
 
+
 if(error){
 
-
 console.log(error);
-
 
 alert(
 "保存失败"
 );
 
-
 return;
-
 
 }
 
 
 
+
 alert(
-"修改成功"
+"保存成功"
 );
 
 
 
-location.href =
+location.href=
 "admin-products.html";
 
 
 
 }
+
+
+
+
+
+
+
+function value(id){
+
+
+let el =
+document.getElementById(id);
+
+
+return el ?
+el.value :
+"";
+
+
+}
+
 
 
 
@@ -476,7 +779,7 @@ location.href =
 function backList(){
 
 
-location.href =
+location.href=
 "admin-products.html";
 
 
@@ -484,9 +787,6 @@ location.href =
 
 
 
-
-
-// 暴露
 
 
 window.saveProduct =
