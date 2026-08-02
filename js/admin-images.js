@@ -30,7 +30,15 @@ SUPABASE_KEY
 let products=[];
 
 
+// =======================
+// 分页设置
+// =======================
 
+const PAGE_SIZE = 15;
+
+let currentPage = 1;
+
+let totalPages = 1;
 
 document.addEventListener(
 "DOMContentLoaded",
@@ -51,12 +59,27 @@ loadProducts();
 // 加载商品
 
 
-async function loadProducts(){
+async function loadProducts(page=1){
+
+
+currentPage = page;
+
+
+
+let start =
+(page-1)*PAGE_SIZE;
+
+
+let end =
+start + PAGE_SIZE - 1;
+
 
 
 let {
 
 data,
+
+count,
 
 error
 
@@ -65,7 +88,10 @@ error
 .from("products")
 
 .select(
-"id,name,image"
+"id,name,image",
+{
+count:"exact"
+}
 )
 
 .order(
@@ -73,6 +99,11 @@ error
 {
 ascending:false
 }
+)
+
+.range(
+start,
+end
 );
 
 
@@ -90,11 +121,21 @@ return;
 products=data;
 
 
+
+totalPages =
+Math.ceil(
+count / PAGE_SIZE
+);
+
+
+
 renderProducts();
 
 
-}
+renderPagination();
 
+
+}
 
 
 
@@ -387,3 +428,116 @@ openImages;
 
 window.backProducts =
 backProducts;
+// =======================
+// 分页
+// =======================
+
+
+function renderPagination(){
+
+
+let box =
+document.getElementById(
+"image-pagination"
+);
+
+
+
+if(!box){
+
+return;
+
+}
+
+
+
+box.innerHTML="";
+
+
+
+let html="";
+
+
+
+html += `
+
+
+<button
+
+onclick="loadProducts(${currentPage-1})"
+
+${currentPage<=1?"disabled":""}
+
+>
+
+上一页
+
+</button>
+
+
+`;
+
+
+
+
+
+for(
+let i=1;
+i<=totalPages;
+i++
+){
+
+
+html += `
+
+
+<button
+
+onclick="loadProducts(${i})"
+
+class="${i===currentPage?'active':''}"
+
+>
+
+${i}
+
+</button>
+
+
+`;
+
+
+
+}
+
+
+
+html += `
+
+
+<button
+
+onclick="loadProducts(${currentPage+1})"
+
+${currentPage>=totalPages?"disabled":""}
+
+>
+
+下一页
+
+</button>
+
+
+`;
+
+
+
+box.innerHTML = html;
+
+
+}
+
+
+
+window.loadProducts =
+loadProducts;
