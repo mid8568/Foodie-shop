@@ -1,11 +1,19 @@
+*{
+
+box-sizing:border-box;
+
+}
+
+
 body{
+
 
 margin:0;
 
 background:#f5f6fa;
 
 font-family:
-Microsoft YaHei;
+"Microsoft YaHei";
 
 }
 
@@ -13,11 +21,26 @@ Microsoft YaHei;
 
 .page{
 
+
 max-width:1200px;
+
 
 margin:30px auto;
 
+
 padding:20px;
+
+
+}
+
+
+
+
+h1{
+
+
+margin-bottom:25px;
+
 
 }
 
@@ -26,47 +49,92 @@ padding:20px;
 
 .toolbar{
 
+
 background:white;
+
 
 padding:20px;
 
-border-radius:10px;
+
+border-radius:12px;
+
 
 margin-bottom:20px;
 
+
+display:flex;
+
+
+gap:10px;
+
+
 }
 
 
 
-input{
+.toolbar input{
 
-padding:12px;
 
 width:300px;
 
+
+padding:12px;
+
+
 border:1px solid #ddd;
+
 
 border-radius:8px;
 
+
 }
+
 
 
 
 button{
 
-padding:10px 20px;
+
+padding:10px 18px;
+
 
 border:none;
 
-background:#1677ff;
-
-color:white;
 
 border-radius:6px;
 
+
+background:#1677ff;
+
+
+color:white;
+
+
 cursor:pointer;
 
+
 }
+
+
+
+button:hover{
+
+
+opacity:.8;
+
+
+}
+
+
+
+.danger{
+
+
+background:#ff4d4f;
+
+
+}
+
 
 
 
@@ -78,24 +146,46 @@ cursor:pointer;
 
 background:white;
 
+
 padding:20px;
 
-margin-bottom:20px;
 
 border-radius:12px;
+
+
+margin-bottom:25px;
 
 
 }
 
 
 
+
 .product-title{
+
 
 font-size:20px;
 
+
 font-weight:bold;
 
-margin-bottom:15px;
+
+margin-bottom:20px;
+
+
+}
+
+
+
+
+.label{
+
+
+font-weight:bold;
+
+
+margin:20px 0 10px;
+
 
 }
 
@@ -107,26 +197,37 @@ margin-bottom:15px;
 
 display:flex;
 
+
 flex-wrap:wrap;
+
 
 gap:15px;
 
+
 }
+
 
 
 
 .image-item{
 
 
-width:150px;
+width:160px;
+
+
+background:#fafafa;
+
 
 border:1px solid #ddd;
 
-padding:8px;
+
+padding:10px;
+
 
 border-radius:10px;
 
-background:#fafafa;
+
+position:relative;
 
 
 }
@@ -138,9 +239,12 @@ background:#fafafa;
 
 width:100%;
 
-height:130px;
+
+height:140px;
+
 
 object-fit:cover;
+
 
 border-radius:8px;
 
@@ -149,12 +253,15 @@ border-radius:8px;
 
 
 
+
 .image-item button{
 
 
 width:100%;
 
-margin-top:8px;
+
+margin-top:10px;
+
 
 background:#ff4d4f;
 
@@ -163,23 +270,69 @@ background:#ff4d4f;
 
 
 
-.label{
+.image-check{
 
 
-font-weight:bold;
+position:absolute;
 
-margin:20px 0 10px;
+
+top:10px;
+
+
+left:10px;
+
+
+width:18px;
+
+
+height:18px;
+
 
 }
+
+
 
 
 
 @media(max-width:700px){
 
 
+
+.toolbar{
+
+
+flex-wrap:wrap;
+
+
+}
+
+
+
+.toolbar input{
+
+
+width:100%;
+
+
+}
+
+
+
 .image-item{
 
+
 width:120px;
+
+
+}
+
+
+
+.image-item img{
+
+
+height:110px;
+
 
 }
 
