@@ -16,7 +16,6 @@ CDS后台管理
 
 <link rel="stylesheet" href="css/admin.css">
 
-
 </head>
 
 
@@ -31,13 +30,10 @@ CDS后台管理
 
 
 
-<!-- =====================
-     左侧菜单
-===================== -->
+<!-- 左侧菜单 -->
 
 
 <div class="sidebar">
-
 
 
 <h2>
@@ -46,53 +42,33 @@ CDS后台
 
 
 
-
 <a href="admin.html">
-
 首页
-
 </a>
-
 
 
 
 <a href="admin-products.html">
-
 商品管理
-
 </a>
-
-
 
 
 
 <a href="admin-images.html">
-
 图片管理
-
 </a>
-
-
 
 
 
 <a href="admin-decoration.html">
-
 前端装修
-
 </a>
-
-
 
 
 
 <a href="admin-ebay.html">
-
 eBay管理
-
 </a>
-
-
 
 
 
@@ -104,10 +80,54 @@ eBay管理
 
 
 
+<!-- 右侧区域 -->
 
-<!-- =====================
-     右侧首页内容
-===================== -->
+
+<div class="page-area">
+
+
+
+
+
+<!-- 顶部 -->
+
+
+<div class="topbar">
+
+
+<div>
+
+CDS后台管理系统
+
+</div>
+
+
+
+<div class="admin-user">
+
+
+管理员：admin
+
+
+<button onclick="logout()">
+
+退出登录
+
+</button>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+<!-- 首页内容 -->
 
 
 <div class="main-content">
@@ -119,10 +139,10 @@ eBay管理
 <div class="dashboard">
 
 
-
 <h1>
-欢迎进入 CDS后台管理
+欢迎进入后台
 </h1>
+
 
 
 
@@ -130,18 +150,17 @@ eBay管理
 
 
 
-
-
 <div class="card">
 
 <h3>
-商品数量
+商品总数
 </h3>
 
-<p>
+<p id="total-products">
 0
 </p>
 
+
 </div>
 
 
@@ -151,14 +170,17 @@ eBay管理
 <div class="card">
 
 <h3>
-订单数量
+上架商品
 </h3>
 
-<p>
+
+<p id="online-products">
 0
 </p>
 
+
 </div>
+
 
 
 
@@ -166,31 +188,16 @@ eBay管理
 
 <div class="card">
 
+
 <h3>
-销售金额
+下架商品
 </h3>
 
-<p>
-$0
+
+<p id="offline-products">
+0
 </p>
 
-</div>
-
-
-
-
-
-</div>
-
-
-
-
-
-</div>
-
-
-
-
 
 </div>
 
@@ -199,11 +206,61 @@ $0
 
 
 
+
+<div class="card">
+
+
+<h3>
+商品图片
+</h3>
+
+
+<p id="total-images">
+0
+</p>
+
+
+</div>
+
+
+
 </div>
 
 
 
 
+
+
+</div>
+
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 
 <script src="js/admin.js"></script>
