@@ -23,7 +23,17 @@ SUPABASE_URL,
 SUPABASE_KEY
 );
 
+// =======================
+// 分页设置
+// =======================
 
+const PAGE_SIZE = 15;
+
+let currentPage = 1;
+
+let totalPages = 1;
+
+let currentKeyword = "";
 
 
 // =======================
@@ -50,22 +60,47 @@ loadProducts();
 // 加载商品
 // =======================
 
+async function loadProducts(
+keyword="",
+page=1
+){
 
-async function loadProducts(keyword=""){
+
+currentPage = page;
+
+currentKeyword = keyword;
+
+
+
+let start =
+(page-1)*PAGE_SIZE;
+
+
+
+let end =
+start + PAGE_SIZE - 1;
 
 
 
 let query =
 supabaseClient
 .from("products")
-.select("*")
+.select(
+"*",
+{
+count:"exact"
+}
+)
 .order(
 "id",
 {
 ascending:false
 }
+)
+.range(
+start,
+end
 );
-
 
 
 
@@ -83,10 +118,11 @@ query.ilike(
 
 
 
-
 const {
 
 data,
+
+count,
 
 error
 
@@ -104,17 +140,20 @@ return;
 
 
 
+totalPages =
+Math.ceil(
+count / PAGE_SIZE
+);
+
+
 
 renderProducts(data);
 
 
+renderPagination();
+
 
 }
-
-
-
-
-
 
 
 
@@ -265,7 +304,10 @@ document.getElementById(
 
 
 
-loadProducts(keyword);
+loadProducts(
+keyword,
+1
+);
 
 
 
@@ -348,3 +390,106 @@ searchProduct;
 
 window.addProduct =
 addProduct;
+// =======================
+// 分页
+// =======================
+
+
+function renderPagination(){
+
+
+const box =
+document.getElementById(
+"pagination"
+);
+
+
+
+if(!box){
+return;
+}
+
+
+
+box.innerHTML="";
+
+
+
+let html="";
+
+
+
+html += `
+
+<button
+
+onclick="loadProducts('${currentKeyword}',${currentPage-1})"
+
+${currentPage<=1?"disabled":""}
+
+>
+
+上一页
+
+</button>
+
+`;
+
+
+
+for(
+let i=1;
+i<=totalPages;
+i++
+){
+
+
+html += `
+
+<button
+
+onclick="loadProducts('${currentKeyword}',${i})"
+
+class="${i===currentPage?'active':''}"
+
+>
+
+${i}
+
+</button>
+
+`;
+
+
+
+}
+
+
+
+html += `
+
+<button
+
+onclick="loadProducts('${currentKeyword}',${currentPage+1})"
+
+${currentPage>=totalPages?"disabled":""}
+
+>
+
+下一页
+
+</button>
+
+`;
+
+
+
+box.innerHTML = html;
+
+
+}
+
+
+
+window.loadProducts =
+loadProducts;
