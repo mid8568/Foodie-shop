@@ -26,17 +26,14 @@ SUPABASE_KEY
 
 
 
-
 let products=[];
 
 
 
 
 
-
-
 // =======================
-// 页面加载
+// 初始化
 // =======================
 
 
@@ -56,13 +53,14 @@ loadImages();
 
 
 
+
+
 // =======================
-// 加载商品图片
+// 加载图片
 // =======================
 
 
 async function loadImages(keyword=""){
-
 
 
 let query =
@@ -102,7 +100,6 @@ query.ilike(
 
 
 
-
 const {
 
 data,
@@ -117,17 +114,14 @@ if(error){
 
 console.log(error);
 
-alert(
-"读取失败"
-);
-
 return;
 
 }
 
 
 
-products=data || [];
+products =
+data || [];
 
 
 
@@ -144,13 +138,13 @@ renderImages();
 
 
 
+
 // =======================
-// 显示图片
+// 渲染
 // =======================
 
 
 function renderImages(){
-
 
 
 const box =
@@ -159,21 +153,19 @@ document.getElementById(
 );
 
 
-
 box.innerHTML="";
 
 
 
 
-products.forEach(product=>{
-
+products.forEach(
+product=>{
 
 
 let div =
 document.createElement(
 "div"
 );
-
 
 
 div.className =
@@ -198,15 +190,10 @@ ${product.name}
 
 
 
-
-// 主图
-
 html += `
 
 <div class="label">
-
 主图
-
 </div>
 
 <div class="image-group">
@@ -217,7 +204,7 @@ html += `
 
 
 
-let mainImages=[
+let main=[
 
 product.image,
 
@@ -232,7 +219,8 @@ product.image4
 
 
 
-mainImages.forEach(
+
+main.forEach(
 (url,index)=>{
 
 
@@ -240,11 +228,17 @@ if(url){
 
 
 html += imageHTML(
+
 url,
+
 "主图"+(index+1),
+
 product.id,
+
 "main",
+
 index
+
 );
 
 
@@ -268,16 +262,12 @@ html += `
 
 
 
-
-// 详情图
-
-
 html += `
 
 
 <div class="label">
 
-详情图片
+详情图
 
 </div>
 
@@ -290,31 +280,29 @@ html += `
 
 
 
-if(
-Array.isArray(
-product.detail_images
-)
+(product.detail_images || [])
 
-){
-
-
-product.detail_images.forEach(
+.forEach(
 (url,index)=>{
 
 
 html += imageHTML(
+
 url,
+
 "详情"+(index+1),
+
 product.id,
+
 "detail",
+
 index
+
 );
 
 
 });
 
-
-}
 
 
 
@@ -324,6 +312,7 @@ html += `
 </div>
 
 `;
+
 
 
 
@@ -339,7 +328,6 @@ box.appendChild(div);
 });
 
 
-
 }
 
 
@@ -351,7 +339,7 @@ box.appendChild(div);
 
 
 // =======================
-// 图片HTML
+// 图片组件
 // =======================
 
 
@@ -364,11 +352,29 @@ index
 ){
 
 
-
 return `
 
 
 <div class="image-item">
+
+
+<input
+
+class="image-check"
+
+type="checkbox"
+
+data-url="${url}"
+
+data-id="${id}"
+
+data-type="${type}"
+
+data-index="${index}"
+
+
+>
+
 
 
 <img src="${url}">
@@ -407,221 +413,6 @@ ${index}
 
 
 }
-
-
-
-
-
-
-
-
-
-// =======================
-// 删除图片
-// =======================
-
-
-async function deleteImage(
-url,
-productId,
-type,
-index
-){
-
-
-
-if(
-!confirm(
-"确定删除这张图片?"
-)
-
-){
-
-return;
-
-}
-
-
-
-
-
-// 1 删除Storage
-
-
-let result =
-
-await deleteStorageImage(
-url
-);
-
-
-
-
-if(!result){
-
-alert(
-"Storage删除失败"
-);
-
-return;
-
-}
-
-
-
-
-
-
-
-// 2 更新数据库
-
-
-let product =
-
-products.find(
-p=>p.id===productId
-);
-
-
-
-if(!product){
-
-return;
-
-}
-
-
-
-
-
-
-
-
-if(type==="main"){
-
-
-
-let images=[
-
-product.image,
-
-product.image2,
-
-product.image3,
-
-product.image4
-
-];
-
-
-
-
-images.splice(
-index,
-1
-);
-
-
-
-
-
-await supabaseClient
-
-.from("products")
-
-.update({
-
-image:
-images[0] || "",
-
-image2:
-images[1] || "",
-
-image3:
-images[2] || "",
-
-image4:
-images[3] || ""
-
-})
-
-.eq(
-"id",
-productId
-);
-
-
-
-
-}
-
-
-
-
-
-
-
-
-
-
-if(type==="detail"){
-
-
-
-let images =
-
-[...product.detail_images];
-
-
-
-images.splice(
-index,
-1
-);
-
-
-
-
-
-await supabaseClient
-
-.from("products")
-
-.update({
-
-detail_images:
-images
-
-})
-
-.eq(
-"id",
-productId
-);
-
-
-
-}
-
-
-
-
-
-
-
-alert(
-"删除成功"
-);
-
-
-
-loadImages();
-
-
-
-}
-
-
 
 
 
@@ -678,24 +469,13 @@ path
 
 
 
-
-
 if(error){
 
-console.log(
-error
-);
+console.log(error);
 
 return false;
 
 }
-
-
-
-console.log(
-"删除:",
-path
-);
 
 
 
@@ -713,6 +493,458 @@ return true;
 
 
 // =======================
+// 单个删除
+// =======================
+
+
+async function deleteImage(
+url,
+id,
+type,
+index
+){
+
+
+
+if(
+!confirm(
+"确定删除?"
+)
+
+){
+
+return;
+
+}
+
+
+
+
+await deleteStorageImage(
+url
+);
+
+
+
+await updateProductImage(
+
+id,
+
+type,
+
+index
+
+);
+
+
+
+loadImages();
+
+
+
+}
+
+
+
+
+
+
+
+
+
+// =======================
+// 更新商品图片
+// =======================
+
+
+async function updateProductImage(
+
+id,
+
+type,
+
+index
+
+){
+
+
+
+let product =
+
+products.find(
+p=>p.id==id
+);
+
+
+
+let main=[
+
+product.image,
+
+product.image2,
+
+product.image3,
+
+product.image4
+
+];
+
+
+
+let detail=[
+
+...(product.detail_images || [])
+
+];
+
+
+
+
+
+if(type==="main"){
+
+
+main.splice(
+index,
+1
+);
+
+
+}
+
+
+
+if(type==="detail"){
+
+
+detail.splice(
+index,
+1
+);
+
+
+}
+
+
+
+
+
+
+await supabaseClient
+
+.from("products")
+
+.update({
+
+image:
+main[0]||"",
+
+image2:
+main[1]||"",
+
+image3:
+main[2]||"",
+
+image4:
+main[3]||"",
+
+detail_images:
+detail
+
+
+})
+
+.eq(
+"id",
+id
+);
+
+
+
+}
+
+
+
+
+
+
+
+
+
+// =======================
+// 全选
+// =======================
+
+
+function selectAllImages(){
+
+
+
+let list =
+
+document.querySelectorAll(
+".image-check"
+);
+
+
+
+let all =
+
+Array.from(list)
+
+.every(
+x=>x.checked
+);
+
+
+
+list.forEach(
+x=>{
+
+x.checked=!all;
+
+}
+
+);
+
+
+
+}
+
+
+
+
+
+
+
+
+
+// =======================
+// 批量删除
+// =======================
+
+
+async function batchDeleteImages(){
+
+
+
+let checked =
+
+document.querySelectorAll(
+".image-check:checked"
+);
+
+
+
+if(
+checked.length===0
+){
+
+alert(
+"请选择图片"
+);
+
+return;
+
+}
+
+
+
+if(
+!confirm(
+"确定批量删除?"
+)
+
+){
+
+return;
+
+}
+
+
+
+
+let groups={};
+
+
+
+
+checked.forEach(
+item=>{
+
+
+let id =
+item.dataset.id;
+
+
+
+if(!groups[id]){
+
+groups[id]=[];
+
+}
+
+
+
+groups[id].push({
+
+url:item.dataset.url,
+
+type:item.dataset.type,
+
+index:Number(
+item.dataset.index
+)
+
+});
+
+
+
+});
+
+
+
+
+
+
+
+for(
+let id in groups
+){
+
+
+let product =
+
+products.find(
+p=>p.id==id
+);
+
+
+
+let main=[
+
+product.image,
+
+product.image2,
+
+product.image3,
+
+product.image4
+
+];
+
+
+
+let detail=[
+
+...(product.detail_images || [])
+
+];
+
+
+
+
+
+for(
+let item of groups[id]
+){
+
+
+await deleteStorageImage(
+item.url
+);
+
+
+
+if(item.type==="main"){
+
+main[item.index]=null;
+
+}
+
+
+
+if(item.type==="detail"){
+
+detail[item.index]=null;
+
+}
+
+
+
+}
+
+
+
+main =
+main.filter(x=>x);
+
+
+detail =
+detail.filter(x=>x);
+
+
+
+
+
+
+
+await supabaseClient
+
+.from("products")
+
+.update({
+
+image:
+main[0]||"",
+
+image2:
+main[1]||"",
+
+image3:
+main[2]||"",
+
+image4:
+main[3]||"",
+
+detail_images:
+detail
+
+})
+
+.eq(
+"id",
+Number(id)
+);
+
+
+
+}
+
+
+
+
+
+alert(
+"删除完成"
+);
+
+
+
+loadImages();
+
+
+
+}
+
+
+
+
+
+
+
+
+// =======================
 // 搜索
 // =======================
 
@@ -720,13 +952,11 @@ return true;
 function searchImages(){
 
 
-
 let keyword =
 
 document.getElementById(
 "search"
 ).value;
-
 
 
 loadImages(keyword);
@@ -743,3 +973,11 @@ searchImages;
 
 window.deleteImage =
 deleteImage;
+
+
+window.selectAllImages =
+selectAllImages;
+
+
+window.batchDeleteImages =
+batchDeleteImages;
