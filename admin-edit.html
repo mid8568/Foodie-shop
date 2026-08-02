@@ -5,7 +5,6 @@
 
 <head>
 
-
 <meta charset="UTF-8">
 
 
@@ -43,7 +42,11 @@
 
 
 
-<!-- 基础信息 -->
+
+
+<!-- ======================
+基础信息
+====================== -->
 
 
 <h2>
@@ -65,6 +68,7 @@
 
 
 
+
 <div class="form-group">
 
 <label>
@@ -78,8 +82,8 @@
 
 
 
-<div class="row">
 
+<div class="row">
 
 
 <div class="form-group">
@@ -94,6 +98,8 @@
 
 
 
+
+
 <div class="form-group">
 
 <label>
@@ -102,6 +108,7 @@
 
 
 <select id="status">
+
 
 <option value="上架">
 上架
@@ -125,7 +132,13 @@
 
 
 
-<!-- 1688 -->
+
+
+
+
+<!-- ======================
+供应信息
+====================== -->
 
 
 <h2>
@@ -143,7 +156,9 @@
 
 <input id="1688_url">
 
+
 </div>
+
 
 
 
@@ -162,6 +177,7 @@
 
 
 </div>
+
 
 
 
@@ -191,6 +207,7 @@
 供应商联系方式
 </label>
 
+
 <input id="supplier_contact">
 
 
@@ -203,47 +220,73 @@
 
 
 
-<!-- 图片 -->
+
+<!-- ======================
+商品图片
+====================== -->
 
 
 <h2>
-商品图片
+商品主图（最多4张）
+</h2>
+
+
+<div
+id="main-images"
+class="image-manager">
+
+</div>
+
+
+
+<div class="upload-box">
+
+
+<input
+
+type="file"
+
+id="main-image-upload"
+
+multiple>
+
+
+</div>
+
+
+
+
+
+
+
+<h2>
+商品详情图片
 </h2>
 
 
 
-<div class="main-image-box">
+<div
+
+id="detail-images"
+
+class="image-manager">
+
+</div>
 
 
-<img id="main-image"
-class="preview-image">
 
 
-<input 
+
+<div class="upload-box">
+
+
+<input
+
 type="file"
-id="image-file">
 
+id="detail-image-upload"
 
-
-</div>
-
-
-
-
-
-<div class="image-list">
-
-
-<img id="image2"
-class="small-image">
-
-
-<img id="image3"
-class="small-image">
-
-
-<img id="image4"
-class="small-image">
+multiple>
 
 
 </div>
@@ -254,23 +297,11 @@ class="small-image">
 
 
 
-<h3>
-详情图片
-</h3>
 
 
-<div id="detail-images"
-class="detail-images">
-
-</div>
-
-
-
-
-
-
-
-<!-- 描述 -->
+<!-- ======================
+描述
+====================== -->
 
 
 <h2>
@@ -281,9 +312,13 @@ class="detail-images">
 
 <div class="form-group">
 
+
 <textarea
+
 id="description">
+
 </textarea>
+
 
 </div>
 
@@ -293,9 +328,13 @@ id="description">
 
 <div class="form-group">
 
+
 <textarea
+
 id="description_en">
+
 </textarea>
+
 
 </div>
 
@@ -305,7 +344,11 @@ id="description_en">
 
 
 
-<!-- 价格 -->
+
+
+<!-- ======================
+价格库存
+====================== -->
 
 
 <h2>
@@ -317,6 +360,7 @@ id="description_en">
 <div class="row">
 
 
+
 <div class="form-group">
 
 <label>
@@ -324,12 +368,16 @@ id="description_en">
 </label>
 
 
-<input 
+<input
+
 id="cost_price"
+
 type="number">
 
 
 </div>
+
+
 
 
 
@@ -341,15 +389,20 @@ type="number">
 </label>
 
 
-<input 
+<input
+
 id="sale_price"
+
 type="number">
 
 
 </div>
 
 
+
 </div>
+
+
 
 
 
@@ -357,13 +410,16 @@ type="number">
 
 <div class="form-group">
 
+
 <label>
 库存数量
 </label>
 
 
-<input 
+<input
+
 id="stock_quantity"
+
 type="number">
 
 
@@ -374,7 +430,12 @@ type="number">
 
 
 
-<!-- 规格 -->
+
+
+
+<!-- ======================
+规格
+====================== -->
 
 
 <h2>
@@ -382,10 +443,12 @@ type="number">
 </h2>
 
 
+
 <div class="form-group">
 
 
 <textarea
+
 id="specifications">
 
 </textarea>
@@ -399,33 +462,50 @@ id="specifications">
 
 
 
-<!-- SEO -->
+
+
+<!-- ======================
+SEO
+====================== -->
 
 
 <h2>
-SEO
+SEO设置
 </h2>
 
 
+
 <div class="form-group">
+
 
 <label>
 SEO标题
 </label>
 
+
 <input id="seo_title">
 
+
 </div>
+
+
 
 
 
 <div class="form-group">
 
+
 <label>
 SEO描述
 </label>
 
-<textarea id="seo_description"></textarea>
+
+<textarea
+
+id="seo_description">
+
+</textarea>
+
 
 </div>
 
@@ -433,6 +513,13 @@ SEO描述
 
 
 
+
+
+
+
+<!-- ======================
+按钮
+====================== -->
 
 
 <div class="buttons">
@@ -444,9 +531,13 @@ class="save-btn"
 
 onclick="saveProduct()">
 
+
 保存修改
 
+
 </button>
+
+
 
 
 
@@ -457,7 +548,9 @@ class="back-btn"
 
 onclick="backList()">
 
+
 返回列表
+
 
 </button>
 
@@ -481,8 +574,10 @@ onclick="backList()">
 
 
 
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
 </script>
+
 
 
 <script src="js/admin-edit.js">
