@@ -3,6 +3,7 @@
 }
 
 
+
 html,
 body{
 
@@ -12,7 +13,7 @@ body{
 
     width:100%;
 
-    height:100%;
+    min-height:100%;
 
     font-family:
     Arial,
@@ -22,6 +23,7 @@ body{
     background:#f5f6fa;
 
 }
+
 
 
 
@@ -37,11 +39,10 @@ body{
 
     width:100%;
 
-    height:100vh;
-
-    overflow:hidden;
+    min-height:100vh;
 
 }
+
 
 
 
@@ -55,7 +56,7 @@ body{
 
     width:230px;
 
-    height:100vh;
+    min-height:100vh;
 
     background:#111827;
 
@@ -66,6 +67,8 @@ body{
     flex-shrink:0;
 
 }
+
+
 
 
 
@@ -84,19 +87,13 @@ body{
 
 
 
-.sidebar ul{
 
-    list-style:none;
-
-    padding:0;
-
-    margin:0;
-
-}
+/* 菜单链接 */
 
 
+.sidebar a{
 
-.sidebar li{
+    display:block;
 
     padding:15px 18px;
 
@@ -104,7 +101,9 @@ body{
 
     border-radius:8px;
 
-    cursor:pointer;
+    color:white;
+
+    text-decoration:none;
 
     font-size:16px;
 
@@ -114,7 +113,9 @@ body{
 
 
 
-.sidebar li:hover{
+
+
+.sidebar a:hover{
 
     background:#2563eb;
 
@@ -124,8 +125,10 @@ body{
 
 
 
+
+
 /* =====================
-   右侧 iframe区域
+   右侧内容区域
 ===================== */
 
 
@@ -133,25 +136,14 @@ body{
 
     flex:1;
 
-    height:100vh;
+    min-height:100vh;
 
-    overflow:hidden;
+    padding:30px;
 
-}
-
-
-
-#module-frame{
-
-    width:100%;
-
-    height:100%;
-
-    border:0;
-
-    display:block;
+    overflow:auto;
 
 }
+
 
 
 
@@ -165,7 +157,7 @@ body{
 
 .product-page{
 
-    padding:30px;
+    padding:0;
 
     width:100%;
 
@@ -178,7 +170,9 @@ body{
 
 .product-page h1{
 
-    margin:0 0 25px;
+    margin:
+
+    0 0 25px;
 
     font-size:26px;
 
@@ -190,7 +184,9 @@ body{
 
 
 
-/* 搜索区域 */
+/* =====================
+   工具栏
+===================== */
 
 
 .toolbar{
@@ -213,13 +209,17 @@ body{
 
 
 
+
+
 .toolbar input{
 
     width:300px;
 
     height:38px;
 
-    padding:0 12px;
+    padding:
+
+    0 12px;
 
     border:
 
@@ -253,11 +253,15 @@ button{
 
 
 
+
+
 button:hover{
 
     opacity:.85;
 
 }
+
+
 
 
 
@@ -270,9 +274,8 @@ button:hover{
 
 .product-page table{
 
-    width:100%;
 
-    min-width:900px;
+    width:100%;
 
     background:white;
 
@@ -283,6 +286,8 @@ button:hover{
     overflow:hidden;
 
 }
+
+
 
 
 
@@ -301,6 +306,8 @@ button:hover{
 
 
 
+
+
 .product-page td{
 
 
@@ -315,6 +322,8 @@ button:hover{
     vertical-align:middle;
 
 }
+
+
 
 
 
@@ -340,6 +349,8 @@ button:hover{
 
 
 }
+
+
 
 
 
@@ -381,6 +392,10 @@ button:hover{
 
 
 
+
+
+
+
 .edit-panel{
 
 
@@ -402,11 +417,15 @@ button:hover{
 
 
 
+
+
+
 .edit-panel h2{
 
     margin-top:0;
 
 }
+
 
 
 
@@ -425,6 +444,8 @@ button:hover{
 
 
 }
+
+
 
 
 
@@ -463,6 +484,8 @@ button:hover{
 
 
 
+
+
 .preview{
 
 
@@ -478,6 +501,8 @@ button:hover{
 
 
 }
+
+
 
 
 
@@ -498,45 +523,201 @@ button:hover{
 
 
 
+
+
+
 /* =====================
-   移动端
+   图片管理
+===================== */
+
+
+.image-grid{
+
+
+    display:grid;
+
+    grid-template-columns:
+
+    repeat(auto-fill,minmax(180px,1fr));
+
+    gap:20px;
+
+}
+
+
+
+
+
+.image-item{
+
+
+    background:white;
+
+    padding:15px;
+
+    border-radius:12px;
+
+    position:relative;
+
+}
+
+
+
+
+
+.image-item img{
+
+
+    width:100%;
+
+    height:160px;
+
+    object-fit:cover;
+
+    border-radius:8px;
+
+}
+
+
+
+
+
+.image-check{
+
+
+    position:absolute;
+
+    top:10px;
+
+    left:10px;
+
+    width:22px;
+
+    height:22px;
+
+    z-index:5;
+
+}
+
+
+
+
+
+.image-item button{
+
+
+    margin-top:10px;
+
+    width:100%;
+
+}
+
+
+
+
+
+/* =====================
+   手机端
 ===================== */
 
 
 @media(max-width:768px){
 
 
-.sidebar{
 
-    width:80px;
+.admin-layout{
 
-    padding:10px;
+    flex-direction:column;
 
 }
 
 
+
+.sidebar{
+
+
+    width:100%;
+
+    min-height:auto;
+
+    display:flex;
+
+    flex-wrap:wrap;
+
+    align-items:center;
+
+}
+
+
+
 .sidebar h2{
+
+
+    width:100%;
+
+    margin:
+
+    5px 0 15px;
+
+
+}
+
+
+
+.sidebar a{
+
+
+    width:auto;
+
+    padding:10px 15px;
 
     font-size:14px;
 
 }
 
 
-.sidebar li{
-
-    font-size:12px;
-
-    padding:10px 5px;
-
-}
 
 
+.main-content{
 
-.product-page{
 
     padding:15px;
 
 }
+
+
+
+
+
+.toolbar{
+
+
+    flex-wrap:wrap;
+
+}
+
+
+
+
+
+.toolbar input{
+
+
+    width:100%;
+
+}
+
+
+
+
+
+.product-page table{
+
+
+    min-width:800px;
+
+}
+
 
 
 }
