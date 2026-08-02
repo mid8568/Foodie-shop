@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 
+
 <head>
 
 <meta charset="UTF-8">
@@ -13,16 +14,30 @@
 </title>
 
 
+
 <link rel="stylesheet" href="css/product-edit.css">
 
 
 </head>
 
 
+
 <body>
 
 
+
 <div class="edit-page">
+
+
+
+<div class="top-bar">
+
+
+<button onclick="backProducts()">
+
+← 返回商品列表
+
+</button>
 
 
 <h1>
@@ -30,8 +45,14 @@
 </h1>
 
 
+</div>
 
-<!-- 基础信息 -->
+
+
+
+
+<!-- 商品信息 -->
+
 
 <div class="card">
 
@@ -50,6 +71,8 @@
 
 
 
+
+
 <label>
 英文标题
 </label>
@@ -58,11 +81,18 @@
 
 
 
+
+
+
 <label>
 商品描述
 </label>
 
+
 <textarea id="description"></textarea>
+
+
+
 
 
 
@@ -70,7 +100,12 @@
 价格
 </label>
 
-<input id="price">
+
+<input 
+id="price"
+type="number">
+
+
 
 
 
@@ -79,19 +114,26 @@
 </label>
 
 
+
 <select id="status">
 
+
 <option value="上架">
+
 上架
+
 </option>
 
 
 <option value="下架">
+
 下架
+
 </option>
 
 
 </select>
+
 
 
 </div>
@@ -100,7 +142,11 @@
 
 
 
+
+
+
 <!-- 主图 -->
+
 
 <div class="card">
 
@@ -110,18 +156,19 @@
 </h2>
 
 
-<div id="main-images"
+
+<div 
+id="main-images"
 class="image-box">
 
+
+</div>
+
+
+
 </div>
 
 
-<input
-type="file"
-id="main-upload">
-
-
-</div>
 
 
 
@@ -130,16 +177,18 @@ id="main-upload">
 
 <!-- 详情图片 -->
 
+
 <div class="card">
 
 
 <h2>
-商品详情图片
+详情图片
 </h2>
 
 
 
-<div id="detail-images"
+<div
+id="detail-images"
 class="image-box">
 
 
@@ -147,9 +196,14 @@ class="image-box">
 
 
 
+
+
 <input
+
 type="file"
+
 id="detail-upload"
+
 multiple>
 
 
@@ -169,13 +223,22 @@ multiple>
 
 
 
+
+
+
 <button
+
 class="save-btn"
+
 onclick="saveProduct()">
+
 
 保存修改
 
+
 </button>
+
+
 
 
 
@@ -185,10 +248,13 @@ onclick="saveProduct()">
 
 
 
+
+
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 
-<script src="js/product-edit.js"></script>
+<script src="js/admin-edit.js"></script>
 
 
 </body>
