@@ -342,7 +342,6 @@ box.appendChild(div);
 // 图片组件
 // =======================
 
-
 function imageHTML(
 url,
 title,
@@ -356,6 +355,9 @@ return `
 
 
 <div class="image-item">
+
+
+<label>
 
 
 <input
@@ -376,6 +378,10 @@ data-index="${index}"
 >
 
 
+</label>
+
+
+
 
 <img src="${url}">
 
@@ -385,6 +391,7 @@ data-index="${index}"
 ${title}
 
 </div>
+
 
 
 
@@ -410,15 +417,7 @@ ${index}
 
 `;
 
-
-
 }
-
-
-
-
-
-
 
 
 
@@ -726,12 +725,22 @@ x.checked=!all;
 
 async function batchDeleteImages(){
 
-
-
 let checked =
 
+Array.from(
 document.querySelectorAll(
-".image-check:checked"
+".image-check"
+)
+
+)
+.filter(
+item=>item.checked
+);
+
+
+console.log(
+"选中的图片:",
+checked
 );
 
 
