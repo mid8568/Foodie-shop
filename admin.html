@@ -14,7 +14,9 @@ CDS后台管理
 </title>
 
 
+
 <link rel="stylesheet" href="css/admin.css">
+
 
 </head>
 
@@ -30,7 +32,9 @@ CDS后台管理
 
 
 
-<!-- 左侧菜单 -->
+<!-- =====================
+     左侧菜单
+===================== -->
 
 
 <div class="sidebar">
@@ -42,81 +46,61 @@ CDS后台
 
 
 
-<a href="admin.html">
+
+
+<a href="javascript:void(0)"
+onclick="openPage('home')">
+
 首页
+
 </a>
 
 
 
-<a href="admin-products.html">
+
+
+<a href="javascript:void(0)"
+onclick="openPage('products')">
+
 商品管理
+
 </a>
 
 
 
-<a href="admin-images.html">
+
+
+<a href="javascript:void(0)"
+onclick="openPage('images')">
+
 图片管理
+
 </a>
 
 
 
-<a href="admin-decoration.html">
+
+
+<a href="javascript:void(0)"
+onclick="openPage('decoration')">
+
 前端装修
+
 </a>
 
 
 
-<a href="admin-ebay.html">
+
+
+<a href="javascript:void(0)"
+onclick="openPage('ebay')">
+
 eBay管理
+
 </a>
 
 
 
-</div>
-
-
-
-
-
-
-
-<!-- 右侧区域 -->
-
-
-<div class="page-area">
-
-
-
-
-
-<!-- 顶部 -->
-
-
-<div class="topbar">
-
-
-<div>
-
-CDS后台管理系统
-
-</div>
-
-
-
-<div class="admin-user">
-
-
-管理员：admin
-
-
-<button onclick="logout()">
-
-退出登录
-
-</button>
-
-
-</div>
 
 
 </div>
@@ -127,7 +111,11 @@ CDS后台管理系统
 
 
 
-<!-- 首页内容 -->
+
+
+<!-- =====================
+     右侧内容
+===================== -->
 
 
 <div class="main-content">
@@ -136,96 +124,13 @@ CDS后台管理系统
 
 
 
-<div class="dashboard">
+<iframe
 
+id="module-frame"
 
-<h1>
-欢迎进入后台
-</h1>
+frameborder="0">
 
-
-
-
-<div class="dashboard-cards">
-
-
-
-<div class="card">
-
-<h3>
-商品总数
-</h3>
-
-<p id="total-products">
-0
-</p>
-
-
-</div>
-
-
-
-
-
-<div class="card">
-
-<h3>
-上架商品
-</h3>
-
-
-<p id="online-products">
-0
-</p>
-
-
-</div>
-
-
-
-
-
-
-<div class="card">
-
-
-<h3>
-下架商品
-</h3>
-
-
-<p id="offline-products">
-0
-</p>
-
-
-</div>
-
-
-
-
-
-
-
-<div class="card">
-
-
-<h3>
-商品图片
-</h3>
-
-
-<p id="total-images">
-0
-</p>
-
-
-</div>
-
-
-
-</div>
-
+</iframe>
 
 
 
@@ -246,21 +151,7 @@ CDS后台管理系统
 
 
 
-</div>
 
-
-
-
-
-
-</div>
-
-
-
-
-
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 
 <script src="js/admin.js"></script>
