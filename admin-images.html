@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="zh-CN">
 
 
@@ -15,8 +14,7 @@
 </title>
 
 
-<link rel="stylesheet" href="css/admin-images.css">
-
+<link rel="stylesheet" href="css/admin.css">
 
 </head>
 
@@ -24,7 +22,9 @@
 <body>
 
 
-<div class="page">
+
+<div class="product-page">
+
 
 
 <h1>
@@ -34,33 +34,50 @@
 
 
 
-<div class="toolbar">
+<!-- 商品列表 -->
 
 
-<input
-id="search"
-placeholder="搜索商品名称">
+<div id="product-box">
 
 
-<button onclick="searchImages()">
-搜索
-</button>
+<table>
+
+
+<thead>
+
+<tr>
+
+
+<th>
+图片
+</th>
+
+
+<th>
+商品名称
+</th>
+
+
+<th>
+操作
+</th>
+
+
+</tr>
+
+
+</thead>
 
 
 
-<button onclick="selectAllImages()">
-全选
-</button>
+<tbody id="image-product-list">
+
+
+</tbody>
 
 
 
-<button 
-class="danger"
-onclick="batchDeleteImages()">
-
-批量删除
-
-</button>
+</table>
 
 
 </div>
@@ -69,7 +86,57 @@ onclick="batchDeleteImages()">
 
 
 
-<div id="image-list">
+
+
+
+
+<!-- 图片详情 -->
+
+
+<div id="image-detail-box"
+style="display:none;">
+
+
+
+<button onclick="backProducts()">
+
+← 返回商品列表
+
+</button>
+
+
+
+<h2 id="current-product-name">
+
+</h2>
+
+
+
+
+
+<h3>
+主图
+</h3>
+
+
+<div id="main-images"
+class="image-grid">
+
+
+</div>
+
+
+
+
+
+
+<h3>
+详情图片
+</h3>
+
+
+<div id="detail-images"
+class="image-grid">
 
 
 </div>
@@ -84,12 +151,20 @@ onclick="batchDeleteImages()">
 
 
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
-</script>
+
+</div>
 
 
-<script src="js/admin-images.js">
-</script>
+
+
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+<script src="js/admin-images.js"></script>
+
 
 
 </body>
