@@ -210,19 +210,18 @@ class="table-image"
 
 
 
-<td>
+<td class="product-name">
 
 
+<div>
 ${item.name || ""}
-
-
-<br>
+</div>
 
 
 <a 
 href="${item['1688_url'] || '#'}"
 target="_blank"
-style="font-size:12px;color:#666;">
+class="1688-link">
 
 1688链接
 
@@ -234,7 +233,7 @@ style="font-size:12px;color:#666;">
 
 
 
-<td>
+<td class="product-name-en">
 
 ${item.name_en || ""}
 
