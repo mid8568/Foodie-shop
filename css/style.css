@@ -9,7 +9,7 @@
 }
 
 body{
-    background:#f0f2f5; /* FB 经典淡灰背景 */
+    background:#f0f2f5; /* FB 经典背景灰色 */
     color:#1c1e21;
     padding-bottom:70px;
 }
@@ -44,74 +44,81 @@ H5 顶部 Header
 }
 
 /* ==========================================
- * 宽屏/电脑端通用版心控制 (1400px 宽屏适配)
+ * 电脑端版心控制 (与 FB 专页一致的 1250px 充实版心)
  * ========================================== */
 .fb-cover-container,
-.profile-container,
+.page-profile-section .profile-container,
 .h5-search, 
 .h5-category, 
 .title, 
 .products {
-    max-width: 1400px !important;
+    max-width: 1250px !important;
     margin-left: auto !important;
     margin-right: auto !important;
-    width: 96%;
+    width: 100%;
 }
 
 /* ==========================================
- * 1:1 复刻 Facebook 专页顶栏与封面海报
+ * 精确复刻 Facebook 封面海报（饱满铺满效果）
  * ========================================== */
 
-/* 封面容器（宽度1400px、居中、深色衬底） */
+/* 封面容器 */
 .fb-cover-container {
-    margin-top: 15px;
     position: relative;
-    border-radius: 12px 12px 0 0;
+    border-radius: 0 0 12px 12px;
     overflow: hidden;
-    background: #121212; /* 深色背景衬托，防止图片两侧留白尴尬 */
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    background: #e4e6eb;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
 
-/* 封面海报高度与展示模式控制（完美显示整张 Banner） */
+/* 封面 Banner 高度与比重 */
 .banner, #banner {
     width: 100% !important;
-    max-height: 480px !important; /* 限制适中高度，不占用过多屏幕 */
-    min-height: 260px !important;
-    overflow: hidden !important;
+    height: 460px !important; /* 维持充实大气的比例高度 */
     position: relative !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    background: #121212;
+    overflow: hidden !important;
+    background-color: #f0f2f5;
 }
 
-/* 图片完整展示逻辑： contain 保持比例全图展示，不裁剪左右/上下 */
+/* 封面图片：采用 cover 模式，充满容器，画面冲击力强且无比饱满 */
 .banner img, 
 .banner > div img,
 .slider-slide img,
 #banner img {
     width: 100% !important;
-    height: auto !important;
-    max-height: 480px !important;
-    object-fit: contain !important; /* 关键：完整显示整张封面，零裁剪 */
-    object-position: center !important;
+    height: 100% !important;
+    object-fit: cover !important; /* 关键：铺满不留白，展示最充实的视觉效果 */
+    object-position: center top !important; /* 优先对齐顶部核心图文 */
     display: block !important;
+}
+
+/* 封面底部叠加的自然阴影蒙层 */
+.banner::after, #banner::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 90px;
+    background: linear-gradient(to top, rgba(0,0,0,0.35), transparent);
+    pointer-events: none;
+    z-index: 2;
 }
 
 /* 右下角【编辑封面照片】按钮 */
 .btn-edit-cover {
     position: absolute;
-    bottom: 15px;
-    right: 20px;
-    background: rgba(255, 255, 255, 0.95);
+    bottom: 16px;
+    right: 24px;
+    background: #ffffff;
     color: #050505;
     border: none;
-    padding: 8px 14px;
+    padding: 7px 12px;
     border-radius: 6px;
     font-weight: 600;
     font-size: 14px;
     cursor: pointer;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
     display: flex;
     align-items: center;
     gap: 6px;
@@ -120,15 +127,18 @@ H5 顶部 Header
 }
 
 .btn-edit-cover:hover {
-    background: #ffffff;
+    background: #f2f2f2;
 }
 
-/* FB 店铺简介区 */
+/* ==========================================
+ * FB 店铺个人主页信息区 (1:1 对齐你的截图)
+ * ========================================== */
 .page-profile-section {
     background: #ffffff;
     padding: 0 0 20px;
     border-bottom: 1px solid #e4e6eb;
-    margin-bottom: 25px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
 }
 
 .profile-container {
@@ -136,41 +146,41 @@ H5 顶部 Header
     align-items: flex-start;
     gap: 25px;
     position: relative;
-    padding: 0 15px;
+    padding: 0 32px;
 }
 
 /* 左侧头像区域 */
 .profile-avatar-wrapper {
     position: relative;
-    margin-top: -50px;
+    margin-top: -32px; /* 让头像恰到好处地压在封面上 */
     flex-shrink: 0;
+    z-index: 5;
 }
 
 /* 头像上方【分享想法...】气泡 */
 .thought-bubble {
     position: absolute;
-    top: -35px;
-    left: 50%;
-    transform: translateX(-50%);
+    top: -32px;
+    left: 15px;
     background: #ffffff;
     color: #65676b;
     font-size: 12px;
-    padding: 5px 14px;
-    border-radius: 18px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    padding: 4px 12px;
+    border-radius: 16px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
     white-space: nowrap;
     border: 1px solid #e4e6eb;
-    z-index: 5;
+    z-index: 10;
 }
 
-/* 头像大圆框 */
+/* 头像圆框 */
 .profile-avatar {
-    width: 160px;
-    height: 160px;
+    width: 168px;
+    height: 168px;
     border-radius: 50%;
     overflow: hidden;
     border: 4px solid #ffffff;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
     background: #ffffff;
     cursor: pointer;
     position: relative;
@@ -185,59 +195,25 @@ H5 顶部 Header
 /* 在线状态小绿点 */
 .online-status {
     position: absolute;
-    bottom: 12px;
-    right: 12px;
-    width: 22px;
-    height: 22px;
+    bottom: 14px;
+    right: 14px;
+    width: 20px;
+    height: 20px;
     background-color: #31a24c;
-    border: 3px solid #ffffff;
+    border: 3.5px solid #ffffff;
     border-radius: 50%;
     z-index: 6;
 }
 
-/* 头像弹出菜单 */
-.avatar-dropdown {
-    display: none;
-    position: absolute;
-    top: 120px;
-    left: 0;
-    background: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-    width: 150px;
-    z-index: 1000;
-    overflow: hidden;
-    border: 1px solid #e4e6eb;
-}
-
-.avatar-dropdown.show {
-    display: block;
-}
-
-.dropdown-item {
-    padding: 10px 15px;
-    font-size: 14px;
-    color: #050505;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    transition: background 0.2s;
-}
-
-.dropdown-item:hover {
-    background: #f0f2f5;
-}
-
-/* 中间店铺信息文字排版 */
+/* 中间店铺信息排版（与你的截图完全一致） */
 .profile-info {
     flex: 1;
-    padding-top: 15px;
-    line-height: 1.5;
+    padding-top: 16px;
+    line-height: 1.45;
 }
 
 .shop-name {
-    font-size: 26px;
+    font-size: 28px;
     font-weight: 700;
     color: #050505;
     margin-bottom: 2px;
@@ -246,23 +222,27 @@ H5 顶部 Header
 .shop-meta {
     font-size: 14px;
     font-weight: 600;
-    color: #050505;
-    margin-bottom: 6px;
+    color: #65676b;
+    margin-bottom: 8px;
 }
 
 .shop-sub, .shop-desc, .shop-shipping, .shop-action {
     font-size: 14px;
     color: #050505;
+    margin-bottom: 4px;
 }
 
 .shop-category-tag {
     font-size: 13px;
     font-weight: 600;
-    color: #050505;
-    margin-top: 4px;
+    color: #65676b;
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
-/* 右侧 FB 操作按钮组 */
+/* 右侧按钮组（专业面板、编辑、发布广告） */
 .profile-actions {
     display: flex;
     gap: 8px;
@@ -275,12 +255,14 @@ H5 顶部 Header
     align-items: center;
     justify-content: center;
     gap: 6px;
-    padding: 8px 16px;
+    padding: 8px 14px;
     border-radius: 6px;
     font-weight: 600;
     font-size: 14px;
     text-decoration: none;
     transition: background 0.2s;
+    border: none;
+    cursor: pointer;
 }
 
 .btn-fb-blue {
@@ -302,7 +284,7 @@ H5 顶部 Header
 }
 
 /* =====================
-搜索栏
+搜索栏 & 分类
 ===================== */
 .h5-search{
     margin-bottom: 15px;
@@ -320,9 +302,6 @@ H5 顶部 Header
     background: #fff;
 }
 
-/* =====================
-分类按钮
-===================== */
 .h5-category{
     margin-bottom: 20px;
     padding: 0 15px;
@@ -349,12 +328,12 @@ H5 顶部 Header
 }
 
 /* =====================
-标题与商品列表（适配宽屏，一行 4-5 个商品）
+商品列表（卡片排列）
 ===================== */
 .title{
-    padding: 0 15px 10px;
+    padding: 0 15px 12px;
     text-align:left;
-    font-size:22px;
+    font-size:20px;
     font-weight: bold;
     color: #050505;
 }
@@ -362,15 +341,15 @@ H5 顶部 Header
 .products{
     padding: 0 15px 40px;
     display:grid;
-    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); /* 自动适应，大屏自动排布 4~5 个 */
-    gap:20px;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap:16px;
 }
 
 .product-card, .card {
     background:white;
-    border-radius:10px;
+    border-radius:8px;
     overflow:hidden;
-    box-shadow: 0 1px 3px rgba(0,0,0,.1);
+    box-shadow: 0 1px 2px rgba(0,0,0,.1);
     transition: transform 0.2s, box-shadow 0.2s;
     display: flex;
     flex-direction: column;
@@ -378,45 +357,44 @@ H5 顶部 Header
 }
 
 .product-card:hover, .card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 6px 16px rgba(0,0,0,.12);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,.12);
 }
 
 .product-card img, .card img{
     width:100%;
-    height:220px;
+    height:200px;
     object-fit:cover;
     display: block;
 }
 
 .product-card h3, .card h3{
-    padding:12px 14px 4px;
-    font-size:16px;
+    padding:10px 12px 4px;
+    font-size:15px;
     color: #050505;
     line-height: 1.35;
-    height: 46px;
+    height: 42px;
     overflow: hidden;
 }
 
 .desc{
-    padding:0 14px;
+    padding:0 12px;
     color:#65676b;
     font-size: 13px;
 }
 
 .price{
-    padding:8px 14px;
-    font-size:18px;
+    padding:6px 12px;
+    font-size:17px;
     font-weight:bold;
     color:#b8860b;
 }
 
-/* 商城按钮 */
 .btn-main{
     display:block;
-    width:calc(100% - 28px);
-    margin:0 14px 14px;
-    padding:10px;
+    width:calc(100% - 24px);
+    margin:0 12px 12px;
+    padding:9px;
     background:#0866ff;
     color:white;
     border:none;
@@ -433,7 +411,7 @@ H5 顶部 Header
 }
 
 /* =====================
-页脚与底部导航
+页脚与响应式
 ===================== */
 footer{
     background:#ffffff;
@@ -448,12 +426,9 @@ footer{
     display:none;
 }
 
-/* =====================
-手机端响应式适配 (移动端回归 100% 宽度与卡片排列)
-===================== */
 @media(max-width:768px){
     .fb-cover-container,
-    .profile-container,
+    .page-profile-section .profile-container,
     .h5-search, 
     .h5-category, 
     .title, 
@@ -461,21 +436,10 @@ footer{
         width: 100% !important;
         max-width: 100% !important;
         border-radius: 0;
-        margin-top: 0;
     }
     
     .banner, #banner {
-        max-height: 220px !important;
-        min-height: 140px !important;
-    }
-
-    .banner img, #banner img {
-        max-height: 220px !important;
-        object-fit: cover !important; /* 手机端为了充满屏幕，切回 cover 避免上下白边 */
-    }
-    
-    .btn-edit-cover span {
-        display: none;
+        height: 200px !important;
     }
 
     .profile-container {
@@ -494,13 +458,6 @@ footer{
         height: 110px;
     }
 
-    .online-status {
-        width: 16px;
-        height: 16px;
-        bottom: 8px;
-        right: 8px;
-    }
-
     .profile-actions {
         width: 100%;
         padding-top: 10px;
@@ -513,32 +470,5 @@ footer{
     .products{
         grid-template-columns: repeat(2, 1fr);
         gap:10px;
-        padding: 0 10px 30px;
-    }
-
-    .product-card img, .card img{
-        height:150px;
-    }
-
-    .mobile-nav{
-        display:flex;
-        position:fixed;
-        bottom:0;
-        left:0;
-        width:100%;
-        height:55px;
-        background:white;
-        border-top:1px solid #e4e6eb;
-        justify-content:space-around;
-        align-items:center;
-        z-index:9999;
-    }
-
-    .mobile-nav a{
-        display:flex;
-        flex-direction:column;
-        align-items:center;
-        font-size:11px;
-        color:#65676b;
     }
 }
