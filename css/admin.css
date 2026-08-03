@@ -1126,3 +1126,17 @@ width:100px;
 text-align:center;
 
 }
+.edit-price,
+.edit-stock{
+
+width:70px;
+
+padding:5px;
+
+text-align:center;
+
+border:1px solid #ddd;
+
+border-radius:4px;
+
+}
