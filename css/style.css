@@ -9,7 +9,7 @@
 }
 
 body{
-    background:#f0f2f5; /* FB 经典淡灰背景 */
+    background:#f0f2f5; /* FB 网页端标准灰色背景 */
     color:#1c1e21;
     padding-bottom:70px;
 }
@@ -18,11 +18,19 @@ a{
     text-decoration:none;
 }
 
+/* FB 页面居中大容器 */
+.fb-page-wrapper {
+    max-width: 1250px;
+    margin: 0 auto;
+    background: #ffffff;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
 /* =====================
-H5 顶部
+H5 顶部 Header
 ===================== */
 .h5-header{
-    display:flex;
+    display:none;
     justify-content:space-between;
     align-items:center;
     background:#160b05;
@@ -44,68 +52,63 @@ H5 顶部
 }
 
 /* =====================
-顶部大封面海报 (限制高度，绝不占满一屏)
+1. 顶部海报（不裁剪、完整按比例展示）
 ===================== */
 .banner{
     width: 100% !important;
-    height: 380px !important; /* PC端固定高度，可自由调整为 300px~400px */
-    max-height: 45vh !important;
-    background: #160b05 !important;
+    height: auto !important; /* 恢复自动高度，保证海报100%完整不切图 */
+    background: #e4e6eb !important;
     margin: 0 !important;
     padding: 0 !important;
     overflow: hidden;
     display: block;
-    position: relative;
+    border-bottom: 1px solid #e4e6eb;
 }
 
-/* 兼容静态或 JS 动态渲染图片，等比截取填充，不压扁 */
 .banner img, 
 .banner > div img,
 .slider-slide img {
     width: 100% !important;
-    height: 100% !important;
+    height: auto !important; /* 不限制 height，显示全部画面 */
     display: block !important;
-    object-fit: cover !important; /* 核心：裁剪适应容器，保持等比例不压扁 */
-    object-position: center !important; /* 保证海报主体居中 */
+    object-fit: contain !important;
     margin: 0 !important;
     border: none;
 }
 
-/* 清理海报上可能重叠的默认文字与按钮 */
+/* 隐藏杂乱文本 */
 .banner h1, .banner p, .banner .btn {
     display: none !important;
 }
 
 /* =====================
-FB 风格店铺主页简介区 (Profile Section)
+2. Profile 专页简介区 (完美重叠头像)
 ===================== */
 .page-profile-section {
     background: #ffffff;
-    padding: 20px 8%;
+    padding: 0 30px 20px 30px;
     border-bottom: 1px solid #e4e6eb;
-    margin-bottom: 15px;
 }
 
 .profile-container {
     display: flex;
     align-items: flex-start;
-    gap: 25px;
-    max-width: 1200px;
-    margin: 0 auto;
+    gap: 20px;
     position: relative;
 }
 
-/* 圆形 Logo */
+/* 头像：强制向上提 80px，精确悬浮压在海报边缘上 */
 .profile-avatar {
-    width: 130px;
-    height: 130px;
+    width: 168px;
+    height: 168px;
     border-radius: 50%;
     overflow: hidden;
-    border: 4px solid #ffffff;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+    border: 4px solid #ffffff; /* FB 经典白边 */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     flex-shrink: 0;
-    margin-top: -40px; /* 向上压在海报边缘，营造专页悬浮感 */
-    background: #fff;
+    margin-top: -80px; /* 核心：往上提压住海报 */
+    background: #ffffff;
+    z-index: 10;
 }
 
 .profile-avatar img {
@@ -114,66 +117,98 @@ FB 风格店铺主页简介区 (Profile Section)
     object-fit: cover;
 }
 
-/* 文本简介区 */
+/* 文本简介 */
 .profile-info {
     flex: 1;
-    line-height: 1.6;
+    padding-top: 15px;
+    line-height: 1.5;
 }
 
 .shop-name {
-    font-size: 28px;
-    font-weight: 700;
+    font-size: 32px;
+    font-weight: 800;
     color: #050505;
+    margin-bottom: 2px;
 }
 
 .shop-meta {
-    font-size: 14px;
+    font-size: 15px;
+    font-weight: 600;
     color: #65676b;
-    margin-bottom: 6px;
+    margin-bottom: 8px;
 }
 
-.shop-sub, .shop-desc, .shop-shipping, .shop-action {
+.shop-sub span {
+    font-size: 11px;
+    background: #e4e6eb;
+    color: #050505;
+    padding: 1px 4px;
+    border-radius: 3px;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-right: 4px;
+}
+
+.shop-sub, .shop-desc, .shop-shipping, .shop-action, .shop-tag {
     font-size: 14px;
     color: #050505;
+    margin-bottom: 3px;
 }
 
 .shop-tag {
-    display: inline-block;
-    margin-top: 6px;
-    font-size: 13px;
-    font-weight: 600;
     color: #65676b;
-    background: #f0f2f5;
-    padding: 3px 10px;
-    border-radius: 6px;
+    font-weight: 600;
+    margin-top: 5px;
 }
 
-/* 右侧交互按钮 */
+/* 右侧 FB 风格操作按钮组 */
 .profile-actions {
-    align-self: center;
+    display: flex;
+    gap: 8px;
+    padding-top: 25px;
+    align-items: center;
+}
+
+.btn-fb-panel {
+    background: #0866ff;
+    color: #ffffff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.btn-fb-edit {
+    background: #e4e6eb;
+    color: #050505;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
 }
 
 .btn-fb-msg {
-    display: inline-block;
-    background: #0866ff; /* FB 经典蓝色 */
-    color: #ffffff;
-    padding: 10px 24px;
-    border-radius: 8px;
+    background: #e4e6eb;
+    color: #050505;
+    padding: 8px 16px;
+    border-radius: 6px;
     font-weight: 600;
-    font-size: 15px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    transition: background 0.2s;
+    font-size: 14px;
+    display: inline-block;
 }
 
-.btn-fb-msg:hover {
-    background: #0052cc;
-}
+.btn-fb-panel:hover { background: #0052cc; }
+.btn-fb-edit:hover, .btn-fb-msg:hover { background: #d8dadf; }
 
 /* =====================
-搜索栏
+3. 搜索与分类
 ===================== */
 .h5-search{
-    padding: 0 8% 15px;
+    padding: 20px 30px 10px;
 }
 
 .h5-search input{
@@ -184,26 +219,23 @@ FB 风格店铺主页简介区 (Profile Section)
     padding:0 20px;
     font-size:15px;
     outline: none;
-    background: #fff;
+    background: #f0f2f5;
 }
 
-/* =====================
-分类按钮
-===================== */
 .h5-category{
     display:flex;
     gap:10px;
-    padding: 0 8% 15px;
+    padding: 10px 30px 15px;
     overflow-x:auto;
 }
 
 .h5-category button{
     padding:8px 18px;
     white-space:nowrap;
-    background:#ffffff;
+    background:#f0f2f5;
     color:#050505;
     border-radius:20px;
-    border: 1px solid #ced0d4;
+    border: none;
     cursor: pointer;
     font-weight: 600;
     font-size: 14px;
@@ -215,18 +247,18 @@ FB 风格店铺主页简介区 (Profile Section)
 }
 
 /* =====================
-标题与商品列表
+4. 商品列表
 ===================== */
 .title{
     text-align:left;
-    padding: 10px 8%;
-    font-size:22px;
+    padding: 10px 30px;
+    font-size:20px;
     font-weight: bold;
     color: #050505;
 }
 
 .products{
-    padding:10px 8% 30px;
+    padding:10px 30px 40px;
     display:grid;
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     gap:15px;
@@ -234,9 +266,9 @@ FB 风格店铺主页简介区 (Profile Section)
 
 .product-card, .card {
     background:white;
-    border-radius:10px;
+    border-radius:8px;
     overflow:hidden;
-    box-shadow: 0 1px 3px rgba(0,0,0,.1);
+    border: 1px solid #ced0d4;
     transition: transform 0.2s;
     display: flex;
     flex-direction: column;
@@ -244,7 +276,8 @@ FB 风格店铺主页简介区 (Profile Section)
 }
 
 .product-card:hover, .card:hover {
-    transform: translateY(-3px);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
 .product-card img, .card img{
@@ -256,10 +289,10 @@ FB 风格店铺主页简介区 (Profile Section)
 
 .product-card h3, .card h3{
     padding:10px 12px 4px;
-    font-size:16px;
+    font-size:15px;
     color: #050505;
     line-height: 1.3;
-    height: 42px;
+    height: 40px;
     overflow: hidden;
 }
 
@@ -276,7 +309,6 @@ FB 风格店铺主页简介区 (Profile Section)
     color:#b8860b;
 }
 
-/* 商城按钮 */
 .btn-main{
     display:block;
     width:calc(100% - 24px);
@@ -309,48 +341,50 @@ footer{
 }
 
 /* =====================
-手机端响应式适配
+移动端响应式适配
 ===================== */
 @media(max-width:768px){
+    body {
+        background: #ffffff;
+    }
+
     .h5-header{
         display:flex;
     }
 
-    /* 手机端 Banner 适中高度 */
-    .banner {
-        height: 180px !important;
+    .fb-page-wrapper {
+        box-shadow: none;
     }
 
     .page-profile-section {
-        padding: 15px;
+        padding: 0 15px 15px;
     }
 
     .profile-container {
         flex-direction: column;
         align-items: center;
         text-align: center;
-        gap: 12px;
+        gap: 10px;
     }
 
     .profile-avatar {
-        width: 100px;
-        height: 100px;
-        margin-top: -35px;
+        width: 120px;
+        height: 120px;
+        margin-top: -60px; /* 移动端头像上提高度 */
+    }
+
+    .profile-info {
+        padding-top: 0;
     }
 
     .shop-name {
-        font-size: 22px;
+        font-size: 24px;
     }
 
     .profile-actions {
         width: 100%;
-        margin-top: 5px;
-    }
-
-    .btn-fb-msg {
-        display: block;
-        width: 100%;
-        text-align: center;
+        padding-top: 10px;
+        justify-content: center;
     }
 
     .h5-search, .h5-category, .title, .products {
