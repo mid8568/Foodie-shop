@@ -961,40 +961,11 @@ category:value("category"),
 description:value("description"),
 
 
-description_en:value("description_en"),
-
-
-
-cost_price:
-
-Number(
-value("cost_price")
-),
-
-
-
-sale_price:
-
-Number(
-value("sale_price")
-),
-
-
-
-stock_quantity:
-
-Number(
-value("stock_quantity")
-),
-
-
-
 status:value("status"),
 
 
 
 stock_status:value("status"),
-
 
 
 "1688_url":
@@ -1018,18 +989,6 @@ value("supplier_url"),
 supplier_contact:
 
 value("supplier_contact"),
-
-
-
-seo_title:
-
-value("seo_title"),
-
-
-
-seo_description:
-
-value("seo_description"),
 
 
 
