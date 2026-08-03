@@ -27,7 +27,7 @@ params.get("page");
 
 if(!page){
 
-page="products";
+page="home";
 
 }
 
@@ -57,7 +57,12 @@ document.getElementById(
 
 let url="";
 
+case "home":
 
+url=
+"admin-home.html";
+
+break;
 
 switch(page){
 
