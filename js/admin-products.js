@@ -112,7 +112,7 @@ async function loadProducts(page = 1) {
 }
 
 // =======================
-// 渲染表格列表
+// 商品列表渲染（修复对齐错位）
 // =======================
 function renderProducts(products) {
     const box = document.getElementById("product-list");
@@ -120,43 +120,65 @@ function renderProducts(products) {
 
     box.innerHTML = "";
 
-    if (products.length === 0) {
-        box.innerHTML = `<tr><td colspan="9" style="text-align:center; color:#999; padding: 20px;">暂无满足条件的商品数据</td></tr>`;
+    if (!products || products.length === 0) {
+        box.innerHTML = `<tr><td colspan="8" style="text-align:center; color:#999; padding: 20px;">暂无满足条件的商品数据</td></tr>`;
         return;
     }
 
     products.forEach(item => {
         let tr = document.createElement("tr");
 
-        // 判断状态样式
+        // 状态文字与样式
         const isOnline = item.stock_status === "上架";
         const statusClass = isOnline ? "status-tag" : "status-tag offline";
         const statusText = item.stock_status || "下架";
 
+        // 格式化时间 (如果没有 created_at，显示默认)
+        const createTime = item.created_at 
+            ? new Date(item.created_at).toLocaleString('zh-CN', { hour12: false }) 
+            : '2026/8/1 00:00:00';
+
+        // 严格按照表头8列的顺序拼接 <td>
         tr.innerHTML = `
-            <td><input type="checkbox" class="select-item" value="${item.id}"></td>
-            <td>
-                <div class="product-info">
-                    <img src="${item.image || 'https://via.placeholder.com/50'}" class="product-img" alt="商品图">
-                    <div class="product-detail">
-                        <div class="title">${item.name || "未命名商品"}</div>
-                        <div class="sub-text">ID: ${item.id}</div>
-                    </div>
-                </div>
+            <!-- 1. 选择框 -->
+            <td width="30">
+                <input type="checkbox" class="select-item" value="${item.id}">
             </td>
+
+            <!-- 2. 图片 -->
+            <td width="70">
+                <img src="${item.image || 'https://via.placeholder.com/50'}" class="table-image" alt="商品图">
+            </td>
+
+            <!-- 3. 中文标题 -->
+            <td class="product-name">
+                <div title="${item.name || ''}">${item.name || "未命名商品"}</div>
+                <div style="color: #999; font-size: 12px; margin-top: 4px;">ID: ${item.id}</div>
+                ${item['1688_url'] ? `<a href="${item['1688_url']}" target="_blank" class="1688-link">1688链接</a>` : ''}
+            </td>
+
+            <!-- 4. 英文标题 -->
+            <td class="product-name-en">
+                <div title="${item.name_en || ''}">${item.name_en || "-"}</div>
+            </td>
+
+            <!-- 5. 价格 (带有 ¥ 符号和实时编辑) -->
             <td>
                 ¥ <input type="number" step="0.01" value="${item.price || 0}" id="price-${item.id}" class="edit-price" onblur="updateProductField('${item.id}')">
             </td>
+
+            <!-- 6. 库存 (实时编辑) -->
             <td>
                 <input type="number" value="${item.stock_quantity || 0}" id="stock-${item.id}" class="edit-stock" onblur="updateProductField('${item.id}')">
             </td>
-            <td>${item.total_sales || 0}</td>
-            <td>${item.sales_30_days || 0}</td>
+
+            <!-- 7. 状态 (创建时间 + 上/下架状态) -->
             <td>
-                ${item.created_at ? new Date(item.created_at).toLocaleString('zh-CN', {hour12: false}) : '-'}
+                <div style="font-size: 12px; color: #666; margin-bottom: 2px;">${createTime}</div>
                 <span class="${statusClass}">${statusText}</span>
             </td>
-            <td>${item.published_at ? new Date(item.published_at).toLocaleString('zh-CN', {hour12: false}) : '-'}</td>
+
+            <!-- 8. 操作 -->
             <td class="action-links">
                 <a href="javascript:void(0)" onclick="editProduct('${item.id}')">编辑商品</a><br>
                 <a href="javascript:void(0)" onclick="toggleStatus('${item.id}', '${item.stock_status}')">${isOnline ? '下架商品' : '上架商品'}</a>
