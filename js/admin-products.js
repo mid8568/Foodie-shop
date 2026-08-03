@@ -244,13 +244,45 @@ ${item.name_en || ""}
 
 <td>
 
-${item.price || 0}
+
+<input
+
+type="number"
+
+value="${item.price || 0}"
+
+class="edit-price"
+
+id="price-${item.id}"
+
+onblur="updateProductField('${item.id}')"
+
+
+>
+
 
 </td>
 
+
+
 <td>
 
-${item.stock_quantity || 0}
+
+<input
+
+type="number"
+
+value="${item.stock_quantity || 0}"
+
+class="edit-stock"
+
+id="stock-${item.id}"
+
+onblur="updateProductField('${item.id}')"
+
+
+>
+
 
 </td>
 
@@ -424,6 +456,79 @@ window.addProduct =
 addProduct;
 window.toggleStatus =
 toggleStatus;
+window.updateProductField =
+updateProductField;
+// =======================
+// 自动保存价格库存
+// 点击空白处触发
+// =======================
+
+
+async function updateProductField(id){
+
+
+
+let price =
+
+document.getElementById(
+"price-"+id
+).value;
+
+
+
+let stock =
+
+document.getElementById(
+"stock-"+id
+).value;
+
+
+
+const {
+
+error
+
+}=await supabaseClient
+
+.from("products")
+
+.update({
+
+price:Number(price),
+
+stock_quantity:Number(stock)
+
+})
+
+.eq(
+"id",
+id
+);
+
+
+
+if(error){
+
+console.log(error);
+
+alert(
+"保存失败"
+);
+
+return;
+
+}
+
+
+
+console.log(
+"商品价格库存已更新",
+id
+);
+
+
+
+}
 // =======================
 // 切换上下架
 // =======================
