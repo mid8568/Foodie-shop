@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,21 +14,47 @@
     <a href="https://m.me/你的Facebook主页用户名" class="h5-cart" target="_blank">💬</a>
 </header>
 
-<!-- 顶部大型封面海报区 (已限制高度，绝不撑满一屏) -->
-<section class="banner">
-    <!-- 如果后台JS插入图片，会自动动态填入这里；如果静态使用，取消下面注释填入链接即可 -->
-    <!-- <img src="YOUR_BANNER_IMAGE.jpg" alt="China Direct Shop Banner"> -->
-</section>
+<!-- 1:1 复刻 Facebook 风格封面海报容器 -->
+<div class="fb-cover-container">
+    <section class="banner" id="banner">
+        <!-- 海报图片由 JS 动态渲染插入 -->
+    </section>
+    <!-- 右下角编辑封面照片按钮 -->
+    <button class="btn-edit-cover" onclick="triggerAvatarUpload()">
+        📷 <span>编辑封面照片</span>
+    </button>
+</div>
 
 <!-- Facebook 风格店铺主页简介区 -->
 <section class="page-profile-section">
     <div class="profile-container">
-        <!-- 圆形 Logo / 头像 -->
-        <div class="profile-avatar">
-            <img src="https://images.unsplash.com/photo-1544717305-2782549b5136?w=200" alt="China Direct Shop Logo" id="site-logo">
+        
+        <!-- 左侧头像区（含分享想法气泡、在线小绿点） -->
+        <div class="profile-avatar-wrapper">
+            <!-- 头像上方气泡 -->
+            <div class="thought-bubble">分享想法...</div>
+            
+            <div class="profile-avatar" id="avatarBtn" onclick="toggleAvatarMenu(event)">
+                <img src="https://images.unsplash.com/photo-1544717305-2782549b5136?w=200" alt="China Direct Shop Logo" id="site-logo">
+                <!-- 右下角在线小绿点 -->
+                <span class="online-status"></span>
+            </div>
+
+            <!-- 隐藏的本地图片上传框 -->
+            <input type="file" id="avatarInput" accept="image/*" style="display: none;" onchange="uploadNewAvatar(event)">
+
+            <!-- 点击头像弹出的菜单 -->
+            <div class="avatar-dropdown" id="avatarDropdown">
+                <div class="dropdown-item" onclick="viewAvatar()">
+                    <span class="icon">👤</span> 查看头像
+                </div>
+                <div class="dropdown-item" onclick="triggerAvatarUpload()">
+                    <span class="icon">🖼️</span> 选择头像
+                </div>
+            </div>
         </div>
         
-        <!-- 店铺名称与简介 -->
+        <!-- 中间店铺名称与简介 -->
         <div class="profile-info">
             <h1 class="shop-name">China Direct Shop</h1>
             <p class="shop-meta">0 位粉丝 · 关注 0 人</p>
@@ -36,12 +62,14 @@
             <p class="shop-desc">Snacks | Tea | Gifts | Daily goods</p>
             <p class="shop-shipping">Direct shipping from China worldwide 🌏</p>
             <p class="shop-action">Message us to order.</p>
-            <span class="shop-tag">🛍️ 零售购物</span>
+            <p class="shop-category-tag">🛍️ 零售购物</p>
         </div>
         
-        <!-- 右侧/下方按钮 -->
+        <!-- 右侧 FB 专页标准操作按钮组 -->
         <div class="profile-actions">
-            <a href="https://m.me/你的Facebook主页用户名" class="btn-fb-msg" target="_blank">💬 联系我们</a>
+            <a href="javascript:void(0)" class="btn-fb btn-fb-blue">📊 专业面板</a>
+            <a href="javascript:void(0)" class="btn-fb btn-fb-gray">✏️ 编辑</a>
+            <a href="javascript:void(0)" class="btn-fb btn-fb-gray">📣 发布广告</a>
         </div>
     </div>
 </section>
@@ -62,7 +90,7 @@
 
 <h2 class="title">Featured Products</h2>
 
-<!-- 商品列表 -->
+<!-- 商品列表区 -->
 <section class="products" id="product-list">
     Loading products...
 </section>
