@@ -1,176 +1,71 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-
-
 <head>
-
-<meta charset="UTF-8">
-
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-
-
-<title>
-图片管理
-</title>
-
-
-<link rel="stylesheet" href="css/admin.css">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图片管理</title>
+    <link rel="stylesheet" href="css/admin.css">
 </head>
-
-
 <body>
 
-
-
 <div class="product-page">
+    <h1>产品图片管理</h1>
 
+    <!-- 1. 商品列表面板 -->
+    <div id="product-box">
+        <table>
+            <thead>
+                <tr>
+                    <th>封面图</th>
+                    <th>商品名称</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody id="image-product-list">
+                <!-- 动态渲染商品 -->
+            </tbody>
+        </table>
+        <div id="image-pagination" class="pagination"></div>
+    </div>
 
+    <!-- 2. 图片管理详情面板 -->
+    <div id="image-detail-box" style="display:none;">
+        <div class="detail-header">
+            <button class="btn-back" onclick="backProducts()">← 返回商品列表</button>
+            <h2 id="current-product-name">商品名称</h2>
+        </div>
 
-<h1>
-图片管理
-</h1>
+        <!-- =================== 主图管理区 =================== -->
+        <div class="section-title-bar">
+            <h3>🖼️ 商品主图</h3>
+            <div class="btn-group">
+                <!-- 隐藏的批量上传 input -->
+                <input type="file" id="upload-main-input" multiple accept="image/*" style="display:none;" onchange="handleBatchUpload(event, 'main')">
+                <button class="btn-action btn-upload" onclick="triggerUpload('main')">📤 批量上传主图</button>
+                <button class="btn-action btn-danger" onclick="handleBatchDelete('main')">🗑️ 批量删除选中项</button>
+            </div>
+        </div>
+        <div id="main-images" class="image-grid">
+            <!-- 动态渲染主图卡片 -->
+        </div>
 
-
-
-
-<!-- 商品列表 -->
-
-
-<div id="product-box">
-
-
-<table>
-
-
-<thead>
-
-<tr>
-
-
-<th>
-图片
-</th>
-
-
-<th>
-商品名称
-</th>
-
-
-<th>
-操作
-</th>
-
-
-</tr>
-
-
-</thead>
-
-
-
-<tbody id="image-product-list">
-
-
-</tbody>
-
-
-
-</table>
-
-<div id="image-pagination" class="pagination">
-
+        <!-- =================== 详情图管理区 =================== -->
+        <div class="section-title-bar">
+            <h3>📜 详情页图片</h3>
+            <div class="btn-group">
+                <!-- 隐藏的批量上传 input -->
+                <input type="file" id="upload-detail-input" multiple accept="image/*" style="display:none;" onchange="handleBatchUpload(event, 'detail')">
+                <button class="btn-action btn-upload" onclick="triggerUpload('detail')">📤 批量上传详情图</button>
+                <button class="btn-action btn-danger" onclick="handleBatchDelete('detail')">🗑️ 批量删除选中项</button>
+            </div>
+        </div>
+        <div id="detail-images" class="image-grid">
+            <!-- 动态渲染详情图卡片 -->
+        </div>
+    </div>
 </div>
-  
-</div>
-
-
-
-
-
-
-
-
-
-<!-- 图片详情 -->
-
-
-<div id="image-detail-box"
-style="display:none;">
-
-
-
-<button onclick="backProducts()">
-
-← 返回商品列表
-
-</button>
-
-
-
-<h2 id="current-product-name">
-
-</h2>
-
-
-
-
-
-<h3>
-主图
-</h3>
-
-
-<div id="main-images"
-class="image-grid">
-
-
-</div>
-
-
-
-
-
-
-<h3>
-详情图片
-</h3>
-
-
-<div id="detail-images"
-class="image-grid">
-
-
-</div>
-
-
-
-
-</div>
-
-
-
-
-
-
-
-</div>
-
-
-
-
-
-
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-
 <script src="js/admin-images.js"></script>
-
-
-
 </body>
-
-
 </html>
