@@ -44,38 +44,56 @@ H5 顶部 Header
 }
 
 /* ==========================================
- * 1:1 复刻 Facebook 专页顶栏与封面海报（精准对齐修改）
+ * 宽屏/电脑端通用版心控制 (1400px 宽屏适配)
+ * ========================================== */
+.fb-cover-container,
+.profile-container,
+.h5-search, 
+.h5-category, 
+.title, 
+.products {
+    max-width: 1400px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    width: 96%;
+}
+
+/* ==========================================
+ * 1:1 复刻 Facebook 专页顶栏与封面海报
  * ========================================== */
 
-/* 1) 封面容器：统一 1200px 最大宽度并居中 */
+/* 封面容器（宽度1400px、居中、深色衬底） */
 .fb-cover-container {
-    max-width: 1200px;
-    margin: 15px auto 0;
+    margin-top: 15px;
     position: relative;
     border-radius: 12px 12px 0 0;
     overflow: hidden;
-    background: #160b05;
-    width: calc(100% - 30px); /* 在中等屏保留左右间距 */
+    background: #121212; /* 深色背景衬托，防止图片两侧留白尴尬 */
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
-/* 封面海报高度控制 */
-.banner {
+/* 封面海报高度与展示模式控制（完美显示整张 Banner） */
+.banner, #banner {
     width: 100% !important;
-    height: 380px !important;
+    max-height: 480px !important; /* 限制适中高度，不占用过多屏幕 */
+    min-height: 260px !important;
     overflow: hidden !important;
     position: relative !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
+    background: #121212;
 }
 
-/* 图片比例自适应（居中裁剪，不拉伸变形） */
+/* 图片完整展示逻辑： contain 保持比例全图展示，不裁剪左右/上下 */
 .banner img, 
 .banner > div img,
-.slider-slide img {
+.slider-slide img,
+#banner img {
     width: 100% !important;
-    height: 100% !important;
-    object-fit: cover !important;
+    height: auto !important;
+    max-height: 480px !important;
+    object-fit: contain !important; /* 关键：完整显示整张封面，零裁剪 */
     object-position: center !important;
     display: block !important;
 }
@@ -105,21 +123,18 @@ H5 顶部 Header
     background: #ffffff;
 }
 
-/* FB 店铺简介区外层 */
+/* FB 店铺简介区 */
 .page-profile-section {
     background: #ffffff;
-    padding: 0 0 20px; /* 移除 8% 边距，交给内部 profile-container */
+    padding: 0 0 20px;
     border-bottom: 1px solid #e4e6eb;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
 }
 
-/* 店铺简介内层容器：统一 1200px 最大宽度与 15px 边距 */
 .profile-container {
     display: flex;
     align-items: flex-start;
     gap: 25px;
-    max-width: 1200px;
-    margin: 0 auto;
     position: relative;
     padding: 0 15px;
 }
@@ -286,14 +301,11 @@ H5 顶部 Header
     background: #d8dadf;
 }
 
-/* ==========================================
- * 2. 下方内容区域（统一 max-width 与边距实现齐平）
- * ========================================== */
-
-/* 搜索栏 */
+/* =====================
+搜索栏
+===================== */
 .h5-search{
-    max-width: 1200px;
-    margin: 0 auto 15px;
+    margin-bottom: 15px;
     padding: 0 15px;
 }
 
@@ -308,10 +320,11 @@ H5 顶部 Header
     background: #fff;
 }
 
-/* 分类按钮 */
+/* =====================
+分类按钮
+===================== */
 .h5-category{
-    max-width: 1200px;
-    margin: 0 auto 15px;
+    margin-bottom: 20px;
     padding: 0 15px;
     display:flex;
     gap:10px;
@@ -335,11 +348,11 @@ H5 顶部 Header
     background: #e4e6eb;
 }
 
-/* 标题与商品列表 */
+/* =====================
+标题与商品列表（适配宽屏，一行 4-5 个商品）
+===================== */
 .title{
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 10px 15px;
+    padding: 0 15px 10px;
     text-align:left;
     font-size:22px;
     font-weight: bold;
@@ -347,12 +360,10 @@ H5 顶部 Header
 }
 
 .products{
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 10px 15px 30px;
+    padding: 0 15px 40px;
     display:grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap:15px;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); /* 自动适应，大屏自动排布 4~5 个 */
+    gap:20px;
 }
 
 .product-card, .card {
@@ -360,40 +371,41 @@ H5 顶部 Header
     border-radius:10px;
     overflow:hidden;
     box-shadow: 0 1px 3px rgba(0,0,0,.1);
-    transition: transform 0.2s;
+    transition: transform 0.2s, box-shadow 0.2s;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
 }
 
 .product-card:hover, .card:hover {
-    transform: translateY(-3px);
+    transform: translateY(-4px);
+    box-shadow: 0 6px 16px rgba(0,0,0,.12);
 }
 
 .product-card img, .card img{
     width:100%;
-    height:200px;
+    height:220px;
     object-fit:cover;
     display: block;
 }
 
 .product-card h3, .card h3{
-    padding:10px 12px 4px;
+    padding:12px 14px 4px;
     font-size:16px;
     color: #050505;
-    line-height: 1.3;
-    height: 42px;
+    line-height: 1.35;
+    height: 46px;
     overflow: hidden;
 }
 
 .desc{
-    padding:0 12px;
+    padding:0 14px;
     color:#65676b;
     font-size: 13px;
 }
 
 .price{
-    padding:8px 12px;
+    padding:8px 14px;
     font-size:18px;
     font-weight:bold;
     color:#b8860b;
@@ -402,9 +414,9 @@ H5 顶部 Header
 /* 商城按钮 */
 .btn-main{
     display:block;
-    width:calc(100% - 24px);
-    margin:0 12px 12px;
-    padding:8px;
+    width:calc(100% - 28px);
+    margin:0 14px 14px;
+    padding:10px;
     background:#0866ff;
     color:white;
     border:none;
@@ -413,6 +425,11 @@ H5 顶部 Header
     text-align: center;
     font-size: 14px;
     font-weight: 600;
+    transition: background 0.2s;
+}
+
+.btn-main:hover {
+    background:#0052cc;
 }
 
 /* =====================
@@ -432,17 +449,29 @@ footer{
 }
 
 /* =====================
-手机端响应式适配
+手机端响应式适配 (移动端回归 100% 宽度与卡片排列)
 ===================== */
 @media(max-width:768px){
-    .fb-cover-container {
+    .fb-cover-container,
+    .profile-container,
+    .h5-search, 
+    .h5-category, 
+    .title, 
+    .products {
+        width: 100% !important;
+        max-width: 100% !important;
         border-radius: 0;
         margin-top: 0;
-        width: 100%;
     }
     
-    .banner {
-        height: 180px !important;
+    .banner, #banner {
+        max-height: 220px !important;
+        min-height: 140px !important;
+    }
+
+    .banner img, #banner img {
+        max-height: 220px !important;
+        object-fit: cover !important; /* 手机端为了充满屏幕，切回 cover 避免上下白边 */
     }
     
     .btn-edit-cover span {
@@ -453,6 +482,7 @@ footer{
         flex-direction: column;
         align-items: flex-start;
         gap: 10px;
+        padding: 0 15px;
     }
 
     .profile-avatar-wrapper {
@@ -483,10 +513,11 @@ footer{
     .products{
         grid-template-columns: repeat(2, 1fr);
         gap:10px;
+        padding: 0 10px 30px;
     }
 
     .product-card img, .card img{
-        height:140px;
+        height:150px;
     }
 
     .mobile-nav{
