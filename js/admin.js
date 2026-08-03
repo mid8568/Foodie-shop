@@ -34,9 +34,12 @@ function loadPage(page, id = "") {
             url = "admin-products.html";
             break;
 
-        // 图片管理
-        case "images":
-            url = "admin-images.html";
+        // 图片管理（拆分后）
+        case "images-product":
+            url = "admin-images-product.html";
+            break;
+        case "images-decor":
+            url = "admin-images-decor.html";
             break;
 
         // 商品编辑
@@ -48,9 +51,12 @@ function loadPage(page, id = "") {
             }
             break;
 
-        // 前端装修
-        case "decoration":
-            url = "admin-decoration.html";
+        // 前端装修（拆分后）
+        case "decor-pc":
+            url = "admin-decor-pc.html";
+            break;
+        case "decor-mobile":
+            url = "admin-decor-mobile.html";
             break;
 
         // eBay同步
@@ -68,13 +74,23 @@ function loadPage(page, id = "") {
     updateSidebarActive(page);
 }
 
-// 高亮当前选中的左侧菜单
+// 高亮当前选中的左侧菜单，并自动展开父级下拉菜单
 function updateSidebarActive(page) {
     const links = document.querySelectorAll(".sidebar a");
     links.forEach(a => {
-        // 判断 onclick 属性中是否包含当前 page 名称
-        if (a.getAttribute("onclick") && a.getAttribute("onclick").includes(`'${page}'`)) {
+        const onClickAttr = a.getAttribute("onclick");
+        if (onClickAttr && onClickAttr.includes(`'${page}'`)) {
             a.classList.add("active");
+
+            // 如果当前高亮的是子菜单，自动展开父级下拉菜单
+            const parentDropdown = a.closest('.nav-dropdown');
+            if (parentDropdown) {
+                parentDropdown.classList.add('active');
+                const container = parentDropdown.querySelector('.dropdown-container');
+                if (container) {
+                    container.style.maxHeight = container.scrollHeight + "px";
+                }
+            }
         } else {
             a.classList.remove("active");
         }
@@ -82,7 +98,7 @@ function updateSidebarActive(page) {
 }
 
 // =======================
-// 菜单跳转
+// 菜单跳转（修改后适配路由）
 // =======================
 function openPage(page, id = "") {
     let url = "admin.html?page=" + page;
@@ -93,6 +109,24 @@ function openPage(page, id = "") {
 
     history.pushState(null, "", url);
     loadPage(page, id);
+}
+
+// =======================
+// 下拉菜单控制（新增方法）
+// =======================
+function toggleDropdown(element) {
+    const parentDropdown = element.parentElement;
+    const container = parentDropdown.querySelector('.dropdown-container');
+
+    // 切换展开/收起类名
+    parentDropdown.classList.toggle('active');
+
+    if (parentDropdown.classList.contains('active')) {
+        // 设置真实内容高度以触发平滑过渡动画
+        container.style.maxHeight = container.scrollHeight + 'px';
+    } else {
+        container.style.maxHeight = '0px';
+    }
 }
 
 // =======================
@@ -110,6 +144,7 @@ window.addEventListener("popstate", () => {
 // 暴露全局方法
 // =======================
 window.openPage = openPage;
+window.toggleDropdown = toggleDropdown;
 
 window.editProduct = function(id) {
     openPage("edit", id);
