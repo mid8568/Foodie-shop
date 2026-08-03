@@ -14,17 +14,15 @@
     <a href="https://m.me/你的Facebook主页用户名" class="h5-cart" target="_blank">💬</a>
 </header>
 
-<!-- 顶部大型封面海报区 (已限制高度，绝不撑满一屏) -->
+<!-- 顶部大型封面海报区 (JS 会自动注入后台 admin-decoration 上传的图片) -->
 <section class="banner" id="banner">
-    <!-- 如果后台JS插入图片，会自动动态填入这里；如果静态使用，取消下面注释填入链接即可 -->
-    <!-- <img src="YOUR_BANNER_IMAGE.jpg" alt="China Direct Shop Banner"> -->
 </section>
 
 <!-- Facebook 风格店铺主页简介区 -->
 <section class="page-profile-section">
     <div class="profile-container">
         
-        <!-- 圆形 Logo / 头像 (点击可弹出查看/更换菜单) -->
+        <!-- 圆形 Logo / 头像 -->
         <div class="profile-avatar-wrapper">
             <div class="profile-avatar" id="avatarBtn" onclick="toggleAvatarMenu(event)">
                 <img src="https://images.unsplash.com/photo-1544717305-2782549b5136?w=200" alt="China Direct Shop Logo" id="site-logo">
@@ -34,7 +32,7 @@
             <!-- 隐藏的本地文件选择框 -->
             <input type="file" id="avatarInput" accept="image/*" style="display: none;" onchange="uploadNewAvatar(event)">
 
-            <!-- 点击头像弹出的菜单 (对应 FB 样式) -->
+            <!-- 点击头像弹出的菜单 -->
             <div class="avatar-dropdown" id="avatarDropdown">
                 <div class="dropdown-item" onclick="viewAvatar()">
                     <span class="icon">👤</span> 查看头像
