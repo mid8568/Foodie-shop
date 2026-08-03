@@ -2,44 +2,37 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>PC 端网页装修</title>
+    <title>PC 端网页装修编辑器</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
         body { background: #f0f2f5; height: 100vh; display: flex; flex-direction: column; color: #333; }
 
-        /* 顶部栏 */
         header { height: 50px; background: #fff; border-bottom: 1px solid #e8e8e8; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; z-index: 100; }
         .header-title { font-weight: bold; font-size: 16px; display: flex; align-items: center; gap: 8px; }
         .btn-group button { padding: 6px 16px; border-radius: 4px; border: 1px solid #d9d9d9; background: #fff; cursor: pointer; margin-left: 8px; font-size: 13px; }
         .btn-group .btn-primary { background: #1890ff; color: #fff; border-color: #1890ff; }
 
-        /* 布局容器 */
         .editor-container { flex: 1; display: flex; overflow: hidden; }
 
-        /* 左侧：PC 组件库 */
         .left-panel { width: 220px; background: #fff; border-right: 1px solid #e8e8e8; padding: 15px; flex-shrink: 0; }
         .panel-title { font-size: 14px; font-weight: bold; margin-bottom: 12px; color: #666; }
         .comp-item { background: #f7f8fa; border: 1px dashed #adc6ff; padding: 12px; margin-bottom: 10px; border-radius: 4px; text-align: center; cursor: pointer; font-size: 13px; color: #1890ff; transition: all 0.2s; }
         .comp-item:hover { background: #e6f7ff; border-color: #1890ff; }
 
-        /* 中间：PC 大屏画布 */
         .center-panel { flex: 1; background: #eef0f3; padding: 20px; overflow-y: auto; display: flex; justify-content: center; }
         .pc-canvas { width: 100%; max-width: 1200px; background: #fff; min-height: 800px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); border-radius: 4px; position: relative; }
 
-        /* 画布中的组件区块 */
         .widget-box { position: relative; border: 2px transparent dashed; cursor: pointer; margin-bottom: 10px; }
         .widget-box.active { border-color: #1890ff; }
         .widget-box:hover { border-color: #40a9ff; }
         .widget-box:hover .widget-del { display: flex; }
         .widget-del { position: absolute; top: 10px; right: 10px; background: #ff4d4f; color: #fff; width: 24px; height: 24px; border-radius: 50%; display: none; align-items: center; justify-content: center; font-size: 14px; cursor: pointer; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
 
-        /* 右侧：配置属性栏 */
         .right-panel { width: 320px; background: #fff; border-left: 1px solid #e8e8e8; padding: 15px; flex-shrink: 0; overflow-y: auto; }
         .form-item { margin-bottom: 15px; }
         .form-item label { display: block; font-size: 12px; color: #666; margin-bottom: 5px; }
         .form-item input, .form-item textarea, .form-item select { width: 100%; padding: 6px 10px; border: 1px solid #d9d9d9; border-radius: 4px; font-size: 13px; outline: none; }
 
-        /* 组件 UI 预览效果 */
         .preview-banner img { width: 100%; object-fit: cover; display: block; }
         .preview-notice { background: #e6f7ff; color: #1890ff; padding: 12px 20px; font-size: 14px; border-left: 4px solid #1890ff; }
         .preview-products { padding: 20px; }
@@ -61,7 +54,6 @@
     </header>
 
     <div class="editor-container">
-        <!-- 左侧组件库 -->
         <div class="left-panel">
             <div class="panel-title">PC 端组件库</div>
             <div class="comp-item" onclick="addComponent('banner')">🖼️ 通栏大图轮播</div>
@@ -69,14 +61,10 @@
             <div class="comp-item" onclick="addComponent('products')">🛍️ 网格商品展示区</div>
         </div>
 
-        <!-- 中间 1200px 网页画布 -->
         <div class="center-panel">
-            <div class="pc-canvas" id="canvas">
-                <!-- 动态渲染组件 -->
-            </div>
+            <div class="pc-canvas" id="canvas"></div>
         </div>
 
-        <!-- 右侧属性面板 -->
         <div class="right-panel" id="config-panel">
             <div class="panel-title">组件属性设置</div>
             <p style="color:#999; font-size: 12px;">点击中间画布中的板块进行个性化调整</p>
@@ -91,8 +79,20 @@
 
         let pageComponents = [];
         let activeIndex = -1;
+        let categoriesList = [];
 
-        document.addEventListener("DOMContentLoaded", loadDecorateConfig);
+        document.addEventListener("DOMContentLoaded", async () => {
+            await fetchCategories();
+            await loadDecorateConfig();
+        });
+
+        async function fetchCategories() {
+            const { data } = await supabaseClient.from("products").select("category");
+            if (data) {
+                const cats = new Set(data.map(item => item.category).filter(Boolean));
+                categoriesList = Array.from(cats);
+            }
+        }
 
         async function loadDecorateConfig() {
             const { data, error } = await supabaseClient
@@ -101,7 +101,7 @@
                 .eq("id", 1)
                 .single();
 
-            if (error) {
+            if (error && error.code !== 'PGRST116') {
                 console.error("加载装修配置失败:", error);
                 return;
             }
@@ -121,7 +121,7 @@
             } else if (type === "notice") {
                 newComp.data = { text: "📢 欢迎光临！网页端专享优惠活动进行中！" };
             } else if (type === "products") {
-                newComp.data = { title: "🔥 热卖商品推荐", cols: 4, limit: 8 };
+                newComp.data = { title: "🔥 热卖商品推荐", category: "全部", cols: 4, limit: 8 };
             }
 
             pageComponents.push(newComp);
@@ -164,14 +164,15 @@
                     contentHtml = `<div class="preview-notice">${comp.data.text || '暂无内容'}</div>`;
                 } else if (comp.type === "products") {
                     const cols = comp.data.cols || 4;
+                    const cat = comp.data.category || '全部';
                     contentHtml = `
                         <div class="preview-products">
-                            <div class="p-title">${comp.data.title || '商品组'} (${cols}列展示)</div>
+                            <div class="p-title">${comp.data.title || '商品区'} <span style="font-size:12px;color:#888;">(分类: ${cat} | ${cols}列)</span></div>
                             <div class="grid-${cols}">
-                                <div class="p-card"><img src="https://via.placeholder.com/150"><p style="margin-top:5px;font-size:12px;">演示商品1</p></div>
-                                <div class="p-card"><img src="https://via.placeholder.com/150"><p style="margin-top:5px;font-size:12px;">演示商品2</p></div>
-                                <div class="p-card"><img src="https://via.placeholder.com/150"><p style="margin-top:5px;font-size:12px;">演示商品3</p></div>
-                                <div class="p-card"><img src="https://via.placeholder.com/150"><p style="margin-top:5px;font-size:12px;">演示商品4</p></div>
+                                <div class="p-card"><img src="https://via.placeholder.com/150"><p style="margin-top:5px;font-size:12px;">商品 1</p></div>
+                                <div class="p-card"><img src="https://via.placeholder.com/150"><p style="margin-top:5px;font-size:12px;">商品 2</p></div>
+                                <div class="p-card"><img src="https://via.placeholder.com/150"><p style="margin-top:5px;font-size:12px;">商品 3</p></div>
+                                <div class="p-card"><img src="https://via.placeholder.com/150"><p style="margin-top:5px;font-size:12px;">商品 4</p></div>
                             </div>
                         </div>`;
                 }
@@ -213,10 +214,19 @@
                         <textarea rows="3" onchange="updateData('text', this.value)">${comp.data.text || ''}</textarea>
                     </div>`;
             } else if (comp.type === "products") {
+                let options = `<option value="全部" ${comp.data.category === '全部' ? 'selected' : ''}>全部商品</option>`;
+                categoriesList.forEach(c => {
+                    options += `<option value="${c}" ${comp.data.category === c ? 'selected' : ''}>${c}</option>`;
+                });
+
                 formHtml += `
                     <div class="form-item">
                         <label>板块标题</label>
                         <input type="text" value="${comp.data.title || ''}" onchange="updateData('title', this.value)">
+                    </div>
+                    <div class="form-item">
+                        <label>展示的商品分类</label>
+                        <select onchange="updateData('category', this.value)">${options}</select>
                     </div>
                     <div class="form-item">
                         <label>每行排布列数</label>
@@ -255,7 +265,7 @@
                 console.error("保存失败:", error);
                 alert("保存失败！");
             } else {
-                alert("🎉 保存并发布成功！网页前端已实时同步。");
+                alert("🎉 保存并发布成功！PC 端首页已同步更新。");
             }
         }
     </script>
