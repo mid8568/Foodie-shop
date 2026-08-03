@@ -36,7 +36,7 @@ function loadPage(page, id = "") {
 
         // 图片管理（拆分为产品和装修）
         case "images-product":
-            url = "admin-images-product.html";
+            url = "admin-images.html";
             break;
 
         case "images-decor":
@@ -54,7 +54,7 @@ function loadPage(page, id = "") {
 
         // 前端装修（拆分为 PC 端和手机端）
         case "decor-pc":
-            url = "admin-decor-pc.html";
+            url = "admin-decoration.html";
             break;
 
         case "decor-mobile":
