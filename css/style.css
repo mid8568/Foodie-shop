@@ -44,31 +44,35 @@ H5 顶部
 }
 
 /* =====================
-顶部大封面海报 (限制高度，绝不占满一屏)
+顶部大封面海报 (修复拉伸/挤压，严格限制高度)
 ===================== */
 .banner{
     width: 100% !important;
-    height: 380px !important; /* PC端固定高度，可自由调整为 300px~400px */
+    height: 380px !important; /* PC端固定高度 */
     max-height: 45vh !important;
     background: #160b05 !important;
     margin: 0 !important;
     padding: 0 !important;
-    overflow: hidden;
-    display: block;
-    position: relative;
+    overflow: hidden !important; /* 强制裁剪溢出部分 */
+    position: relative !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
 }
 
-/* 兼容静态或 JS 动态渲染图片，等比截取填充，不压扁 */
+/* 兼容静态或 JS 动态装修组件渲染图片，保持等比例居中裁剪 */
 .banner img, 
+.banner > div,
 .banner > div img,
+.slider-slide,
 .slider-slide img {
     width: 100% !important;
     height: 100% !important;
     display: block !important;
-    object-fit: cover !important; /* 核心：裁剪适应容器，保持等比例不压扁 */
+    object-fit: cover !important; /* 核心：保持比例填满，不拉伸变形 */
     object-position: center !important; /* 保证海报主体居中 */
     margin: 0 !important;
-    border: none;
+    border: none !important;
 }
 
 /* 清理海报上可能重叠的默认文字与按钮 */
@@ -95,7 +99,12 @@ FB 风格店铺主页简介区 (Profile Section)
     position: relative;
 }
 
-/* 圆形 Logo */
+/* 圆形 Logo & 交互容器 */
+.profile-avatar-wrapper {
+    position: relative;
+    flex-shrink: 0;
+}
+
 .profile-avatar {
     width: 130px;
     height: 130px;
@@ -103,15 +112,68 @@ FB 风格店铺主页简介区 (Profile Section)
     overflow: hidden;
     border: 4px solid #ffffff;
     box-shadow: 0 2px 12px rgba(0,0,0,0.15);
-    flex-shrink: 0;
-    margin-top: -40px; /* 向上压在海报边缘，营造专页悬浮感 */
+    margin-top: -40px; /* 向上压在海报边缘 */
     background: #fff;
+    cursor: pointer;
+    position: relative;
 }
 
 .profile-avatar img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+}
+
+.avatar-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    text-align: center;
+    padding: 3px 0;
+    font-size: 14px;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.profile-avatar:hover .avatar-overlay {
+    opacity: 1;
+}
+
+/* FB 风格头像点击下拉菜单 */
+.avatar-dropdown {
+    display: none;
+    position: absolute;
+    top: 95px;
+    left: 0;
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    width: 150px;
+    z-index: 1000;
+    overflow: hidden;
+    border: 1px solid #e4e6eb;
+}
+
+.avatar-dropdown.show {
+    display: block;
+}
+
+.dropdown-item {
+    padding: 10px 15px;
+    font-size: 14px;
+    color: #050505;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.2s;
+}
+
+.dropdown-item:hover {
+    background: #f0f2f5;
 }
 
 /* 文本简介区 */
@@ -336,6 +398,12 @@ footer{
         width: 100px;
         height: 100px;
         margin-top: -35px;
+    }
+
+    .avatar-dropdown {
+        top: 70px;
+        left: 50%;
+        transform: translateX(-50%);
     }
 
     .shop-name {
