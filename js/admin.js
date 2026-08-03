@@ -87,6 +87,12 @@ let url="";
 
 switch(page){
 
+case "home":
+
+url =
+"admin-home.html";
+
+break;
 
 
 // 商品管理
