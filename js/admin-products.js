@@ -1,779 +1,305 @@
-console.log(
-"admin-products.js启动"
-);
-
+console.log("admin-products.js 启动成功");
 
 // =======================
-// Supabase
+// Supabase 初始化
 // =======================
+const SUPABASE_URL = "https://ukxxmxnubxjezkwbbxdr.supabase.co";
+const SUPABASE_KEY = "sb_publishable_2IFHfms3ombozpvZCvaeEg_2VZ2z5hJ";
 
-
-const SUPABASE_URL =
-"https://ukxxmxnubxjezkwbbxdr.supabase.co";
-
-
-const SUPABASE_KEY =
-"sb_publishable_2IFHfms3ombozpvZCvaeEg_2VZ2z5hJ";
-
-
-
-const supabaseClient =
-supabase.createClient(
-SUPABASE_URL,
-SUPABASE_KEY
-);
-
-
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // =======================
-// 分页
+// 全局状态管理
 // =======================
-
-
 const PAGE_SIZE = 15;
-
-
 let currentPage = 1;
-
-
 let totalPages = 1;
+let totalCount = 0;
 
-
-let currentKeyword = "";
-
-
-
+// 多条件筛选参数
+let filterParams = {
+    keywordTitle: "", // 商品标题
+    keywordId: "",    // 商品ID
+    keywordCode: "",  // 商家编码
+    statusTab: "全部"  // 当前选中Tab：全部 / 出售中 / 仓库中
+};
 
 // =======================
-// 页面加载
+// 页面加载绑定
 // =======================
-
-
-document.addEventListener(
-"DOMContentLoaded",
-()=>{
-
-
-loadProducts();
-
-
+document.addEventListener("DOMContentLoaded", () => {
+    // 1. 初始化Tab切换事件
+    initTabs();
+    
+    // 2. 加载商品列表数据
+    loadProducts();
 });
 
-
-
-
-
-// =======================
-// 加载商品
-// =======================
-
-
-async function loadProducts(
-keyword="",
-page=1
-){
-
-
-currentPage = page;
-
-
-currentKeyword = keyword;
-
-
-
-let start =
-(page-1)*PAGE_SIZE;
-
-
-
-let end =
-start+PAGE_SIZE-1;
-
-
-
-let query =
-supabaseClient
-.from("products")
-.select(
-"*",
-{
-count:"exact"
-}
-)
-.order(
-"id",
-{
-ascending:false
-}
-)
-.range(
-start,
-end
-);
-
-
-
-if(keyword){
-
-
-query =
-query.ilike(
-"name",
-"%"+keyword+"%"
-);
-
-
+// 初始化顶部 Tab 逻辑
+function initTabs() {
+    const tabs = document.querySelectorAll(".tabs .tab-item");
+    tabs.forEach(tab => {
+        tab.addEventListener("click", function() {
+            tabs.forEach(t => t.classList.remove("active"));
+            this.classList.add("active");
+            
+            // 提取 Tab 名称 (去掉后面的数字)
+            const tabName = this.innerText.split('(')[0].trim();
+            filterParams.statusTab = tabName;
+            
+            // 切 Tab 时重置到第一页并重新加载
+            loadProducts(1);
+        });
+    });
 }
 
+// =======================
+// 加载与查询商品
+// =======================
+async function loadProducts(page = 1) {
+    currentPage = page;
+    let start = (page - 1) * PAGE_SIZE;
+    let end = start + PAGE_SIZE - 1;
 
+    // 构建 Supabase 基础查询
+    let query = supabaseClient
+        .from("products")
+        .select("*", { count: "exact" })
+        .order("id", { ascending: false })
+        .range(start, end);
 
-const {
+    // 1. 根据 Tab 过滤上/下架状态
+    if (filterParams.statusTab === "出售中") {
+        query = query.eq("stock_status", "上架");
+    } else if (filterParams.statusTab === "仓库中") {
+        query = query.eq("stock_status", "下架");
+    }
 
-data,
+    // 2. 组合框筛选：商品标题
+    if (filterParams.keywordTitle) {
+        query = query.ilike("name", `%${filterParams.keywordTitle}%`);
+    }
 
-count,
+    // 3. 组合框筛选：商品ID (支持逗号分隔多个ID)
+    if (filterParams.keywordId) {
+        const ids = filterParams.keywordId
+            .split(/[,，\s]+/)
+            .map(id => id.trim())
+            .filter(id => id);
+        if (ids.length > 0) {
+            query = query.in("id", ids);
+        }
+    }
 
-error
+    // 4. 组合框筛选：商家编码
+    if (filterParams.keywordCode) {
+        query = query.ilike("merchant_code", `%${filterParams.keywordCode}%`);
+    }
 
-}=await query;
+    const { data, count, error } = await query;
 
+    if (error) {
+        console.error("加载商品失败:", error);
+        return;
+    }
 
+    totalCount = count || 0;
+    totalPages = Math.ceil(totalCount / PAGE_SIZE) || 1;
 
-if(error){
-
-console.log(error);
-
-return;
-
+    // 渲染表格与分页状态
+    renderProducts(data || []);
+    renderPaginationInfo();
 }
 
+// =======================
+// 渲染表格列表
+// =======================
+function renderProducts(products) {
+    const box = document.getElementById("product-list");
+    if (!box) return;
 
+    box.innerHTML = "";
 
-totalPages =
-Math.ceil(
-count/PAGE_SIZE
-);
+    if (products.length === 0) {
+        box.innerHTML = `<tr><td colspan="9" style="text-align:center; color:#999; padding: 20px;">暂无满足条件的商品数据</td></tr>`;
+        return;
+    }
 
+    products.forEach(item => {
+        let tr = document.createElement("tr");
 
+        // 判断状态样式
+        const isOnline = item.stock_status === "上架";
+        const statusClass = isOnline ? "status-tag" : "status-tag offline";
+        const statusText = item.stock_status || "下架";
 
-renderProducts(
-data
-);
+        tr.innerHTML = `
+            <td><input type="checkbox" class="select-item" value="${item.id}"></td>
+            <td>
+                <div class="product-info">
+                    <img src="${item.image || 'https://via.placeholder.com/50'}" class="product-img" alt="商品图">
+                    <div class="product-detail">
+                        <div class="title">${item.name || "未命名商品"}</div>
+                        <div class="sub-text">ID: ${item.id}</div>
+                    </div>
+                </div>
+            </td>
+            <td>
+                ¥ <input type="number" step="0.01" value="${item.price || 0}" id="price-${item.id}" class="edit-price" onblur="updateProductField('${item.id}')">
+            </td>
+            <td>
+                <input type="number" value="${item.stock_quantity || 0}" id="stock-${item.id}" class="edit-stock" onblur="updateProductField('${item.id}')">
+            </td>
+            <td>${item.total_sales || 0}</td>
+            <td>${item.sales_30_days || 0}</td>
+            <td>
+                ${item.created_at ? new Date(item.created_at).toLocaleString('zh-CN', {hour12: false}) : '-'}
+                <span class="${statusClass}">${statusText}</span>
+            </td>
+            <td>${item.published_at ? new Date(item.published_at).toLocaleString('zh-CN', {hour12: false}) : '-'}</td>
+            <td class="action-links">
+                <a href="javascript:void(0)" onclick="editProduct('${item.id}')">编辑商品</a><br>
+                <a href="javascript:void(0)" onclick="toggleStatus('${item.id}', '${item.stock_status}')">${isOnline ? '下架商品' : '上架商品'}</a>
+            </td>
+        `;
 
-
-renderPagination();
-
-
-
+        box.appendChild(tr);
+    });
 }
 
-
-
-
-
-
 // =======================
-// 商品列表
+// 搜索与重置
 // =======================
-
-
-function renderProducts(products){
-
-
-const box =
-document.getElementById(
-"product-list"
-);
-
-
-
-box.innerHTML="";
-
-
-
-products.forEach(item=>{
-
-
-let tr =
-document.createElement(
-"tr"
-);
-
-
-
-tr.innerHTML = `
-
-
-<td>
-
-<img
-
-src="${item.image || ''}"
-
-class="table-image"
-
->
-
-</td>
-
-
-
-<td class="product-name">
-
-
-<div>
-
-${item.name || ""}
-
-</div>
-
-
-<a
-
-href="${item['1688_url'] || '#'}"
-
-target="_blank"
-
-class="1688-link"
-
->
-
-1688链接
-
-</a>
-
-
-</td>
-
-
-
-
-<td>
-
-${item.name_en || ""}
-
-</td>
-
-
-
-
-
-<td>
-
-
-<input
-
-type="number"
-
-value="${item.price || 0}"
-
-id="price-${item.id}"
-
-class="edit-price"
-
-onblur="updateProductField('${item.id}')"
-
->
-
-
-</td>
-
-
-
-
-
-<td>
-
-
-<input
-
-type="number"
-
-value="${item.stock_quantity || 0}"
-
-id="stock-${item.id}"
-
-class="edit-stock"
-
-onblur="updateProductField('${item.id}')"
-
->
-
-
-</td>
-
-
-
-
-
-<td>
-
-
-<button
-
-onclick="toggleStatus('${item.id}','${item.stock_status}')"
-
->
-
-
-${item.stock_status || "下架"}
-
-
-</button>
-
-
-</td>
-
-
-
-
-
-<td>
-
-
-<button
-
-onclick="editProduct('${item.id}')"
-
->
-
-编辑
-
-</button>
-
-
-
-</td>
-
-
-`;
-
-
-
-box.appendChild(tr);
-
-
-
-});
-
-
+function searchProduct() {
+    const inputTitle = document.getElementById("search-title")?.value.trim() || "";
+    const inputId = document.getElementById("search-id")?.value.trim() || "";
+    const inputCode = document.getElementById("search-code")?.value.trim() || "";
+
+    filterParams.keywordTitle = inputTitle;
+    filterParams.keywordId = inputId;
+    filterParams.keywordCode = inputCode;
+
+    loadProducts(1);
 }
 
+function resetSearch() {
+    if (document.getElementById("search-title")) document.getElementById("search-title").value = "";
+    if (document.getElementById("search-id")) document.getElementById("search-id").value = "";
+    if (document.getElementById("search-code")) document.getElementById("search-code").value = "";
 
+    filterParams.keywordTitle = "";
+    filterParams.keywordId = "";
+    filterParams.keywordCode = "";
 
-
-
-
-
-// =======================
-// 搜索
-// =======================
-
-
-function searchProduct(){
-
-
-
-let keyword =
-
-document.getElementById(
-"search"
-).value;
-
-
-
-loadProducts(
-keyword,
-1
-);
-
-
-
+    loadProducts(1);
 }
 
-
-
-
-
-
-
 // =======================
-// 编辑商品
+// 字段即时更新 (价格/库存)
 // =======================
+async function updateProductField(id) {
+    let priceInput = document.getElementById("price-" + id);
+    let stockInput = document.getElementById("stock-" + id);
 
+    if (!priceInput || !stockInput) return;
 
-function editProduct(id){
+    let price = Number(priceInput.value);
+    let stock = Number(stockInput.value);
 
+    const { error } = await supabaseClient
+        .from("products")
+        .update({
+            price: price,
+            stock_quantity: stock
+        })
+        .eq("id", id);
 
-console.log(
-"编辑商品:",
-id
-);
+    if (error) {
+        console.error("保存失败:", error);
+        alert("实时修改价格/库存失败！");
+        return;
+    }
 
-
-
-/*
-
-iframe模式
-
-返回父页面打开编辑
-
-*/
-
-
-if(
-window.parent &&
-window.parent.openPage
-){
-
-
-
-window.parent.openPage(
-"edit",
-id
-);
-
-
-
-}else{
-
-
-window.location.href =
-"admin.html?page=edit&id="+id;
-
-
-
+    console.log("实时修改成功, 商品ID:", id);
 }
 
+// =======================
+// 快捷上下架切换
+// =======================
+async function toggleStatus(id, currentStatus) {
+    let newStatus = currentStatus === "上架" ? "下架" : "上架";
 
+    const { error } = await supabaseClient
+        .from("products")
+        .update({
+            stock_status: newStatus
+        })
+        .eq("id", id);
 
+    if (error) {
+        console.error(error);
+        alert("切换状态失败");
+        return;
+    }
+
+    // 重新刷新列表数据
+    loadProducts(currentPage);
 }
 
-
-
-
-
-
-
 // =======================
-// 添加商品
+// 操作响应 (编辑/添加/批量全选)
 // =======================
-
-
-function addProduct(){
-
-
-alert(
-"添加商品功能开发中"
-);
-
-
+function editProduct(id) {
+    if (window.parent && window.parent.openPage) {
+        window.parent.openPage("edit", id);
+    } else {
+        window.location.href = "admin.html?page=edit&id=" + id;
+    }
 }
 
-
-
-
-
-
-
-
-
-// =======================
-// 更新价格库存
-// =======================
-
-
-async function updateProductField(id){
-
-
-
-let price =
-document.getElementById(
-"price-"+id
-).value;
-
-
-
-let stock =
-document.getElementById(
-"stock-"+id
-).value;
-
-
-
-const {
-
-error
-
-}=await supabaseClient
-
-.from("products")
-
-.update({
-
-price:Number(price),
-
-stock_quantity:Number(stock)
-
-})
-
-.eq(
-"id",
-id
-);
-
-
-
-if(error){
-
-console.log(error);
-
-alert(
-"保存失败"
-);
-
-return;
-
+function addProduct() {
+    if (window.parent && window.parent.openPage) {
+        window.parent.openPage("add-product");
+    } else {
+        alert("跳转至发布商品页面");
+    }
 }
 
-
-
-console.log(
-"保存成功",
-id
-);
-
-
+// 全选/反选实现
+function toggleSelectAll(masterCheckbox) {
+    const checkboxes = document.querySelectorAll(".select-item");
+    checkboxes.forEach(cb => cb.checked = masterCheckbox.checked);
 }
-
-
-
-
-
-
-
 
 // =======================
-// 上下架
+// 分页控件
 // =======================
+function renderPaginationInfo() {
+    const infoBox = document.getElementById("page-info");
+    if (!infoBox) return;
 
-
-async function toggleStatus(
-id,
-status
-){
-
-
-let newStatus =
-status==="上架"
-?
-"下架"
-:
-"上架";
-
-
-
-const {
-
-error
-
-}=await supabaseClient
-
-.from("products")
-
-.update({
-
-stock_status:newStatus
-
-})
-
-.eq(
-"id",
-id
-);
-
-
-
-if(error){
-
-alert(
-"修改失败"
-);
-
-return;
-
+    infoBox.innerHTML = `
+        共 <strong>${totalCount}</strong> 件商品 &nbsp; 
+        <button class="btn-page" onclick="changePage(${currentPage - 1})" ${currentPage <= 1 ? "disabled" : ""}>&lt;</button>
+        <span>${currentPage} / ${totalPages}</span>
+        <button class="btn-page" onclick="changePage(${currentPage + 1})" ${currentPage >= totalPages ? "disabled" : ""}>&gt;</button>
+    `;
 }
 
-
-
-loadProducts(
-currentKeyword,
-currentPage
-);
-
-
+function changePage(page) {
+    if (page < 1 || page > totalPages) return;
+    loadProducts(page);
 }
-
-
-
-
-
 
 // =======================
-// 分页
+// 导出给全局全局调用
 // =======================
-
-
-function renderPagination(){
-
-
-const box =
-document.getElementById(
-"pagination"
-);
-
-
-
-if(!box)return;
-
-
-
-box.innerHTML="";
-
-
-
-let html="";
-
-
-
-html+=`
-
-<button
-
-onclick="changePage(${currentPage-1})"
-
-${currentPage<=1?"disabled":""}
-
->
-
-上一页
-
-</button>
-
-`;
-
-
-
-
-for(
-let i=1;
-i<=totalPages;
-i++
-){
-
-
-html+=`
-
-<button
-
-onclick="changePage(${i})"
-
-class="${i===currentPage?'active':''}"
-
->
-
-${i}
-
-</button>
-
-`;
-
-}
-
-
-
-html+=`
-
-<button
-
-onclick="changePage(${currentPage+1})"
-
-${currentPage>=totalPages?"disabled":""}
-
->
-
-下一页
-
-</button>
-
-`;
-
-
-
-box.innerHTML=html;
-
-
-}
-
-
-
-
-
-function changePage(page){
-
-
-if(
-page<1 ||
-page>totalPages
-){
-
-return;
-
-}
-
-
-loadProducts(
-currentKeyword,
-page
-);
-
-
-}
-
-
-
-
-
-
-
-// =======================
-// 暴露
-// =======================
-
-
-window.loadProducts =
-loadProducts;
-
-
-window.searchProduct =
-searchProduct;
-
-
-window.addProduct =
-addProduct;
-
-
-window.editProduct =
-editProduct;
-
-
-window.toggleStatus =
-toggleStatus;
-
-
-window.updateProductField =
-updateProductField;
-
-
-window.changePage =
-changePage;
+window.loadProducts = loadProducts;
+window.searchProduct = searchProduct;
+window.resetSearch = resetSearch;
+window.addProduct = addProduct;
+window.editProduct = editProduct;
+window.toggleStatus = toggleStatus;
+window.updateProductField = updateProductField;
+window.changePage = changePage;
+window.toggleSelectAll = toggleSelectAll;
