@@ -5,19 +5,20 @@ const SUPABASE_URL = 'https://ukxxmxnubxjezkwbbxdr.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_2IFHfms3ombozpvZCvaeEg_2VZ2z5hJ';
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+
 let allProducts = [];
 
-// 页面加载完成后自动请求数据
+// 页面加载完成后自动请求数据库
 document.addEventListener('DOMContentLoaded', () => {
     loadBanners();
     loadProducts();
 });
 
 /* ==========================================
- * 2. 数据库数据加载 (Banner 与 商品)
+ * 2. 从后台/数据库读取数据并渲染
  * ========================================== */
 
-// 加载 Banner 海报
+// 从数据库渲染后台上传的 Banner 海报
 async function loadBanners() {
     const bannerContainer = document.getElementById('banner');
     if (!bannerContainer) return;
@@ -27,17 +28,18 @@ async function loadBanners() {
         if (error) throw error;
 
         if (data && data.length > 0) {
+            // 将后台上传的图片循环渲染到页面
             bannerContainer.innerHTML = data.map(b => `<img src="${b.image_url}" alt="Banner">`).join('');
         } else {
-            // 数据库无数据时的默认占位图
-            bannerContainer.innerHTML = `<img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=1200" alt="Banner">`;
+            // 如果后台没上传过任何 Banner，显示备用默认图
+            bannerContainer.innerHTML = `<img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=1200" alt="Default Banner">`;
         }
     } catch (err) {
         console.error('Error loading banners:', err);
     }
 }
 
-// 加载商品列表
+// 从数据库渲染后台上传的商品列表
 async function loadProducts() {
     const productContainer = document.getElementById('product-list');
     if (!productContainer) return;
@@ -50,17 +52,17 @@ async function loadProducts() {
         renderProducts(allProducts);
     } catch (err) {
         console.error('Error loading products:', err);
-        productContainer.innerHTML = '<p style="text-align:center; padding:20px;">Failed to load products.</p>';
+        productContainer.innerHTML = '<p style="text-align:center; padding:20px;">Failed to load products. Check API key.</p>';
     }
 }
 
-// 渲染商品 DOM
+// 动态渲染商品 DOM
 function renderProducts(products) {
     const productContainer = document.getElementById('product-list');
     if (!productContainer) return;
 
     if (products.length === 0) {
-        productContainer.innerHTML = '<p style="text-align:center; padding:20px;">No products found.</p>';
+        productContainer.innerHTML = '<p style="text-align:center; padding:20px;">暂无商品，请在后台添加。</p>';
         return;
     }
 
@@ -97,19 +99,14 @@ function filterProducts(category) {
 
 
 /* ==========================================
- * 3. FB 风格头像点击与替换逻辑
+ * 3. FB 风格头像交互逻辑
  * ========================================== */
-
-// 显示 / 隐藏头像下拉菜单
 function toggleAvatarMenu(event) {
-    event.stopPropagation(); // 阻止点击冒泡
+    event.stopPropagation();
     const dropdown = document.getElementById('avatarDropdown');
-    if (dropdown) {
-        dropdown.classList.toggle('show');
-    }
+    if (dropdown) dropdown.classList.toggle('show');
 }
 
-// 点击页面其它空白处时，自动关闭弹窗菜单
 document.addEventListener('click', function (e) {
     const dropdown = document.getElementById('avatarDropdown');
     const avatarBtn = document.getElementById('avatarBtn');
@@ -118,23 +115,18 @@ document.addEventListener('click', function (e) {
     }
 });
 
-// 查看头像：在新窗口打开大图
 function viewAvatar() {
     const logoImg = document.getElementById('site-logo').src;
     window.open(logoImg, '_blank');
     closeAvatarMenu();
 }
 
-// 选择头像：触发隐藏的上传框
 function triggerAvatarUpload() {
     const fileInput = document.getElementById('avatarInput');
-    if (fileInput) {
-        fileInput.click();
-    }
+    if (fileInput) fileInput.click();
     closeAvatarMenu();
 }
 
-// 更换本地选中的图片并实时预览
 function uploadNewAvatar(event) {
     const file = event.target.files[0];
     if (file) {
@@ -146,10 +138,7 @@ function uploadNewAvatar(event) {
     }
 }
 
-// 辅助函数：关闭下拉菜单
 function closeAvatarMenu() {
     const dropdown = document.getElementById('avatarDropdown');
-    if (dropdown) {
-        dropdown.classList.remove('show');
-    }
+    if (dropdown) dropdown.classList.remove('show');
 }
