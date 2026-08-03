@@ -2,96 +2,96 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>店铺装修编辑器</title>
+    <title>PC 端网页装修</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-        body { background: #f0f2f5; height: 100vh; display: flex; flex-direction: column; }
-        
-        /* 顶部操作栏 */
-        header { height: 50px; background: #fff; border-bottom: 1px solid #e8e8e8; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; }
-        .header-title { font-weight: bold; font-size: 16px; color: #333; }
-        .btn-group button { padding: 6px 16px; border-radius: 4px; border: 1px solid #d9d9d9; background: #fff; cursor: pointer; margin-left: 8px; }
+        body { background: #f0f2f5; height: 100vh; display: flex; flex-direction: column; color: #333; }
+
+        /* 顶部栏 */
+        header { height: 50px; background: #fff; border-bottom: 1px solid #e8e8e8; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; z-index: 100; }
+        .header-title { font-weight: bold; font-size: 16px; display: flex; align-items: center; gap: 8px; }
+        .btn-group button { padding: 6px 16px; border-radius: 4px; border: 1px solid #d9d9d9; background: #fff; cursor: pointer; margin-left: 8px; font-size: 13px; }
         .btn-group .btn-primary { background: #1890ff; color: #fff; border-color: #1890ff; }
 
-        /* 三栏布局 */
+        /* 布局容器 */
         .editor-container { flex: 1; display: flex; overflow: hidden; }
-        
-        /* 左侧：组件库 */
-        .left-panel { width: 220px; background: #fff; border-right: 1px solid #e8e8e8; padding: 15px; }
+
+        /* 左侧：PC 组件库 */
+        .left-panel { width: 220px; background: #fff; border-right: 1px solid #e8e8e8; padding: 15px; flex-shrink: 0; }
         .panel-title { font-size: 14px; font-weight: bold; margin-bottom: 12px; color: #666; }
-        .comp-item { background: #f7f8fa; border: 1px dashed #adc6ff; padding: 10px; margin-bottom: 10px; border-radius: 4px; text-align: center; cursor: pointer; font-size: 13px; color: #1890ff; transition: all 0.2s; }
+        .comp-item { background: #f7f8fa; border: 1px dashed #adc6ff; padding: 12px; margin-bottom: 10px; border-radius: 4px; text-align: center; cursor: pointer; font-size: 13px; color: #1890ff; transition: all 0.2s; }
         .comp-item:hover { background: #e6f7ff; border-color: #1890ff; }
 
-        /* 中间：手机画布 preview */
-        .center-panel { flex: 1; background: #f0f2f5; display: flex; justify-content: center; align-items: flex-start; padding: 30px; overflow-y: auto; }
-        .phone-canvas { width: 375px; min-height: 667px; background: #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border-radius: 8px; overflow: hidden; border: 1px solid #e8e8e8; position: relative; }
-        
-        .widget-box { position: relative; border: 2px transparent dashed; cursor: pointer; }
-        .widget-box.active { border-color: #1890ff; }
-        .widget-box:hover .widget-del { display: flex; }
-        .widget-del { position: absolute; top: 4px; right: 4px; background: #ff4d4f; color: #fff; width: 20px; height: 20px; border-radius: 50%; display: none; align-items: center; justify-content: center; font-size: 12px; cursor: pointer; z-index: 10; }
+        /* 中间：PC 大屏画布 */
+        .center-panel { flex: 1; background: #eef0f3; padding: 20px; overflow-y: auto; display: flex; justify-content: center; }
+        .pc-canvas { width: 100%; max-width: 1200px; background: #fff; min-height: 800px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); border-radius: 4px; position: relative; }
 
-        /* 右侧：属性设置 */
-        .right-panel { width: 300px; background: #fff; border-left: 1px solid #e8e8e8; padding: 15px; overflow-y: auto; }
+        /* 画布中的组件区块 */
+        .widget-box { position: relative; border: 2px transparent dashed; cursor: pointer; margin-bottom: 10px; }
+        .widget-box.active { border-color: #1890ff; }
+        .widget-box:hover { border-color: #40a9ff; }
+        .widget-box:hover .widget-del { display: flex; }
+        .widget-del { position: absolute; top: 10px; right: 10px; background: #ff4d4f; color: #fff; width: 24px; height: 24px; border-radius: 50%; display: none; align-items: center; justify-content: center; font-size: 14px; cursor: pointer; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+
+        /* 右侧：配置属性栏 */
+        .right-panel { width: 320px; background: #fff; border-left: 1px solid #e8e8e8; padding: 15px; flex-shrink: 0; overflow-y: auto; }
         .form-item { margin-bottom: 15px; }
         .form-item label { display: block; font-size: 12px; color: #666; margin-bottom: 5px; }
-        .form-item input, .form-item textarea { width: 100%; padding: 6px 10px; border: 1px solid #d9d9d9; border-radius: 4px; font-size: 13px; }
+        .form-item input, .form-item textarea, .form-item select { width: 100%; padding: 6px 10px; border: 1px solid #d9d9d9; border-radius: 4px; font-size: 13px; outline: none; }
 
-        /* UI预览组件样式 */
-        .preview-banner img { width: 100%; height: 140px; object-fit: cover; display: block; }
-        .preview-notice { background: #fffbe6; color: #fa8c16; padding: 8px 12px; font-size: 12px; border-bottom: 1px solid #ffe58f; }
-        .preview-products { padding: 10px; background: #f9f9f9; }
-        .preview-products .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        .p-card { background: #fff; border-radius: 4px; padding: 6px; font-size: 12px; }
-        .p-card img { width: 100%; height: 100px; object-fit: cover; border-radius: 4px; }
+        /* 组件 UI 预览效果 */
+        .preview-banner img { width: 100%; object-fit: cover; display: block; }
+        .preview-notice { background: #e6f7ff; color: #1890ff; padding: 12px 20px; font-size: 14px; border-left: 4px solid #1890ff; }
+        .preview-products { padding: 20px; }
+        .preview-products .p-title { font-size: 18px; font-weight: bold; margin-bottom: 15px; border-bottom: 2px solid #f0f0f0; padding-bottom: 8px; }
+        .preview-products .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
+        .preview-products .grid-5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; }
+        .p-card { border: 1px solid #f0f0f0; border-radius: 4px; padding: 10px; text-align: center; background: #fafafa; }
+        .p-card img { width: 100%; height: 120px; object-fit: cover; border-radius: 4px; }
     </style>
 </head>
 <body>
 
-    <!-- 顶部 -->
     <header>
-        <div class="header-title">🎨 店铺首页装修</div>
+        <div class="header-title">🖥️ PC 网页首页装修编辑器</div>
         <div class="btn-group">
-            <button onclick="loadDecorateConfig()">重置/刷新</button>
-            <button class="btn-primary" onclick="saveDecorateConfig()">保存并发布</button>
+            <button onclick="loadDecorateConfig()">刷新配置</button>
+            <button class="btn-primary" onclick="saveDecorateConfig()">保存并发布网页端</button>
         </div>
     </header>
 
     <div class="editor-container">
         <!-- 左侧组件库 -->
         <div class="left-panel">
-            <div class="panel-title">添加组件</div>
-            <div class="comp-item" onclick="addComponent('banner')">🖼️ 轮播图</div>
-            <div class="comp-item" onclick="addComponent('notice')">📢 滚动公告</div>
-            <div class="comp-item" onclick="addComponent('products')">🛍️ 商品推荐组</div>
+            <div class="panel-title">PC 端组件库</div>
+            <div class="comp-item" onclick="addComponent('banner')">🖼️ 通栏大图轮播</div>
+            <div class="comp-item" onclick="addComponent('notice')">📢 网页横幅公告</div>
+            <div class="comp-item" onclick="addComponent('products')">🛍️ 网格商品展示区</div>
         </div>
 
-        <!-- 中间预览画布 -->
+        <!-- 中间 1200px 网页画布 -->
         <div class="center-panel">
-            <div class="phone-canvas" id="canvas">
-                <!-- 动态组件列表渲染于此 -->
+            <div class="pc-canvas" id="canvas">
+                <!-- 动态渲染组件 -->
             </div>
         </div>
 
-        <!-- 右侧属性配置 -->
+        <!-- 右侧属性面板 -->
         <div class="right-panel" id="config-panel">
-            <div class="panel-title">组件设置</div>
-            <p style="color:#999; font-size: 12px;">点击中间画布中的组件进行编辑</p>
+            <div class="panel-title">组件属性设置</div>
+            <p style="color:#999; font-size: 12px;">点击中间画布中的板块进行个性化调整</p>
         </div>
     </div>
 
-    <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         const SUPABASE_URL = "https://ukxxmxnubxjezkwbbxdr.supabase.co";
         const SUPABASE_KEY = "sb_publishable_2IFHfms3ombozpvZCvaeEg_2VZ2z5hJ";
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // 当前装修组件 JSON 数据
         let pageComponents = [];
         let activeIndex = -1;
 
-        // 初始化加载配置
         document.addEventListener("DOMContentLoaded", loadDecorateConfig);
 
         async function loadDecorateConfig() {
@@ -103,7 +103,6 @@
 
             if (error) {
                 console.error("加载装修配置失败:", error);
-                alert("加载配置失败，请检查数据库配置！");
                 return;
             }
 
@@ -111,16 +110,18 @@
             renderCanvas();
         }
 
-        // 添加新组件
         function addComponent(type) {
             let newComp = { id: "comp_" + Date.now(), type: type, data: {} };
             
             if (type === "banner") {
-                newComp.data = { images: ["https://via.placeholder.com/600x200/1890ff/ffffff?text=New+Banner"] };
+                newComp.data = { 
+                    height: 400,
+                    images: ["https://via.placeholder.com/1200x400/1890ff/ffffff?text=PC+Banner+1"] 
+                };
             } else if (type === "notice") {
-                newComp.data = { text: "请输入新的公告内容" };
+                newComp.data = { text: "📢 欢迎光临！网页端专享优惠活动进行中！" };
             } else if (type === "products") {
-                newComp.data = { title: "全新上架", limit: 4 };
+                newComp.data = { title: "🔥 热卖商品推荐", cols: 4, limit: 8 };
             }
 
             pageComponents.push(newComp);
@@ -128,7 +129,6 @@
             renderCanvas();
         }
 
-        // 删除组件
         function deleteComponent(index, event) {
             event.stopPropagation();
             pageComponents.splice(index, 1);
@@ -136,16 +136,20 @@
             renderCanvas();
         }
 
-        // 选中组件
         function selectComponent(index) {
             activeIndex = index;
             renderCanvas();
         }
 
-        // 渲染手机画布
         function renderCanvas() {
             const canvas = document.getElementById("canvas");
             canvas.innerHTML = "";
+
+            if (pageComponents.length === 0) {
+                canvas.innerHTML = `<p style="text-align:center; padding: 100px 0; color:#aaa;">点击左侧组件库，开始搭建你的网页端首页</p>`;
+                renderConfigPanel();
+                return;
+            }
 
             pageComponents.forEach((comp, idx) => {
                 const box = document.createElement("div");
@@ -154,16 +158,20 @@
 
                 let contentHtml = "";
                 if (comp.type === "banner") {
-                    contentHtml = `<div class="preview-banner"><img src="${comp.data.images[0] || 'https://via.placeholder.com/600x200'}"></div>`;
+                    const h = comp.data.height || 400;
+                    contentHtml = `<div class="preview-banner"><img src="${comp.data.images[0] || 'https://via.placeholder.com/1200x400'}" style="height:${h}px;"></div>`;
                 } else if (comp.type === "notice") {
-                    contentHtml = `<div class="preview-notice">📢 ${comp.data.text || '暂无内容'}</div>`;
+                    contentHtml = `<div class="preview-notice">${comp.data.text || '暂无内容'}</div>`;
                 } else if (comp.type === "products") {
+                    const cols = comp.data.cols || 4;
                     contentHtml = `
                         <div class="preview-products">
-                            <div style="font-weight:bold; margin-bottom:6px; font-size:13px;">${comp.data.title || '商品组'}</div>
-                            <div class="grid">
-                                <div class="p-card"><img src="https://via.placeholder.com/100"><p>演示商品A</p></div>
-                                <div class="p-card"><img src="https://via.placeholder.com/100"><p>演示商品B</p></div>
+                            <div class="p-title">${comp.data.title || '商品组'} (${cols}列展示)</div>
+                            <div class="grid-${cols}">
+                                <div class="p-card"><img src="https://via.placeholder.com/150"><p style="margin-top:5px;font-size:12px;">演示商品1</p></div>
+                                <div class="p-card"><img src="https://via.placeholder.com/150"><p style="margin-top:5px;font-size:12px;">演示商品2</p></div>
+                                <div class="p-card"><img src="https://via.placeholder.com/150"><p style="margin-top:5px;font-size:12px;">演示商品3</p></div>
+                                <div class="p-card"><img src="https://via.placeholder.com/150"><p style="margin-top:5px;font-size:12px;">演示商品4</p></div>
                             </div>
                         </div>`;
                 }
@@ -178,45 +186,54 @@
             renderConfigPanel();
         }
 
-        // 渲染右侧属性配置面板
         function renderConfigPanel() {
             const panel = document.getElementById("config-panel");
             if (activeIndex < 0 || activeIndex >= pageComponents.length) {
-                panel.innerHTML = `<div class="panel-title">组件设置</div><p style="color:#999; font-size: 12px;">点击中间画布中的组件进行编辑</p>`;
+                panel.innerHTML = `<div class="panel-title">组件属性设置</div><p style="color:#999; font-size: 12px;">点击中间画布中的板块进行个性化调整</p>`;
                 return;
             }
 
             const comp = pageComponents[activeIndex];
-            let formHtml = `<div class="panel-title">编辑 ${comp.type} 组件</div>`;
+            let formHtml = `<div class="panel-title">设置 ${comp.type} 模块</div>`;
 
             if (comp.type === "banner") {
                 formHtml += `
                     <div class="form-item">
-                        <label>图片URL地址</label>
+                        <label>图片 URL 地址</label>
                         <input type="text" value="${comp.data.images[0] || ''}" onchange="updateData('images', [this.value])">
+                    </div>
+                    <div class="form-item">
+                        <label>Banner 高度 (px)</label>
+                        <input type="number" value="${comp.data.height || 400}" onchange="updateData('height', Number(this.value))">
                     </div>`;
             } else if (comp.type === "notice") {
                 formHtml += `
                     <div class="form-item">
-                        <label>公告文字</label>
+                        <label>横幅文字内容</label>
                         <textarea rows="3" onchange="updateData('text', this.value)">${comp.data.text || ''}</textarea>
                     </div>`;
             } else if (comp.type === "products") {
                 formHtml += `
                     <div class="form-item">
-                        <label>模块标题</label>
+                        <label>板块标题</label>
                         <input type="text" value="${comp.data.title || ''}" onchange="updateData('title', this.value)">
                     </div>
                     <div class="form-item">
-                        <label>显示数量</label>
-                        <input type="number" value="${comp.data.limit || 4}" onchange="updateData('limit', Number(this.value))">
+                        <label>每行排布列数</label>
+                        <select onchange="updateData('cols', Number(this.value))">
+                            <option value="4" ${comp.data.cols == 4 ? 'selected' : ''}>每行 4 列</option>
+                            <option value="5" ${comp.data.cols == 5 ? 'selected' : ''}>每行 5 列</option>
+                        </select>
+                    </div>
+                    <div class="form-item">
+                        <label>显示商品总数量</label>
+                        <input type="number" value="${comp.data.limit || 8}" onchange="updateData('limit', Number(this.value))">
                     </div>`;
             }
 
             panel.innerHTML = formHtml;
         }
 
-        // 动态修改属性
         function updateData(key, value) {
             if (activeIndex >= 0) {
                 pageComponents[activeIndex].data[key] = value;
@@ -224,13 +241,12 @@
             }
         }
 
-        // 保存并发布装修数据
         async function saveDecorateConfig() {
             const { error } = await supabaseClient
                 .from("decorations")
                 .upsert({
                     id: 1,
-                    page_name: "店铺首页",
+                    page_name: "PC官网首页",
                     config: pageComponents,
                     updated_at: new Date()
                 });
@@ -239,7 +255,7 @@
                 console.error("保存失败:", error);
                 alert("保存失败！");
             } else {
-                alert("🎉 保存并发布成功！前端首页已更新。");
+                alert("🎉 保存并发布成功！网页前端已实时同步。");
             }
         }
     </script>
