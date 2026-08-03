@@ -9,15 +9,171 @@ let allProducts = [];
 
 // 页面加载完成后自动请求数据库
 document.addEventListener('DOMContentLoaded', () => {
-    loadBanners();
-    loadProducts();
+    loadSiteAssets(); // 读取保存的封面与头像
+    loadBanners();    // 读取动态Banner
+    loadProducts();   // 读取商品
 });
 
 /* ==========================================
- * 2. 从后台/数据库读取数据并渲染
+ * 2. 页面初始化：读取已保存的头像与封面
  * ========================================== */
+async function loadSiteAssets() {
+    try {
+        const { data, error } = await db.from('site_settings').select('*');
+        if (error) {
+            console.warn('site_settings 数据表可能不存在或无数据，使用默认展示', error);
+            return;
+        }
 
-// 加载后台海报
+        if (data && data.length > 0) {
+            data.forEach(setting => {
+                // 如果数据库中有保存头像，自动替换
+                if (setting.key === 'avatar_url' && setting.value) {
+                    const avatarImg = document.getElementById('site-logo');
+                    if (avatarImg) avatarImg.src = setting.value;
+                }
+                // 如果数据库中有保存封面图，自动替换
+                if (setting.key === 'cover_url' && setting.value) {
+                    const bannerContainer = document.getElementById('banner');
+                    if (bannerContainer) {
+                        bannerContainer.innerHTML = `<img src="${setting.value}" alt="Cover Banner">`;
+                    }
+                }
+            });
+        }
+    } catch (err) {
+        console.error('加载站点资源失败:', err);
+    }
+}
+
+/* ==========================================
+ * 3. 核心工具：图片上传至 Supabase Storage
+ * ========================================== */
+async function uploadToSupabaseStorage(file, pathFolder) {
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${pathFolder}/${Date.now()}.${fileExt}`;
+
+    // 1. 上传文件至 Supabase Storage 的 images 存储桶
+    const { data, error } = await db.storage
+        .from('images')
+        .upload(fileName, file, { cacheControl: '3600', upsert: true });
+
+    if (error) {
+        throw new Error('图片上传失败: ' + error.message);
+    }
+
+    // 2. 获取图片的公开 URL
+    const { data: publicUrlData } = db.storage
+        .from('images')
+        .getPublicUrl(fileName);
+
+    return publicUrlData.publicUrl;
+}
+
+// 保存配置到 site_settings 表
+async function saveSettingToDB(key, value) {
+    const { error } = await db
+        .from('site_settings')
+        .upsert({ key: key, value: value }, { onConflict: 'key' });
+    
+    if (error) {
+        console.error(`保存 ${key} 到数据库失败:`, error.message);
+    }
+}
+
+/* ==========================================
+ * 4. 封面海报独立上传逻辑（永久生效）
+ * ========================================== */
+function triggerCoverUpload() {
+    const coverInput = document.getElementById('coverInput');
+    if (coverInput) coverInput.click();
+}
+
+async function uploadNewCover(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const bannerContainer = document.getElementById('banner');
+    if (bannerContainer) {
+        bannerContainer.innerHTML = `<p style="color:#fff; text-align:center;">正在上传封面...</p>`;
+    }
+
+    try {
+        // 上传到 Storage
+        const imageUrl = await uploadToSupabaseStorage(file, 'covers');
+        
+        // 渲染到页面
+        if (bannerContainer) {
+            bannerContainer.innerHTML = `<img src="${imageUrl}" alt="Uploaded Cover">`;
+        }
+
+        // 保存链接到数据库，保证刷新不丢失
+        await saveSettingToDB('cover_url', imageUrl);
+        alert('封面照片修改成功！');
+    } catch (err) {
+        alert(err.message);
+        loadBanners(); // 失败时恢复
+    }
+}
+
+/* ==========================================
+ * 5. 头像菜单与独立上传逻辑（永久生效）
+ * ========================================== */
+function toggleAvatarMenu(event) {
+    event.stopPropagation();
+    const dropdown = document.getElementById('avatarDropdown');
+    if (dropdown) dropdown.classList.toggle('show');
+}
+
+document.addEventListener('click', function (e) {
+    const dropdown = document.getElementById('avatarDropdown');
+    const avatarBtn = document.getElementById('avatarBtn');
+    if (dropdown && avatarBtn && !avatarBtn.contains(e.target) && !dropdown.contains(e.target)) {
+        dropdown.classList.remove('show');
+    }
+});
+
+function viewAvatar() {
+    const logoImg = document.getElementById('site-logo').src;
+    window.open(logoImg, '_blank');
+    closeAvatarMenu();
+}
+
+function triggerAvatarUpload() {
+    const fileInput = document.getElementById('avatarInput');
+    if (fileInput) fileInput.click();
+    closeAvatarMenu();
+}
+
+async function uploadNewAvatar(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const avatarImg = document.getElementById('site-logo');
+
+    try {
+        // 上传到 Storage
+        const imageUrl = await uploadToSupabaseStorage(file, 'avatars');
+        
+        // 渲染页面头像
+        if (avatarImg) avatarImg.src = imageUrl;
+
+        // 保存链接到数据库
+        await saveSettingToDB('avatar_url', imageUrl);
+        alert('头像修改成功！');
+    } catch (err) {
+        alert(err.message);
+    }
+}
+
+function closeAvatarMenu() {
+    const dropdown = document.getElementById('avatarDropdown');
+    if (dropdown) dropdown.classList.remove('show');
+}
+
+/* ==========================================
+ * 6. 加载商品与 Banner 数据库数据
+ * ========================================== */
 async function loadBanners() {
     const bannerContainer = document.getElementById('banner');
     if (!bannerContainer) return;
@@ -47,7 +203,6 @@ async function loadBanners() {
     }
 }
 
-// 加载商品
 async function loadProducts() {
     const productContainer = document.getElementById('product-list');
     if (!productContainer) return;
@@ -64,7 +219,6 @@ async function loadProducts() {
     }
 }
 
-// 渲染商品 DOM
 function renderProducts(products) {
     const productContainer = document.getElementById('product-list');
     if (!productContainer) return;
@@ -88,7 +242,6 @@ function renderProducts(products) {
     }).join('');
 }
 
-// 搜索商品
 function searchProducts() {
     const query = document.getElementById('search').value.toLowerCase();
     const filtered = allProducts.filter(p => {
@@ -98,7 +251,6 @@ function searchProducts() {
     renderProducts(filtered);
 }
 
-// 分类筛选商品
 function filterProducts(category) {
     if (category === '全部') {
         renderProducts(allProducts);
@@ -106,71 +258,4 @@ function filterProducts(category) {
         const filtered = allProducts.filter(p => p.category === category);
         renderProducts(filtered);
     }
-}
-
-/* ==========================================
- * 3. 封面图独立上传逻辑
- * ========================================== */
-function triggerCoverUpload() {
-    const coverInput = document.getElementById('coverInput');
-    if (coverInput) coverInput.click();
-}
-
-function uploadNewCover(event) {
-    const file = event.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-            const bannerContainer = document.getElementById('banner');
-            if (bannerContainer) {
-                bannerContainer.innerHTML = `<img src="${e.target.result}" alt="Uploaded Cover">`;
-            }
-        };
-        reader.readAsDataURL(file);
-    }
-}
-
-/* ==========================================
- * 4. 头像菜单与独立上传逻辑
- * ========================================== */
-function toggleAvatarMenu(event) {
-    event.stopPropagation();
-    const dropdown = document.getElementById('avatarDropdown');
-    if (dropdown) dropdown.classList.toggle('show');
-}
-
-document.addEventListener('click', function (e) {
-    const dropdown = document.getElementById('avatarDropdown');
-    const avatarBtn = document.getElementById('avatarBtn');
-    if (dropdown && avatarBtn && !avatarBtn.contains(e.target) && !dropdown.contains(e.target)) {
-        dropdown.classList.remove('show');
-    }
-});
-
-function viewAvatar() {
-    const logoImg = document.getElementById('site-logo').src;
-    window.open(logoImg, '_blank');
-    closeAvatarMenu();
-}
-
-function triggerAvatarUpload() {
-    const fileInput = document.getElementById('avatarInput');
-    if (fileInput) fileInput.click();
-    closeAvatarMenu();
-}
-
-function uploadNewAvatar(event) {
-    const file = event.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-            document.getElementById('site-logo').src = e.target.result;
-        };
-        reader.readAsDataURL(file);
-    }
-}
-
-function closeAvatarMenu() {
-    const dropdown = document.getElementById('avatarDropdown');
-    if (dropdown) dropdown.classList.remove('show');
 }
