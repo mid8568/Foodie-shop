@@ -1,4 +1,82 @@
 /* =====================
+全局
+===================== */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:"Microsoft YaHei",Arial,sans-serif;
+}
+
+body{
+    background:#f8f3ea;
+    color:#333;
+    padding-bottom:70px;
+}
+
+a{
+    text-decoration:none;
+}
+
+/* =====================
+顶部导航
+===================== */
+
+header{
+    background:#160b05;
+    color:white;
+    padding:20px 8%;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.logo{
+    font-size:30px;
+    font-weight:bold;
+    color:#d4af37;
+}
+
+nav a{
+    color:white;
+    margin:0 15px;
+}
+
+.cart{
+    background:#d4af37;
+    color:#000;
+    padding:8px 18px;
+    border-radius:20px;
+}
+
+/* =====================
+H5顶部
+===================== */
+
+.h5-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    background:#160b05;
+    padding:15px;
+    position:sticky;
+    top:0;
+    z-index:999;
+}
+
+.h5-logo{
+    font-size:22px;
+    font-weight:bold;
+    color:#d4af37;
+}
+
+.h5-cart{
+    font-size:26px;
+    color:white;
+}
+
+/* =====================
 Banner 动态图片终极修复
 ===================== */
 
@@ -31,4 +109,364 @@ Banner 动态图片终极修复
     object-fit: contain !important;
     margin: 0 !important;
     padding: 0 !important;
+}
+
+/* =====================
+搜索
+===================== */
+
+.h5-search{
+    background:white;
+    padding:15px;
+}
+
+.h5-search input{
+    width:100%;
+    height:45px;
+    border-radius:25px;
+    border:1px solid #ddd;
+    padding:0 20px;
+    font-size:16px;
+    outline: none;
+}
+
+/* =====================
+分类
+===================== */
+
+.h5-category{
+    display:flex;
+    gap:10px;
+    padding:15px;
+    overflow-x:auto;
+}
+
+.h5-category button{
+    width:auto;
+    margin:0;
+    padding:8px 20px;
+    white-space:nowrap;
+    background:#160b05;
+    color:white;
+    border-radius:20px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.h5-category button:hover {
+    background: #d4af37;
+    color: #000;
+}
+
+/* =====================
+标题
+===================== */
+
+.title{
+    text-align:center;
+    font-size:35px;
+    padding:40px 0 20px;
+}
+
+/* =====================
+商品列表
+===================== */
+
+.products{
+    padding:30px 8%;
+    display:grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap:20px;
+}
+
+.product-card, .card {
+    background:white;
+    border-radius:15px;
+    overflow:hidden;
+    box-shadow: 0 5px 20px rgba(0,0,0,.08);
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.product-card:hover, .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,.15);
+}
+
+.product-card img, .card img{
+    width:100%;
+    height:220px;
+    object-fit:cover;
+    display: block;
+}
+
+.product-card h3, .card h3{
+    padding:12px 15px 5px;
+    font-size:18px;
+    color: #333;
+    line-height: 1.4;
+    height: 48px;
+    overflow: hidden;
+}
+
+.desc{
+    padding:0 15px;
+    color:#777;
+    line-height:1.6;
+    font-size: 13px;
+}
+
+.price{
+    padding:10px 15px;
+    font-size:22px;
+    font-weight:bold;
+    color:#b8860b;
+}
+
+/* =====================
+联系按钮区域
+===================== */
+
+.contact-box {
+    text-align: center;
+    padding: 30px 0;
+}
+
+.btn{
+    display:inline-block;
+    background:#d4af37;
+    color:#000;
+    padding:12px 32px;
+    border-radius:30px;
+    cursor: pointer;
+    font-weight: bold;
+    border: none;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+.btn-main{
+    display:block;
+    width:calc(100% - 30px);
+    margin:0 15px 15px;
+    padding:10px;
+    background:#160b05;
+    color:white;
+    border:none;
+    border-radius:25px;
+    cursor:pointer;
+    text-align: center;
+    font-size: 14px;
+    transition: background 0.2s;
+}
+
+.btn-main:hover{
+    background:#d4af37;
+    color:#000;
+}
+
+/* =====================
+商品详情
+===================== */
+
+.product-detail{
+    width:90%;
+    margin:40px auto;
+    background:white;
+    padding:30px;
+    border-radius:15px;
+    display:flex;
+    gap:40px;
+}
+
+.product-detail img{
+    width:400px;
+    height:450px;
+    object-fit:cover;
+    border-radius:15px;
+}
+
+.detail-info{
+    flex:1;
+}
+
+/* =====================
+后台容器
+===================== */
+
+.container{
+    width:80%;
+    margin:50px auto;
+    background:white;
+    padding:30px;
+    border-radius:15px;
+}
+
+.container h1{
+    font-size:35px;
+}
+
+/* =====================
+后台输入框
+===================== */
+
+input, textarea{
+    width:100%;
+    padding:12px;
+    margin:10px 0;
+    border:1px solid #ddd;
+    border-radius:8px;
+    font-size:16px;
+}
+
+textarea{
+    height:120px;
+}
+
+/* =====================
+品牌介绍
+===================== */
+
+.brand{
+    background:#160b05;
+    color:white;
+    padding:40px 10%;
+    text-align:center;
+    line-height:2;
+}
+
+.brand h2 {
+    color: #d4af37;
+    margin-bottom: 10px;
+}
+
+/* =====================
+页脚
+===================== */
+
+footer{
+    background:#000;
+    color:white;
+    text-align:center;
+    padding:20px;
+}
+
+/* =====================
+购物车
+===================== */
+
+.cart-item{
+    background:white;
+    margin:15px 0;
+    padding:15px;
+    border-radius:15px;
+    display:flex;
+    gap:15px;
+}
+
+.cart-item img{
+    width:100px;
+    height:100px;
+    object-fit:cover;
+    border-radius:10px;
+}
+
+.qty{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.qty button{
+    width:35px;
+    height:35px;
+    padding:0;
+    margin:0;
+}
+
+.cart-bottom{
+    position:fixed;
+    bottom:60px;
+    left:0;
+    width:100%;
+    background:white;
+    padding:10px 20px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    box-shadow:0 -3px 10px #ddd;
+}
+
+.cart-bottom button{
+    width:120px;
+    margin:0;
+}
+
+/* =====================
+手机底部导航
+===================== */
+
+.mobile-nav{
+    display:none;
+}
+
+/* =====================
+手机端响应式适配
+===================== */
+
+@media(max-width:768px){
+
+    header{
+        display:none;
+    }
+
+    .title{
+        font-size:22px;
+        padding:20px 0 10px;
+    }
+
+    .products{
+        grid-template-columns: repeat(2, 1fr);
+        padding:10px;
+        gap:10px;
+    }
+
+    .product-card img, .card img{
+        height:150px;
+    }
+
+    .product-card h3, .card h3{
+        font-size:14px;
+        height: 38px;
+        padding: 8px;
+    }
+
+    .price{
+        font-size:16px;
+        padding: 5px 8px;
+    }
+
+    .mobile-nav{
+        display:flex;
+        position:fixed;
+        bottom:0;
+        left:0;
+        width:100%;
+        height:60px;
+        background:white;
+        border-top:1px solid #ddd;
+        justify-content:space-around;
+        align-items:center;
+        z-index:9999;
+    }
+
+    .mobile-nav a{
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+        font-size:12px;
+        color:#333;
+    }
 }
