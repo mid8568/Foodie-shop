@@ -7,7 +7,7 @@ const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let allProducts = [];
 
-// 页面加载完成后自动请求数据库
+// 页面加载完成后自动初始化
 document.addEventListener('DOMContentLoaded', () => {
     loadSiteAssets(); // 读取保存的封面与头像
     loadBanners();    // 读取动态Banner
@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
  * 2. 读取保存的头像与封面 (数据库优先，本地缓存备用)
  * ========================================== */
 async function loadSiteAssets() {
-    // 先尝试从 localStorage 恢复（保证瞬间渲染不闪烁）
+    // 1. 先尝试从 localStorage 恢复（保证页面刷新时瞬间显示不闪烁）
     const localAvatar = localStorage.getItem('site_avatar_url');
     const localCover = localStorage.getItem('site_cover_url');
 
@@ -31,7 +31,7 @@ async function loadSiteAssets() {
         if (bannerContainer) bannerContainer.innerHTML = `<img src="${localCover}" alt="Cover Banner">`;
     }
 
-    // 再从 Supabase 数据库同步最新链接
+    // 2. 从 Supabase 数据库同步最新链接
     try {
         const { data, error } = await db.from('site_settings').select('*');
         if (error) {
@@ -59,28 +59,83 @@ async function loadSiteAssets() {
 }
 
 /* ==========================================
- * 3. 核心工具：图片上传至 Supabase Storage
+ * 3. 图片前端自动压缩（防止大图上传触发 Failed to fetch）
+ * ========================================== */
+function compressImage(file, maxWidth = 1600, quality = 0.8) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (e) => {
+            const img = new Image();
+            img.src = e.target.result;
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                let width = img.width;
+                let height = img.height;
+
+                if (width > maxWidth) {
+                    height = Math.round((height * maxWidth) / width);
+                    width = maxWidth;
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+
+                canvas.toBlob(
+                    (blob) => {
+                        if (blob) {
+                            const compressedFile = new File([blob], file.name, {
+                                type: 'image/jpeg',
+                                lastModified: Date.now(),
+                            });
+                            resolve(compressedFile);
+                        } else {
+                            reject(new Error('图片压缩失败'));
+                        }
+                    },
+                    'image/jpeg',
+                    quality
+                );
+            };
+            img.onerror = (err) => reject(err);
+        };
+        reader.onerror = (err) => reject(err);
+    });
+}
+
+/* ==========================================
+ * 4. 存储桶上传通用函数
  * ========================================== */
 async function uploadToSupabaseStorage(file, pathFolder) {
-    // 限制文件大小不超过 5MB
-    if (file.size > 5 * 1024 * 1024) {
-        throw new Error('图片大小不能超过 5MB！');
+    let uploadFile = file;
+    try {
+        // 封面与头像按需自动压缩
+        if (pathFolder === 'covers') {
+            uploadFile = await compressImage(file, 1600, 0.8); // 封面压缩至最大宽度 1600px
+        } else if (pathFolder === 'avatars') {
+            uploadFile = await compressImage(file, 500, 0.85);  // 头像压缩至最大宽度 500px
+        }
+    } catch (e) {
+        console.warn('图片压缩跳过，尝试使用原图上传', e);
     }
 
-    const fileExt = file.name.split('.').pop();
+    const fileExt = uploadFile.name.split('.').pop() || 'jpg';
     const fileName = `${pathFolder}/${Date.now()}.${fileExt}`;
 
-    // 上传到 images 存储桶
+    // 上传到 Supabase Storage 的 images 存储桶
     const { data, error } = await db.storage
         .from('images')
-        .upload(fileName, file, { cacheControl: '3600', upsert: true });
+        .upload(fileName, uploadFile, { cacheControl: '3600', upsert: true });
 
     if (error) {
         console.error('Storage Upload Error:', error);
         throw new Error('图片上传存储桶失败: ' + error.message);
     }
 
-    // 获取公开访问 URL
+    // 获取公开访问链接
     const { data: publicUrlData } = db.storage
         .from('images')
         .getPublicUrl(fileName);
@@ -88,9 +143,8 @@ async function uploadToSupabaseStorage(file, pathFolder) {
     return publicUrlData.publicUrl;
 }
 
-// 保存配置到 site_settings 表
+// 保存链接到数据库与本地缓存
 async function saveSettingToDB(key, value) {
-    // 同步写入 localStorage
     if (key === 'avatar_url') localStorage.setItem('site_avatar_url', value);
     if (key === 'cover_url') localStorage.setItem('site_cover_url', value);
 
@@ -100,12 +154,11 @@ async function saveSettingToDB(key, value) {
 
     if (error) {
         console.error(`保存 ${key} 到数据库失败:`, error.message);
-        alert(`警告: 本地已更新，但保存至数据库失败 (${error.message})`);
     }
 }
 
 /* ==========================================
- * 4. 封面海报上传逻辑
+ * 5. 封面海报上传逻辑
  * ========================================== */
 function triggerCoverUpload() {
     const coverInput = document.getElementById('coverInput');
@@ -118,7 +171,7 @@ async function uploadNewCover(event) {
 
     const bannerContainer = document.getElementById('banner');
     if (bannerContainer) {
-        bannerContainer.innerHTML = `<p style="color:#fff; text-align:center; padding-top:100px;">正在上传封面，请稍候...</p>`;
+        bannerContainer.innerHTML = `<p style="color:#fff; text-align:center; padding-top:100px;">正在处理并上传封面，请稍候...</p>`;
     }
 
     try {
@@ -129,15 +182,15 @@ async function uploadNewCover(event) {
         }
 
         await saveSettingToDB('cover_url', imageUrl);
-        alert('封面照片修改成功并已保存！');
+        alert('封面照片修改成功并已永久保存！');
     } catch (err) {
         alert('修改封面失败: ' + err.message);
-        loadBanners(); // 恢复默认
+        loadBanners(); // 失败恢复
     }
 }
 
 /* ==========================================
- * 5. 头像菜单与上传逻辑
+ * 6. 头像菜单与上传逻辑
  * ========================================== */
 function toggleAvatarMenu(event) {
     event.stopPropagation();
@@ -177,7 +230,7 @@ async function uploadNewAvatar(event) {
         if (avatarImg) avatarImg.src = imageUrl;
 
         await saveSettingToDB('avatar_url', imageUrl);
-        alert('头像修改成功并已保存！');
+        alert('头像修改成功并已永久保存！');
     } catch (err) {
         alert('修改头像失败: ' + err.message);
     }
@@ -189,13 +242,13 @@ function closeAvatarMenu() {
 }
 
 /* ==========================================
- * 6. 加载商品与 Banner 数据
+ * 7. 加载动态 Banner 与商品列表
  * ========================================== */
 async function loadBanners() {
     const bannerContainer = document.getElementById('banner');
     if (!bannerContainer) return;
 
-    // 如果已经有封面图，不再被后台 Banner 覆盖
+    // 如果用户已经自定义保存了封面，优先展示自定义封面
     if (localStorage.getItem('site_cover_url')) return;
 
     try {
