@@ -8,63 +8,72 @@
 </head>
 <body>
 
-<!-- 手机端顶部 Header -->
+<!-- 手机端 Header -->
 <header class="h5-header">
     <div class="h5-logo">🇨🇳 China Direct Shop</div>
     <a href="https://m.me/你的Facebook主页用户名" class="h5-cart" target="_blank">💬</a>
 </header>
 
-<!-- 顶部大型封面海报区 (已限制高度，绝不撑满一屏) -->
-<section class="banner">
-    <!-- 如果后台JS插入图片，会自动动态填入这里；如果静态使用，取消下面注释填入链接即可 -->
-    <!-- <img src="YOUR_BANNER_IMAGE.jpg" alt="China Direct Shop Banner"> -->
-</section>
+<!-- 主包装盒（仿 FB 版心，左右居中） -->
+<div class="fb-page-wrapper">
 
-<!-- Facebook 风格店铺主页简介区 -->
-<section class="page-profile-section">
-    <div class="profile-container">
-        <!-- 圆形 Logo / 头像 -->
-        <div class="profile-avatar">
-            <img src="https://images.unsplash.com/photo-1544717305-2782549b5136?w=200" alt="China Direct Shop Logo" id="site-logo">
+    <!-- 1. 顶部大封面海报 (无裁剪、无黑色背景) -->
+    <section class="banner">
+        <!-- JS 会动态插入图片，静态调试时可用 <img src="海报.jpg"> -->
+    </section>
+
+    <!-- 2. 店铺 Profile 区域 -->
+    <section class="page-profile-section">
+        <div class="profile-container">
+            
+            <!-- 头像 (压在海报左下角) -->
+            <div class="profile-avatar">
+                <img src="https://images.unsplash.com/photo-1544717305-2782549b5136?w=200" alt="China Direct Shop Logo" id="site-logo">
+            </div>
+            
+            <!-- 简介信息 -->
+            <div class="profile-info">
+                <h1 class="shop-name">China Direct Shop</h1>
+                <p class="shop-meta">0 位粉丝 · 关注 0 人</p>
+                <p class="shop-sub"><span>cn</span> Authentic products from China</p>
+                <p class="shop-desc">Snacks | Tea | Gifts | Daily goods</p>
+                <p class="shop-shipping">Direct shipping from China worldwide 🌏</p>
+                <p class="shop-action">Message us to order.</p>
+                <p class="shop-tag">🛍️ 零售购物</p>
+            </div>
+            
+            <!-- 右侧按钮组 -->
+            <div class="profile-actions">
+                <button class="btn-fb-panel">📊 专业面板</button>
+                <button class="btn-fb-edit">✏️ 编辑</button>
+                <a href="https://m.me/你的Facebook主页用户名" class="btn-fb-msg" target="_blank">💬 联系我们</a>
+            </div>
+
         </div>
-        
-        <!-- 店铺名称与简介 -->
-        <div class="profile-info">
-            <h1 class="shop-name">China Direct Shop</h1>
-            <p class="shop-meta">0 位粉丝 · 关注 0 人</p>
-            <p class="shop-sub">🇨🇳 Authentic products from China</p>
-            <p class="shop-desc">Snacks | Tea | Gifts | Daily goods</p>
-            <p class="shop-shipping">Direct shipping from China worldwide 🌏</p>
-            <p class="shop-action">Message us to order.</p>
-        </div>
-        
-        <!-- 右侧/下方按钮 -->
-        <div class="profile-actions">
-            <a href="https://m.me/你的Facebook主页用户名" class="btn-fb-msg" target="_blank">💬 联系我们</a>
-        </div>
+    </section>
+
+    <!-- 3. 搜索栏 -->
+    <div class="h5-search">
+        <input id="search" placeholder="Search products..." oninput="searchProducts()">
     </div>
-</section>
 
-<!-- 搜索栏 -->
-<div class="h5-search">
-    <input id="search" placeholder="Search products..." oninput="searchProducts()">
+    <!-- 4. 商品分类 -->
+    <div class="h5-category">
+        <button onclick="filterProducts('全部')">All</button>
+        <button onclick="filterProducts('茶叶')">🍵 Tea</button>
+        <button onclick="filterProducts('零食')">🍜 Snacks</button>
+        <button onclick="filterProducts('礼品')">🎁 Gifts</button>
+        <button onclick="filterProducts('生活用品')">🏠 Daily Goods</button>
+    </div>
+
+    <h2 class="title">Featured Products</h2>
+
+    <!-- 5. 商品列表 -->
+    <section class="products" id="product-list">
+        Loading products...
+    </section>
+
 </div>
-
-<!-- 商品分类 -->
-<div class="h5-category">
-    <button onclick="filterProducts('全部')">All</button>
-    <button onclick="filterProducts('茶叶')">🍵 Tea</button>
-    <button onclick="filterProducts('零食')">🍜 Snacks</button>
-    <button onclick="filterProducts('礼品')">🎁 Gifts</button>
-    <button onclick="filterProducts('生活用品')">🏠 Daily Goods</button>
-</div>
-
-<h2 class="title">Featured Products</h2>
-
-<!-- 商品列表 -->
-<section class="products" id="product-list">
-    Loading products...
-</section>
 
 <!-- 底部导航 (手机端) -->
 <div class="mobile-nav">
