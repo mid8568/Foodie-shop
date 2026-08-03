@@ -1,1142 +1,456 @@
-*{
-    box-sizing:border-box;
+/* =====================
+   全局重置与基础
+===================== */
+* {
+    box-sizing: border-box;
 }
 
-
-
-html,
-body{
-
-    margin:0;
-
-    padding:0;
-
-    width:100%;
-
-    min-height:100%;
-
-    font-family:
-    Arial,
-    "Microsoft YaHei",
-    sans-serif;
-
-    background:#f5f6fa;
-
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    min-height: 100%;
+    font-family: Arial, "Microsoft YaHei", -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #f5f6fa;
+    color: #333;
 }
-
-
-
-
 
 /* =====================
    后台整体布局
 ===================== */
-
-
-.admin-layout{
-
-    display:flex;
-
-    width:100%;
-
-    min-height:100vh;
-
+.admin-layout {
+    display: flex;
+    width: 100%;
+    min-height: 100vh;
 }
 
-
-
-
-
-/* =====================
-   左侧菜单
-===================== */
-
-
-.sidebar{
-
-    width:230px;
-
-    min-height:100vh;
-
-    background:#111827;
-
-    color:white;
-
-    padding:20px;
-
-    flex-shrink:0;
-
+/* 左侧菜单 */
+.sidebar {
+    width: 230px;
+    min-height: 100vh;
+    background: #111827;
+    color: white;
+    padding: 20px;
+    flex-shrink: 0;
 }
 
-
-
-
-
-.sidebar h2{
-
-    text-align:center;
-
-    margin:
-
-    10px 0 40px;
-
-    font-size:22px;
-
+.sidebar h2 {
+    text-align: center;
+    margin: 10px 0 40px;
+    font-size: 22px;
 }
-
-
-
-
 
 /* 菜单链接 */
-
-
-.sidebar a{
-
-    display:block;
-
-    padding:15px 18px;
-
-    margin-bottom:12px;
-
-    border-radius:8px;
-
-    color:white;
-
-    text-decoration:none;
-
-    font-size:16px;
-
-    transition:.2s;
-
+.sidebar a {
+    display: block;
+    padding: 15px 18px;
+    margin-bottom: 12px;
+    border-radius: 8px;
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+    transition: .2s;
 }
 
-
-
-
-
-.sidebar a:hover{
-
-    background:#2563eb;
-
+.sidebar a:hover,
+.sidebar a.active {
+    background: #2563eb;
 }
 
+/* 右侧页面区域 */
+.page-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
 
+.topbar {
+    height: 60px;
+    background: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 30px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.08);
+}
 
+.admin-user {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
 
+.admin-user button {
+    background: #dc2626;
+}
 
+.main-content {
+    flex: 1;
+    height: 100vh;
+    overflow: hidden;
+    padding: 0; /* iframe 充盈视图 */
+}
 
+#module-frame {
+    width: 100%;
+    height: 100%;
+    border: 0;
+}
 
 /* =====================
-   右侧内容区域
+   商品管理页面样式
 ===================== */
-
-
-.main-content{
-
-    flex:1;
-
-    min-height:100vh;
-
-    padding:30px;
-
-    overflow:auto;
-
+.product-page {
+    padding: 20px;
+    width: 100%;
+    min-height: 100vh;
+    background: #fff;
 }
 
+.product-page h1 {
+    margin: 0 0 20px;
+    font-size: 24px;
+}
 
+/* 1. 顶部分类 Tabs 选项卡 */
+.tabs {
+    display: flex;
+    border-bottom: 1px solid #e8e8e8;
+    margin-bottom: 20px;
+}
 
+.tab-item {
+    padding: 10px 18px;
+    cursor: pointer;
+    color: #666;
+    font-size: 14px;
+    position: relative;
+    user-select: none;
+}
 
+.tab-item.active {
+    color: #2563eb;
+    font-weight: bold;
+}
 
+.tab-item.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: #2563eb;
+}
 
+/* 2. 多条件搜索栏 */
+.search-bar {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.search-bar .input-group input {
+    height: 36px;
+    padding: 0 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    outline: none;
+    width: 180px;
+    font-size: 14px;
+}
+
+.search-bar .input-group input:focus {
+    border-color: #2563eb;
+}
+
+/* 3. 工具栏 */
+.toolbar {
+    background: white;
+    padding: 0 0 16px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.toolbar-left {
+    display: flex;
+    gap: 10px;
+}
+
+.toolbar input {
+    width: 300px;
+    height: 38px;
+    padding: 0 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+}
+
+/* 通用按钮 */
+button, .btn {
+    background: #2563eb;
+    color: white;
+    border: 1px solid #2563eb;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all .2s;
+}
+
+button:hover, .btn:hover {
+    opacity: .85;
+}
+
+.btn-secondary {
+    background: #fff;
+    color: #333;
+    border-color: #ddd;
+}
+
+.btn-secondary:hover {
+    color: #2563eb;
+    border-color: #2563eb;
+}
 
 /* =====================
-   商品管理页面
+   商品列表表格
 ===================== */
-
-
-.product-page{
-
-    padding:0;
-
-    width:100%;
-
-    min-height:100vh;
-
+.table-container {
+    width: 100%;
+    overflow-x: auto;
 }
 
-
-
-
-.product-page h1{
-
-    margin:
-
-    0 0 25px;
-
-    font-size:26px;
-
+.product-page table,
+.product-table {
+    width: 100%;
+    background: white;
+    border-collapse: collapse;
+    border-radius: 8px;
+    overflow: hidden;
 }
 
+.product-page th,
+.product-table th {
+    background: #f8fafc;
+    padding: 12px 10px;
+    font-weight: 600;
+    text-align: center;
+    color: #475569;
+    border-bottom: 1px solid #e2e8f0;
+    white-space: nowrap;
+}
 
+.product-page td,
+.product-table td {
+    padding: 12px 10px;
+    border-bottom: 1px solid #eeeeee;
+    text-align: center;
+    vertical-align: middle;
+}
 
+/* 表格列宽设定 */
+.name-column, .product-name { width: 220px; }
+.name-en-column, .product-name-en { width: 350px; }
 
+.product-name div, .product-name-en {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
 
+.1688-link {
+    font-size: 12px;
+    color: #777;
+    display: block;
+    margin-top: 5px;
+    text-decoration: none;
+}
 
+.1688-link:hover {
+    color: #2563eb;
+}
+
+/* 图片 */
+.table-image, .product-img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 6px;
+    display: block;
+    margin: auto;
+    border: 1px solid #eee;
+}
+
+/* 实时可编辑价格/库存框 */
+.edit-price, .edit-stock {
+    width: 75px;
+    padding: 5px;
+    text-align: center;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    outline: none;
+}
+
+.edit-price:focus, .edit-stock:focus {
+    border-color: #2563eb;
+}
+
+.status-tag {
+    color: #10b981;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.status-tag.offline {
+    color: #ef4444;
+}
+
+/* 操作按键链接 */
+.action-links a {
+    color: #2563eb;
+    text-decoration: none;
+    font-size: 13px;
+    display: inline-block;
+    margin: 2px 0;
+}
+
+.action-links a:hover {
+    text-decoration: underline;
+}
 
 /* =====================
-   工具栏
+   分页控件
 ===================== */
-
-
-.toolbar{
-
-    background:white;
-
-    padding:20px;
-
-    border-radius:12px;
-
-    margin-bottom:20px;
-
-    display:flex;
-
-    gap:10px;
-
-    align-items:center;
-
+.pagination {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 8px;
+    margin-top: 20px;
 }
 
-
-
-
-
-.toolbar input{
-
-    width:300px;
-
-    height:38px;
-
-    padding:
-
-    0 12px;
-
-    border:
-
-    1px solid #ddd;
-
-    border-radius:6px;
-
+.pagination button {
+    padding: 6px 12px;
+    cursor: pointer;
+    border: 1px solid #ddd;
+    background: white;
+    color: #333;
+    border-radius: 4px;
 }
 
-
-
-
-
-button{
-
-    background:#2563eb;
-
-    color:white;
-
-    border:none;
-
-    padding:
-
-    9px 18px;
-
-    border-radius:6px;
-
-    cursor:pointer;
-
+.pagination button.active {
+    background: #2563eb;
+    color: white;
+    border-color: #2563eb;
 }
 
-
-
-
-
-button:hover{
-
-    opacity:.85;
-
+.pagination button:disabled {
+    opacity: .5;
+    cursor: not-allowed;
 }
-
-
-
-
-
-
 
 /* =====================
-   商品表格
+   看板 & 弹窗 & 图片管理
 ===================== */
-
-
-.product-page table{
-
-
-    width:100%;
-
-    background:white;
-
-    border-collapse:collapse;
-
-    border-radius:12px;
-
-    overflow:hidden;
-
+.dashboard {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
 }
 
-
-
-
-
-.product-page th{
-
-
-    background:#f3f4f6;
-
-    padding:15px;
-
-    font-weight:600;
-
-    text-align:center;
-
+.dashboard-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
 }
 
-
-
-
-
-.product-page td{
-
-
-    padding:15px 10px;
-
-    border-bottom:
-
-    1px solid #eeeeee;
-
-    text-align:center;
-
-    vertical-align:middle;
-
+.card {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0,0,0,.08);
 }
 
+.card h3 { margin: 0; color: #555; }
+.card p { font-size: 32px; font-weight: bold; margin: 10px 0 0; }
 
-
-
-
-
-
-/* 商品图片 */
-
-
-.table-image{
-
-
-    width:80px;
-
-    height:80px;
-
-    object-fit:cover;
-
-    border-radius:8px;
-
-    display:block;
-
-    margin:auto;
-
-
+/* 模态弹窗 */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,.45);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
 }
 
+.edit-panel {
+    width: 500px;
+    max-height: 90vh;
+    overflow: auto;
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+}
 
+.edit-panel h2 { margin-top: 0; }
+.edit-panel label { display: block; margin-top: 15px; margin-bottom: 6px; font-weight: bold; }
+.edit-panel input, .edit-panel textarea, .edit-panel select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+}
+.edit-panel textarea { height: 120px; resize: none; }
+.preview { width: 120px; height: 120px; object-fit: cover; border-radius: 8px; margin: 10px 0; }
+.buttons { display: flex; gap: 15px; margin-top: 25px; }
 
+/* 图片网格 */
+.image-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
 
+.image-card, .image-item {
+    background: white;
+    padding: 10px;
+    border-radius: 10px;
+    position: relative;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
 
+.image-card img, .image-item img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 8px;
+}
 
-
+.image-check {
+    position: absolute;
+    top: 10px; left: 10px;
+    width: 22px; height: 22px;
+    z-index: 5;
+}
 
 /* =====================
-   编辑弹窗
+   移动端响应式适配
 ===================== */
-
-
-.modal{
-
-
-    display:none;
-
-    position:fixed;
-
-    top:0;
-
-    left:0;
-
-    width:100%;
-
-    height:100%;
-
-
-    background:
-
-    rgba(0,0,0,.45);
-
-
-    justify-content:center;
-
-    align-items:center;
-
-
-}
-
-
-
-
-
-
-
-.edit-panel{
-
-
-    width:500px;
-
-    max-height:90vh;
-
-    overflow:auto;
-
-    background:white;
-
-    padding:30px;
-
-    border-radius:12px;
-
-
-}
-
-
-
-
-
-
-
-.edit-panel h2{
-
-    margin-top:0;
-
-}
-
-
-
-
-
-
-.edit-panel label{
-
-
-    display:block;
-
-    margin-top:15px;
-
-    margin-bottom:6px;
-
-    font-weight:bold;
-
-
-}
-
-
-
-
-
-
-.edit-panel input,
-.edit-panel textarea,
-.edit-panel select{
-
-
-    width:100%;
-
-    padding:10px;
-
-    border:
-
-    1px solid #ddd;
-
-    border-radius:6px;
-
-}
-
-
-
-
-
-.edit-panel textarea{
-
-
-    height:120px;
-
-    resize:none;
-
-}
-
-
-
-
-
-
-
-.preview{
-
-
-    width:120px;
-
-    height:120px;
-
-    object-fit:cover;
-
-    border-radius:8px;
-
-    margin:10px 0;
-
-
-}
-
-
-
-
-
-
-.buttons{
-
-
-    display:flex;
-
-    gap:15px;
-
-    margin-top:25px;
-
-
-}
-
-
-
-
-
-
-
-
-/* =====================
-   图片管理
-===================== */
-
-
-.image-grid{
-
-
-    display:grid;
-
-    grid-template-columns:
-
-    repeat(auto-fill,minmax(180px,1fr));
-
-    gap:20px;
-
-}
-
-
-
-
-
-.image-item{
-
-
-    background:white;
-
-    padding:15px;
-
-    border-radius:12px;
-
-    position:relative;
-
-}
-
-
-
-
-
-.image-item img{
-
-
-    width:100%;
-
-    height:160px;
-
-    object-fit:cover;
-
-    border-radius:8px;
-
-}
-
-
-
-
-
-.image-check{
-
-
-    position:absolute;
-
-    top:10px;
-
-    left:10px;
-
-    width:22px;
-
-    height:22px;
-
-    z-index:5;
-
-}
-
-
-
-
-
-.image-item button{
-
-
-    margin-top:10px;
-
-    width:100%;
-
-}
-
-
-
-
-
-/* =====================
-   手机端
-===================== */
-
-
-@media(max-width:768px){
-
-
-
-.admin-layout{
-
-    flex-direction:column;
-
-}
-
-
-
-.sidebar{
-
-
-    width:100%;
-
-    min-height:auto;
-
-    display:flex;
-
-    flex-wrap:wrap;
-
-    align-items:center;
-
-}
-
-
-
-.sidebar h2{
-
-
-    width:100%;
-
-    margin:
-
-    5px 0 15px;
-
-
-}
-
-
-
-.sidebar a{
-
-
-    width:auto;
-
-    padding:10px 15px;
-
-    font-size:14px;
-
-}
-
-
-
-
-.main-content{
-
-
-    padding:15px;
-
-}
-
-
-
-
-
-.toolbar{
-
-
-    flex-wrap:wrap;
-
-}
-
-
-
-
-
-.toolbar input{
-
-
-    width:100%;
-
-}
-
-
-
-
-
-.product-page table{
-
-
-    min-width:800px;
-
-}
-
-
-
-}
-/* =====================
-后台顶部
-===================== */
-
-
-.page-area{
-
-flex:1;
-
-display:flex;
-
-flex-direction:column;
-
-min-height:100vh;
-
-}
-
-
-
-
-.topbar{
-
-
-height:60px;
-
-
-background:white;
-
-
-display:flex;
-
-
-justify-content:space-between;
-
-
-align-items:center;
-
-
-padding:0 30px;
-
-
-box-shadow:
-
-0 2px 8px rgba(0,0,0,.08);
-
-
-}
-
-
-
-
-.admin-user{
-
-
-display:flex;
-
-
-align-items:center;
-
-
-gap:15px;
-
-
-}
-
-
-
-
-.admin-user button{
-
-
-background:#dc2626;
-
-
-}
-
-
-
-
-.main-content{
-
-
-padding:30px;
-
-
-flex:1;
-
-
-}
-
-
-
-
-
-.dashboard{
-
-
-background:white;
-
-padding:30px;
-
-border-radius:12px;
-
-
-}
-
-
-
-
-.dashboard-cards{
-
-
-display:grid;
-
-
-grid-template-columns:
-
-repeat(auto-fit,minmax(200px,1fr));
-
-
-gap:20px;
-
-
-}
-
-
-
-
-
-.card{
-
-
-background:white;
-
-
-padding:25px;
-
-
-border-radius:12px;
-
-
-box-shadow:
-
-0 5px 15px rgba(0,0,0,.08);
-
-
-}
-
-
-
-
-
-.card h3{
-
-
-margin:0;
-
-
-color:#555;
-
-
-}
-
-
-
-
-.card p{
-
-
-font-size:32px;
-
-
-font-weight:bold;
-
-
-}
-.main-content{
-
-flex:1;
-
-height:100vh;
-
-overflow:hidden;
-
-}
-
-
-
-
-#module-frame{
-
-
-width:100%;
-
-height:100%;
-
-border:0;
-
-
-}
-.image-grid{
-
-
-display:grid;
-
-grid-template-columns:
-
-repeat(auto-fill,minmax(150px,1fr));
-
-gap:20px;
-
-margin-top:20px;
-
-
-}
-
-
-
-.image-card{
-
-
-background:white;
-
-padding:10px;
-
-border-radius:10px;
-
-
-}
-
-
-
-.image-card img{
-
-
-width:100%;
-
-height:150px;
-
-object-fit:cover;
-
-border-radius:8px;
-
-
-}
-.pagination{
-
-display:flex;
-
-justify-content:center;
-
-gap:10px;
-
-margin-top:20px;
-
-}
-
-
-
-.pagination button{
-
-padding:6px 12px;
-
-cursor:pointer;
-
-border:1px solid #ddd;
-
-background:white;
-
-}
-
-
-
-.pagination button.active{
-
-background:#222;
-
-color:white;
-
-}
-
-
-
-.pagination button:disabled{
-
-opacity:.5;
-
-cursor:not-allowed;
-
-}
-/* 商品管理表格 */
-
-
-.product-table{
-
-width:100%;
-
-table-layout:fixed;
-
-}
-
-
-
-/* 中文标题 */
-
-.name-column,
-.product-name{
-
-width:220px;
-
-}
-
-
-
-/* 英文标题 */
-
-.name-en-column,
-.product-name-en{
-
-width:350px;
-
-}
-
-
-
-/* 中文标题内容 */
-
-.product-name div{
-
-overflow:hidden;
-
-text-overflow:ellipsis;
-
-white-space:nowrap;
-
-}
-
-
-
-/* 英文标题 */
-
-.product-name-en{
-
-overflow:hidden;
-
-text-overflow:ellipsis;
-
-white-space:nowrap;
-
-}
-
-
-
-/* 1688链接 */
-
-.1688-link{
-
-font-size:12px;
-
-color:#777;
-
-display:block;
-
-margin-top:5px;
-
-}
-
-
-
-/* 价格 */
-
-.product-table th:nth-child(4),
-.product-table td:nth-child(4){
-
-width:80px;
-
-text-align:center;
-
-}
-
-
-
-/* 状态 */
-
-.product-table th:nth-child(6),
-.product-table td:nth-child(6){
-
-width:100px;
-
-text-align:center;
-
-}
-
-
-
-/* 操作 */
-
-.product-table th:last-child,
-.product-table td:last-child{
-
-width:100px;
-
-text-align:center;
-
-}
-.edit-price,
-.edit-stock{
-
-width:70px;
-
-padding:5px;
-
-text-align:center;
-
-border:1px solid #ddd;
-
-border-radius:4px;
-
+@media(max-width: 768px) {
+    .admin-layout { flex-direction: column; }
+    .sidebar { width: 100%; min-height: auto; display: flex; flex-wrap: wrap; align-items: center; }
+    .sidebar h2 { width: 100%; margin: 5px 0 15px; }
+    .sidebar a { width: auto; padding: 10px 15px; font-size: 14px; }
+    .main-content { padding: 15px; }
+    .toolbar { flex-wrap: wrap; }
+    .toolbar input { width: 100%; }
+    .product-page table { min-width: 800px; }
 }
