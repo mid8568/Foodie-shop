@@ -44,10 +44,10 @@ H5 顶部 Header
 }
 
 /* ==========================================
- * 1:1 复刻 Facebook 专页顶栏与封面海报
+ * 1:1 复刻 Facebook 专页顶栏与封面海报（精准对齐修改）
  * ========================================== */
 
-/* 封面容器（居中、带圆角） */
+/* 1) 封面容器：统一 1200px 最大宽度并居中 */
 .fb-cover-container {
     max-width: 1200px;
     margin: 15px auto 0;
@@ -55,6 +55,7 @@ H5 顶部 Header
     border-radius: 12px 12px 0 0;
     overflow: hidden;
     background: #160b05;
+    width: calc(100% - 30px); /* 在中等屏保留左右间距 */
 }
 
 /* 封面海报高度控制 */
@@ -104,14 +105,15 @@ H5 顶部 Header
     background: #ffffff;
 }
 
-/* FB 店铺简介区 */
+/* FB 店铺简介区外层 */
 .page-profile-section {
     background: #ffffff;
-    padding: 0 8% 20px;
+    padding: 0 0 20px; /* 移除 8% 边距，交给内部 profile-container */
     border-bottom: 1px solid #e4e6eb;
     margin-bottom: 20px;
 }
 
+/* 店铺简介内层容器：统一 1200px 最大宽度与 15px 边距 */
 .profile-container {
     display: flex;
     align-items: flex-start;
@@ -119,6 +121,7 @@ H5 顶部 Header
     max-width: 1200px;
     margin: 0 auto;
     position: relative;
+    padding: 0 15px;
 }
 
 /* 左侧头像区域 */
@@ -283,11 +286,15 @@ H5 顶部 Header
     background: #d8dadf;
 }
 
-/* =====================
-搜索栏
-===================== */
+/* ==========================================
+ * 2. 下方内容区域（统一 max-width 与边距实现齐平）
+ * ========================================== */
+
+/* 搜索栏 */
 .h5-search{
-    padding: 0 8% 15px;
+    max-width: 1200px;
+    margin: 0 auto 15px;
+    padding: 0 15px;
 }
 
 .h5-search input{
@@ -301,13 +308,13 @@ H5 顶部 Header
     background: #fff;
 }
 
-/* =====================
-分类按钮
-===================== */
+/* 分类按钮 */
 .h5-category{
+    max-width: 1200px;
+    margin: 0 auto 15px;
+    padding: 0 15px;
     display:flex;
     gap:10px;
-    padding: 0 8% 15px;
     overflow-x:auto;
 }
 
@@ -328,19 +335,21 @@ H5 顶部 Header
     background: #e4e6eb;
 }
 
-/* =====================
-标题与商品列表
-===================== */
+/* 标题与商品列表 */
 .title{
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 10px 15px;
     text-align:left;
-    padding: 10px 8%;
     font-size:22px;
     font-weight: bold;
     color: #050505;
 }
 
 .products{
-    padding:10px 8% 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 10px 15px 30px;
     display:grid;
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     gap:15px;
@@ -429,6 +438,7 @@ footer{
     .fb-cover-container {
         border-radius: 0;
         margin-top: 0;
+        width: 100%;
     }
     
     .banner {
@@ -436,7 +446,7 @@ footer{
     }
     
     .btn-edit-cover span {
-        display: none; /* 手机端隐藏编辑文本，仅保留相机图标 */
+        display: none;
     }
 
     .profile-container {
@@ -468,11 +478,6 @@ footer{
 
     .btn-fb {
         flex: 1;
-    }
-
-    .h5-search, .h5-category, .title, .products {
-        padding-left: 15px;
-        padding-right: 15px;
     }
 
     .products{
