@@ -1,17 +1,16 @@
 /* =====================
-全局
+全局基础设置
 ===================== */
-
 *{
     margin:0;
     padding:0;
     box-sizing:border-box;
-    font-family:"Microsoft YaHei",Arial,sans-serif;
+    font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
 body{
-    background:#f8f3ea;
-    color:#333;
+    background:#f0f2f5; /* FB 经典淡灰背景 */
+    color:#1c1e21;
     padding-bottom:70px;
 }
 
@@ -20,101 +19,45 @@ a{
 }
 
 /* =====================
-顶部导航
+H5 顶部
 ===================== */
-
-header{
-    background:#160b05;
-    color:white;
-    padding:20px 8%;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-}
-
-.logo{
-    font-size:30px;
-    font-weight:bold;
-    color:#d4af37;
-}
-
-nav a{
-    color:white;
-    margin:0 15px;
-}
-
-.cart{
-    background:#d4af37;
-    color:#000;
-    padding:8px 18px;
-    border-radius:20px;
-}
-
-/* =====================
-H5顶部
-===================== */
-
 .h5-header{
     display:flex;
     justify-content:space-between;
     align-items:center;
     background:#160b05;
-    padding:15px;
+    padding:12px 20px;
     position:sticky;
     top:0;
     z-index:999;
 }
 
 .h5-logo{
-    font-size:22px;
+    font-size:20px;
     font-weight:bold;
     color:#d4af37;
 }
 
 .h5-cart{
-    font-size:26px;
+    font-size:22px;
     color:white;
 }
 
 /* =====================
-Banner 动态渲染修复（恢复图片显示 + 无黑边 + 不压扁）
+顶部大封面海报 (100%等比无缝展示)
 ===================== */
-
-/* 1. 父容器自适应，清除黑色背景 */
-.banner {
-    width: 100% !important;
+.banner{
+    width: 100%;
     height: auto !important;
-    min-height: 0 !important;
     background: transparent !important;
-    padding: 0 !important;
     margin: 0 !important;
+    padding: 0 !important;
     overflow: hidden;
-    position: relative;
+    display: block;
 }
 
-/* 2. 保证动态生成的子容器正常显示，高度自适应 */
-.banner > div,
-.banner-content {
-    display: block !important;
-    position: static !important; /* 恢复正常流式布局，由图片撑开高度 */
-    transform: none !important;
-    width: 100% !important;
-    height: auto !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    background: none !important;
-}
-
-/* 3. 精准隐藏叠加在图片上的文字和 HTML 按钮（不影响图片） */
-.banner h1,
-.banner p,
-.banner .btn,
-.banner a.btn {
-    display: none !important;
-}
-
-/* 4. 强制动态图片按真实长宽比等比例渲染 */
-.banner img,
+/* 兼容静态或 JS 动态渲染图片 */
+.banner img, 
 .banner > div img,
 .slider-slide img {
     width: 100% !important;
@@ -122,306 +65,241 @@ Banner 动态渲染修复（恢复图片显示 + 无黑边 + 不压扁）
     display: block !important;
     object-fit: contain !important;
     margin: 0 !important;
-    padding: 0 !important;
-    max-width: 100% !important;
+    border: none;
+}
+
+/* 清理海报上可能重叠的默认文字 */
+.banner h1, .banner p, .banner .btn {
+    display: none !important;
 }
 
 /* =====================
-搜索
+FB 风格店铺主页简介区 (Profile Section)
 ===================== */
+.page-profile-section {
+    background: #ffffff;
+    padding: 20px 8%;
+    border-bottom: 1px solid #e4e6eb;
+    margin-bottom: 15px;
+}
 
+.profile-container {
+    display: flex;
+    align-items: flex-start;
+    gap: 25px;
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+}
+
+/* 圆形 Logo */
+.profile-avatar {
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 4px solid #ffffff;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+    flex-shrink: 0;
+    margin-top: -40px; /* 稍微向上悬浮压在海报边缘上，营造经典专页效果 */
+    background: #fff;
+}
+
+.profile-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* 文本简介区 */
+.profile-info {
+    flex: 1;
+    line-height: 1.6;
+}
+
+.shop-name {
+    font-size: 28px;
+    font-weight: 700;
+    color: #050505;
+}
+
+.shop-meta {
+    font-size: 14px;
+    color: #65676b;
+    margin-bottom: 6px;
+}
+
+.shop-sub, .shop-desc, .shop-shipping, .shop-action {
+    font-size: 14px;
+    color: #050505;
+}
+
+.shop-tag {
+    display: inline-block;
+    margin-top: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #65676b;
+    background: #f0f2f5;
+    padding: 3px 10px;
+    border-radius: 6px;
+}
+
+/* 右侧交互按钮 */
+.profile-actions {
+    align-self: center;
+}
+
+.btn-fb-msg {
+    display: inline-block;
+    background: #0866ff; /* FB 经典蓝色 */
+    color: #ffffff;
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 15px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transition: background 0.2s;
+}
+
+.btn-fb-msg:hover {
+    background: #0052cc;
+}
+
+/* =====================
+搜索栏
+===================== */
 .h5-search{
-    background:white;
-    padding:15px;
+    padding: 0 8% 15px;
 }
 
 .h5-search input{
     width:100%;
-    height:45px;
-    border-radius:25px;
-    border:1px solid #ddd;
+    height:42px;
+    border-radius:20px;
+    border:1px solid #ced0d4;
     padding:0 20px;
-    font-size:16px;
+    font-size:15px;
     outline: none;
+    background: #fff;
 }
 
 /* =====================
-分类
+分类按钮
 ===================== */
-
 .h5-category{
     display:flex;
     gap:10px;
-    padding:15px;
+    padding: 0 8% 15px;
     overflow-x:auto;
 }
 
 .h5-category button{
-    width:auto;
-    margin:0;
-    padding:8px 20px;
+    padding:8px 18px;
     white-space:nowrap;
-    background:#160b05;
-    color:white;
+    background:#ffffff;
+    color:#050505;
     border-radius:20px;
-    border: none;
+    border: 1px solid #ced0d4;
     cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
     transition: all 0.2s;
 }
 
 .h5-category button:hover {
-    background: #d4af37;
-    color: #000;
+    background: #e4e6eb;
 }
 
 /* =====================
-标题
+标题与商品列表
 ===================== */
-
 .title{
-    text-align:center;
-    font-size:35px;
-    padding:40px 0 20px;
+    text-align:left;
+    padding: 10px 8%;
+    font-size:22px;
+    font-weight: bold;
+    color: #050505;
 }
-
-/* =====================
-商品列表
-===================== */
 
 .products{
-    padding:30px 8%;
+    padding:10px 8% 30px;
     display:grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap:20px;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap:15px;
 }
 
 .product-card, .card {
     background:white;
-    border-radius:15px;
+    border-radius:10px;
     overflow:hidden;
-    box-shadow: 0 5px 20px rgba(0,0,0,.08);
-    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,.1);
+    transition: transform 0.2s;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
 }
 
 .product-card:hover, .card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 25px rgba(0,0,0,.15);
+    transform: translateY(-3px);
 }
 
 .product-card img, .card img{
     width:100%;
-    height:220px;
+    height:200px;
     object-fit:cover;
     display: block;
 }
 
 .product-card h3, .card h3{
-    padding:12px 15px 5px;
-    font-size:18px;
-    color: #333;
-    line-height: 1.4;
-    height: 48px;
+    padding:10px 12px 4px;
+    font-size:16px;
+    color: #050505;
+    line-height: 1.3;
+    height: 42px;
     overflow: hidden;
 }
 
 .desc{
-    padding:0 15px;
-    color:#777;
-    line-height:1.6;
+    padding:0 12px;
+    color:#65676b;
     font-size: 13px;
 }
 
 .price{
-    padding:10px 15px;
-    font-size:22px;
+    padding:8px 12px;
+    font-size:18px;
     font-weight:bold;
     color:#b8860b;
 }
 
-/* =====================
-联系按钮区域
-===================== */
-
-.contact-box {
-    text-align: center;
-    padding: 30px 0;
-}
-
-.btn{
-    display:inline-block;
-    background:#d4af37;
-    color:#000;
-    padding:12px 32px;
-    border-radius:30px;
-    cursor: pointer;
-    font-weight: bold;
-    border: none;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-}
-
+/* 商城按钮 */
 .btn-main{
     display:block;
-    width:calc(100% - 30px);
-    margin:0 15px 15px;
-    padding:10px;
-    background:#160b05;
+    width:calc(100% - 24px);
+    margin:0 12px 12px;
+    padding:8px;
+    background:#0866ff;
     color:white;
     border:none;
-    border-radius:25px;
+    border-radius:6px;
     cursor:pointer;
     text-align: center;
     font-size: 14px;
-    transition: background 0.2s;
-}
-
-.btn-main:hover{
-    background:#d4af37;
-    color:#000;
+    font-weight: 600;
 }
 
 /* =====================
-商品详情
+页脚与底部导航
 ===================== */
-
-.product-detail{
-    width:90%;
-    margin:40px auto;
-    background:white;
-    padding:30px;
-    border-radius:15px;
-    display:flex;
-    gap:40px;
-}
-
-.product-detail img{
-    width:400px;
-    height:450px;
-    object-fit:cover;
-    border-radius:15px;
-}
-
-.detail-info{
-    flex:1;
-}
-
-/* =====================
-后台容器
-===================== */
-
-.container{
-    width:80%;
-    margin:50px auto;
-    background:white;
-    padding:30px;
-    border-radius:15px;
-}
-
-.container h1{
-    font-size:35px;
-}
-
-/* =====================
-后台输入框
-===================== */
-
-input, textarea{
-    width:100%;
-    padding:12px;
-    margin:10px 0;
-    border:1px solid #ddd;
-    border-radius:8px;
-    font-size:16px;
-}
-
-textarea{
-    height:120px;
-}
-
-/* =====================
-品牌介绍
-===================== */
-
-.brand{
-    background:#160b05;
-    color:white;
-    padding:40px 10%;
-    text-align:center;
-    line-height:2;
-}
-
-.brand h2 {
-    color: #d4af37;
-    margin-bottom: 10px;
-}
-
-/* =====================
-页脚
-===================== */
-
 footer{
-    background:#000;
-    color:white;
+    background:#ffffff;
+    color:#65676b;
     text-align:center;
     padding:20px;
+    border-top: 1px solid #e4e6eb;
+    font-size: 13px;
 }
-
-/* =====================
-购物车
-===================== */
-
-.cart-item{
-    background:white;
-    margin:15px 0;
-    padding:15px;
-    border-radius:15px;
-    display:flex;
-    gap:15px;
-}
-
-.cart-item img{
-    width:100px;
-    height:100px;
-    object-fit:cover;
-    border-radius:10px;
-}
-
-.qty{
-    display:flex;
-    align-items:center;
-    gap:10px;
-}
-
-.qty button{
-    width:35px;
-    height:35px;
-    padding:0;
-    margin:0;
-}
-
-.cart-bottom{
-    position:fixed;
-    bottom:60px;
-    left:0;
-    width:100%;
-    background:white;
-    padding:10px 20px;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    box-shadow:0 -3px 10px #ddd;
-}
-
-.cart-bottom button{
-    width:120px;
-    margin:0;
-}
-
-/* =====================
-手机底部导航
-===================== */
 
 .mobile-nav{
     display:none;
@@ -430,37 +308,55 @@ footer{
 /* =====================
 手机端响应式适配
 ===================== */
-
 @media(max-width:768px){
-
-    header{
-        display:none;
+    .h5-header{
+        display:flex;
     }
 
-    .title{
-        font-size:22px;
-        padding:20px 0 10px;
+    .page-profile-section {
+        padding: 15px;
+    }
+
+    .profile-container {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 12px;
+    }
+
+    .profile-avatar {
+        width: 100px;
+        height: 100px;
+        margin-top: -35px;
+    }
+
+    .shop-name {
+        font-size: 22px;
+    }
+
+    .profile-actions {
+        width: 100%;
+        margin-top: 5px;
+    }
+
+    .btn-fb-msg {
+        display: block;
+        width: 100%;
+        text-align: center;
+    }
+
+    .h5-search, .h5-category, .title, .products {
+        padding-left: 15px;
+        padding-right: 15px;
     }
 
     .products{
         grid-template-columns: repeat(2, 1fr);
-        padding:10px;
         gap:10px;
     }
 
     .product-card img, .card img{
-        height:150px;
-    }
-
-    .product-card h3, .card h3{
-        font-size:14px;
-        height: 38px;
-        padding: 8px;
-    }
-
-    .price{
-        font-size:16px;
-        padding: 5px 8px;
+        height:140px;
     }
 
     .mobile-nav{
@@ -469,9 +365,9 @@ footer{
         bottom:0;
         left:0;
         width:100%;
-        height:60px;
+        height:55px;
         background:white;
-        border-top:1px solid #ddd;
+        border-top:1px solid #e4e6eb;
         justify-content:space-around;
         align-items:center;
         z-index:9999;
@@ -481,7 +377,7 @@ footer{
         display:flex;
         flex-direction:column;
         align-items:center;
-        font-size:12px;
-        color:#333;
+        font-size:11px;
+        color:#65676b;
     }
 }
