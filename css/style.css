@@ -49,7 +49,7 @@ a {
 }
 
 /* ==========================================
- * 统一版心与居中对齐 (核心重点)
+ * 统一版心与居中对齐
  * 封面、店铺信息、搜索/分类、商品列表全部统一 1250px 居中
  * ========================================== */
 .fb-cover-container,
@@ -77,8 +77,8 @@ a {
 
 .banner, #banner {
     width: 100% !important;
-    height: auto !important;          /* 关键：高度由图片自然撑开 */
-    min-height: 180px;                 /* 容错最低高度 */
+    height: auto !important;          /* 高度由图片自然撑开 */
+    min-height: 180px;
     position: relative !important;
     overflow: hidden !important;
 }
@@ -88,13 +88,13 @@ a {
 .slider-slide img,
 #banner img {
     width: 100% !important;
-    height: auto !important;          /* 关键：等比例自适应，不拉伸变形 */
+    height: auto !important;          /* 等比例自适应，不拉伸变形 */
     max-width: 100% !important;
     display: block !important;
     object-fit: contain !important;    /* 完整显示图片内容 */
 }
 
-/* 封面编辑按钮 - 中式朱红古风按钮 */
+/* 封面编辑按钮 */
 .btn-edit-cover {
     position: absolute;
     bottom: 20px;
@@ -121,7 +121,7 @@ a {
 }
 
 /* ==========================================
- * 中国风店铺个人主页信息区 (自然撑开高度)
+ * 店铺个人主页信息区 (头像下移 + 文字横排)
  * ========================================== */
 .page-profile-section {
     width: 100%;
@@ -136,22 +136,21 @@ a {
     align-items: flex-start;
     gap: 30px;
     position: relative;
-    padding: 0 32px 20px;
-    height: auto !important; /* 自然撑开 */
+    padding: 16px 32px 20px;
+    height: auto !important;
 }
 
-/* 左侧头像区域 - 带中式描边 */
+/* 1. 左侧头像区域：向下移动 */
 .profile-avatar-wrapper {
-    margin-top: -35px !important;
+    margin-top: 10px !important; /* 正值下移 */
     flex-shrink: 0;
     position: relative;
     z-index: 5;
 }
 
-/* 头像上方【分享想法...】气泡 - 朱印风 */
 .thought-bubble {
     position: absolute;
-    top: -30px;
+    top: -28px;
     left: 10px;
     background: #8c1c1c;
     color: #f7e3ad;
@@ -164,10 +163,9 @@ a {
     z-index: 10;
 }
 
-/* 头像圆框 */
 .profile-avatar {
-    width: 140px !important;
-    height: 140px !important;
+    width: 130px !important;
+    height: 130px !important;
     border-radius: 50%;
     border: 4px solid #ffffff;
     box-shadow: 0 4px 12px rgba(140, 28, 28, 0.15), 0 0 0 2px #d4af37;
@@ -182,11 +180,10 @@ a {
     object-fit: cover;
 }
 
-/* 在线状态点 - 翡翠绿 */
 .online-status {
     position: absolute;
-    bottom: 10px;
-    right: 10px;
+    bottom: 8px;
+    right: 8px;
     width: 18px;
     height: 18px;
     background-color: #00a870;
@@ -195,10 +192,10 @@ a {
     z-index: 6;
 }
 
-/* 店铺信息文案（高度自然撑开） */
+/* 店铺信息文案 */
 .profile-info {
     flex: 1;
-    padding-top: 15px !important;
+    padding-top: 6px !important;
     line-height: 1.6;
     height: auto !important;
 }
@@ -207,7 +204,7 @@ a {
     font-size: 26px;
     font-weight: bold;
     color: #1a120f;
-    margin-bottom: 4px;
+    margin-bottom: 2px;
     letter-spacing: 1px;
 }
 
@@ -218,17 +215,36 @@ a {
     margin-bottom: 8px;
 }
 
-.shop-sub, .shop-desc, .shop-shipping, .shop-action {
-    font-size: 14px;
+/* 2. 四排文字横排成一行 */
+.shop-details-inline {
+    display: flex;
+    flex-wrap: wrap; /* 空间不足时自动折行 */
+    align-items: center;
+    gap: 8px 12px;
+    font-size: 13px;
     color: #4a423d;
-    margin-bottom: 4px;
+    margin-top: 6px;
+}
+
+/* 自动加上圆点分隔符 */
+.shop-details-inline span:not(:last-child)::after {
+    content: "•";
+    margin-left: 12px;
+    color: #c8a061;
+}
+
+.shop-sub, .shop-desc, .shop-shipping, .shop-action {
+    display: inline-flex !important;
+    align-items: center;
+    margin-bottom: 0 !important;
+    font-size: 13px !important;
 }
 
 .shop-category-tag {
     font-size: 13px;
     font-weight: 600;
     color: #8c1c1c;
-    margin-top: 6px;
+    margin-top: 8px;
     display: inline-flex;
     align-items: center;
     gap: 6px;
@@ -243,7 +259,7 @@ a {
     display: flex;
     gap: 10px;
     align-self: flex-start;
-    padding-top: 20px;
+    padding-top: 10px;
 }
 
 .btn-fb {
@@ -259,7 +275,6 @@ a {
     cursor: pointer;
 }
 
-/* 主按钮：宫廷红印章风格 */
 .btn-fb-blue {
     background: #8c1c1c;
     color: #f7e3ad;
@@ -272,7 +287,6 @@ a {
     color: #ffffff;
 }
 
-/* 次要按钮：素雅木色风格 */
 .btn-fb-gray {
     background: #f0e6d6;
     color: #5c4433;
@@ -335,7 +349,7 @@ a {
 }
 
 /* ==========================================
- * 商品列表（与整体对齐）
+ * 商品列表
  * ========================================== */
 .title {
     padding: 0 15px 15px;
@@ -402,7 +416,6 @@ a {
     color: #b81c1c;
 }
 
-/* 商品购买按钮 */
 .btn-main {
     display: block;
     width: calc(100% - 28px);
@@ -457,11 +470,11 @@ footer {
         flex-direction: column;
         align-items: flex-start;
         gap: 12px;
-        padding: 0 16px;
+        padding: 12px 16px;
     }
 
     .profile-avatar-wrapper {
-        margin-top: -40px !important;
+        margin-top: 0 !important;
     }
 
     .profile-avatar {
