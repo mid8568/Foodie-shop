@@ -34,10 +34,11 @@ function loadPage(page, id = "") {
             url = "admin-products.html";
             break;
 
-        // 图片管理（拆分后）
+        // 图片管理（拆分为产品和装修）
         case "images-product":
             url = "admin-images-product.html";
             break;
+
         case "images-decor":
             url = "admin-images-decor.html";
             break;
@@ -51,10 +52,11 @@ function loadPage(page, id = "") {
             }
             break;
 
-        // 前端装修（拆分后）
+        // 前端装修（拆分为 PC 端和手机端）
         case "decor-pc":
             url = "admin-decor-pc.html";
             break;
+
         case "decor-mobile":
             url = "admin-decor-mobile.html";
             break;
@@ -70,11 +72,11 @@ function loadPage(page, id = "") {
 
     frame.src = url;
 
-    // 更新左侧菜单高亮状态
+    // 更新左侧菜单高亮及下拉菜单状态
     updateSidebarActive(page);
 }
 
-// 高亮当前选中的左侧菜单，并自动展开父级下拉菜单
+// 高亮当前选中的左侧菜单并自动展开父级菜单
 function updateSidebarActive(page) {
     const links = document.querySelectorAll(".sidebar a");
     links.forEach(a => {
@@ -82,7 +84,7 @@ function updateSidebarActive(page) {
         if (onClickAttr && onClickAttr.includes(`'${page}'`)) {
             a.classList.add("active");
 
-            // 如果当前高亮的是子菜单，自动展开父级下拉菜单
+            // 如果当前激活的是子菜单，自动展开对应下拉框
             const parentDropdown = a.closest('.nav-dropdown');
             if (parentDropdown) {
                 parentDropdown.classList.add('active');
@@ -98,7 +100,7 @@ function updateSidebarActive(page) {
 }
 
 // =======================
-// 菜单跳转（修改后适配路由）
+// 菜单跳转
 // =======================
 function openPage(page, id = "") {
     let url = "admin.html?page=" + page;
@@ -112,17 +114,15 @@ function openPage(page, id = "") {
 }
 
 // =======================
-// 下拉菜单控制（新增方法）
+// 下拉菜单控制
 // =======================
 function toggleDropdown(element) {
     const parentDropdown = element.parentElement;
     const container = parentDropdown.querySelector('.dropdown-container');
 
-    // 切换展开/收起类名
     parentDropdown.classList.toggle('active');
 
     if (parentDropdown.classList.contains('active')) {
-        // 设置真实内容高度以触发平滑过渡动画
         container.style.maxHeight = container.scrollHeight + 'px';
     } else {
         container.style.maxHeight = '0px';
@@ -130,7 +130,7 @@ function toggleDropdown(element) {
 }
 
 // =======================
-// 浏览器前进后退
+// 浏览器前进后退监听
 // =======================
 window.addEventListener("popstate", () => {
     let params = new URLSearchParams(window.location.search);
