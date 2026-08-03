@@ -77,86 +77,27 @@ H5顶部
 }
 
 /* =====================
-Banner & 动态轮播图支持 (清除黑色底色挤压)
+Banner (彻底消除黑边与变形)
 ===================== */
 
 .banner{
     width: 100%;
     height: auto !important;
-    min-height: unset !important; /* 消除默认最小高度撑开黑块 */
-    position: relative;
+    margin: 0 !important;
+    padding: 0 !important;
     overflow: hidden;
-    background: transparent !important; /* 去除黑色背景 */
-    margin: 0;
-    padding: 0;
+    background: none !important; /* 彻底清除黑色背景 */
+    display: block;
 }
 
-.banner img, 
-.slider-slide img {
+/* 强制图片自适应宽度，高度由图片宽度按比例自动推算，绝不压扁 */
+.banner img {
     width: 100% !important;
     height: auto !important;
     display: block !important;
-    object-fit: contain !important;
-    margin: 0;
-    padding: 0;
-}
-
-/* 浮动文字与按钮 */
-.banner-content,
-.banner > div:not(.slider-dots) {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    text-align: center;
-    color: white;
-    width: 90%;
-    z-index: 2;
-    pointer-events: none;
-}
-
-.banner-content *, .banner > div * {
-    pointer-events: auto;
-}
-
-.banner h1{
-    font-size: 38px;
-    text-shadow: 0 2px 8px rgba(0,0,0,0.7);
-}
-
-.banner p{
-    font-size: 16px;
-    margin: 10px 0;
-    text-shadow: 0 2px 8px rgba(0,0,0,0.7);
-}
-
-.btn{
-    display:inline-block;
-    background:#d4af37;
-    color:#000;
-    padding:10px 28px;
-    border-radius:30px;
-    cursor: pointer;
-    font-weight: bold;
+    margin: 0 !important;
+    padding: 0 !important;
     border: none;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-}
-
-/* 轮播图指示器Dots */
-.slider-dots {
-    position: absolute;
-    bottom: 12px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 3;
-    display: flex;
-    gap: 8px;
-}
-
-.slider-dots .slider-dot.active {
-    background: #d4af37 !important;
-    width: 20px !important;
-    border-radius: 4px !important;
 }
 
 /* =====================
@@ -228,7 +169,6 @@ Banner & 动态轮播图支持 (清除黑色底色挤压)
     gap:20px;
 }
 
-/* 支持 JS 动态生成的卡片类名 */
 .product-card, .card {
     background:white;
     border-radius:15px;
@@ -276,8 +216,25 @@ Banner & 动态轮播图支持 (清除黑色底色挤压)
 }
 
 /* =====================
-商城按钮
+联系按钮区域
 ===================== */
+
+.contact-box {
+    text-align: center;
+    padding: 30px 0;
+}
+
+.btn{
+    display:inline-block;
+    background:#d4af37;
+    color:#000;
+    padding:12px 32px;
+    border-radius:30px;
+    cursor: pointer;
+    font-weight: bold;
+    border: none;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
 
 .btn-main{
     display:block;
@@ -358,78 +315,20 @@ textarea{
 }
 
 /* =====================
-1688采集后台
-===================== */
-
-.admin-card{
-    background:white;
-    padding:20px;
-    margin:20px;
-    border-radius:10px;
-}
-
-.form-row{
-    display:flex;
-    gap:10px;
-}
-
-.admin-btn{
-    background:#1677ff;
-    color:white;
-    border:none;
-    padding:10px 20px;
-    border-radius:5px;
-    cursor:pointer;
-}
-
-.image-box{
-    display:flex;
-    flex-wrap:wrap;
-    gap:15px;
-}
-
-.image-box img{
-    width:120px;
-    height:120px;
-    object-fit:cover;
-    border:1px solid #ddd;
-    border-radius:8px;
-}
-
-.image-item{
-    position:relative;
-}
-
-.delete-img{
-    position:absolute;
-    right:-5px;
-    top:-5px;
-    background:red;
-    color:white;
-    border:none;
-    cursor:pointer;
-    border-radius:50%;
-    width:22px;
-    height:22px;
-    line-height: 22px;
-    text-align: center;
-}
-
-/* =====================
-品牌 (修正这里的内边距，防止空出大黑块)
+品牌介绍
 ===================== */
 
 .brand{
     background:#160b05;
     color:white;
-    padding:20px 10%; /* 从原 50px 改为 20px */
+    padding:40px 10%;
     text-align:center;
     line-height:2;
 }
 
-/* 如果你的黑块是 HTML 中单独的一个空 div 或者是 background */
-.brand:empty {
-    display: none !important;
+.brand h2 {
+    color: #d4af37;
+    margin-bottom: 10px;
 }
 
 /* =====================
@@ -503,60 +402,6 @@ footer{
 }
 
 /* =====================
-详情页画廊
-===================== */
-
-.product-box{
-    display:flex;
-    gap:30px;
-    padding:20px;
-}
-
-.gallery{
-    width:50%;
-}
-
-.main-image{
-    width:100%;
-    height:500px;
-    object-fit:contain;
-    background:#fff;
-}
-
-.thumb-list{
-    display:flex;
-    gap:10px;
-    margin-top:15px;
-}
-
-.thumb{
-    width:80px;
-    height:80px;
-    object-fit:cover;
-    cursor:pointer;
-}
-
-.info{
-    width:50%;
-}
-
-.spec-table{
-    width:100%;
-    border-collapse:collapse;
-    margin-top:20px;
-}
-
-.spec-table td{
-    border:1px solid #ddd;
-    padding:10px;
-}
-
-.detail-image{
-    width:100%;
-    margin-top:20px;
-}
-
-/* =====================
 手机端响应式适配
 ===================== */
 
@@ -564,29 +409,6 @@ footer{
 
     header{
         display:none;
-    }
-
-    .banner{
-        height: auto !important;
-    }
-
-    .banner img {
-        width: 100% !important;
-        height: auto !important;
-    }
-
-    .banner h1{
-        font-size: 18px;
-    }
-
-    .banner p{
-        font-size: 12px;
-        margin: 3px 0;
-    }
-
-    .btn{
-        padding: 4px 12px;
-        font-size: 12px;
     }
 
     .title{
@@ -615,23 +437,6 @@ footer{
         padding: 5px 8px;
     }
 
-    .product-detail{
-        width:95%;
-        flex-direction:column;
-        padding:20px;
-    }
-
-    .product-detail img{
-        width:100%;
-        height:auto;
-    }
-
-    .container{
-        width:95%;
-        margin:20px auto;
-        padding:20px;
-    }
-
     .mobile-nav{
         display:flex;
         position:fixed;
@@ -652,17 +457,5 @@ footer{
         align-items:center;
         font-size:12px;
         color:#333;
-    }
-
-    .product-box{
-        display:block;
-    }
-
-    .gallery, .info{
-        width:100%;
-    }
-
-    .main-image{
-        height:300px;
     }
 }
