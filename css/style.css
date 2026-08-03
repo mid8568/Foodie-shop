@@ -77,27 +77,31 @@ H5顶部
 }
 
 /* =====================
-Banner & 动态轮播图支持 (终极修复：保持原图100%正确比例不压扁)
+Banner & 动态轮播图支持 (清除黑色底色挤压)
 ===================== */
 
 .banner{
     width: 100%;
-    height: auto !important; /* 允许由图片真实高度支撑，绝不压扁 */
+    height: auto !important;
+    min-height: unset !important; /* 消除默认最小高度撑开黑块 */
     position: relative;
     overflow: hidden;
-    background: #160b05;
+    background: transparent !important; /* 去除黑色背景 */
+    margin: 0;
+    padding: 0;
 }
 
-/* 无论是直接放 <img> 还是轮播图组件，都按原图等比例缩放 */
 .banner img, 
 .slider-slide img {
     width: 100% !important;
-    height: auto !important; /* 关键：高度设为 auto，确保长宽比与真实原图完全一致 */
+    height: auto !important;
     display: block !important;
     object-fit: contain !important;
+    margin: 0;
+    padding: 0;
 }
 
-/* 浮动文字与按钮（若需在图片上加按钮，保留定位） */
+/* 浮动文字与按钮 */
 .banner-content,
 .banner > div:not(.slider-dots) {
     position: absolute;
@@ -108,7 +112,7 @@ Banner & 动态轮播图支持 (终极修复：保持原图100%正确比例不�
     color: white;
     width: 90%;
     z-index: 2;
-    pointer-events: none; /* 防止文字框影响图片点击 */
+    pointer-events: none;
 }
 
 .banner-content *, .banner > div * {
@@ -412,15 +416,20 @@ textarea{
 }
 
 /* =====================
-品牌
+品牌 (修正这里的内边距，防止空出大黑块)
 ===================== */
 
 .brand{
     background:#160b05;
     color:white;
-    padding:50px 10%;
+    padding:20px 10%; /* 从原 50px 改为 20px */
     text-align:center;
     line-height:2;
+}
+
+/* 如果你的黑块是 HTML 中单独的一个空 div 或者是 background */
+.brand:empty {
+    display: none !important;
 }
 
 /* =====================
