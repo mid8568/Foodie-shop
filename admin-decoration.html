@@ -28,10 +28,20 @@
         .widget-box:hover .widget-del { display: flex; }
         .widget-del { position: absolute; top: 10px; right: 10px; background: #ff4d4f; color: #fff; width: 24px; height: 24px; border-radius: 50%; display: none; align-items: center; justify-content: center; font-size: 14px; cursor: pointer; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
 
-        .right-panel { width: 320px; background: #fff; border-left: 1px solid #e8e8e8; padding: 15px; flex-shrink: 0; overflow-y: auto; }
+        .right-panel { width: 340px; background: #fff; border-left: 1px solid #e8e8e8; padding: 15px; flex-shrink: 0; overflow-y: auto; }
         .form-item { margin-bottom: 15px; }
         .form-item label { display: block; font-size: 12px; color: #666; margin-bottom: 5px; }
         .form-item input, .form-item textarea, .form-item select { width: 100%; padding: 6px 10px; border: 1px solid #d9d9d9; border-radius: 4px; font-size: 13px; outline: none; }
+        
+        /* 多图列表管理样式 */
+        .banner-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
+        .banner-item { display: flex; align-items: center; gap: 8px; background: #fafafa; border: 1px solid #f0f0f0; padding: 6px; border-radius: 4px; }
+        .banner-item img { width: 50px; height: 30px; object-fit: cover; border-radius: 2px; }
+        .banner-item input { flex: 1; font-size: 12px; }
+        .banner-item .btn-remove { color: #ff4d4f; cursor: pointer; padding: 0 4px; font-weight: bold; }
+
+        .upload-btn { display: block; text-align: center; padding: 8px; background: #e6f7ff; border: 1px dashed #1890ff; color: #1890ff; border-radius: 4px; cursor: pointer; font-size: 12px; margin-bottom: 10px; }
+        .upload-input { display: none; }
 
         .preview-banner img { width: 100%; object-fit: cover; display: block; }
         .preview-notice { background: #e6f7ff; color: #1890ff; padding: 12px 20px; font-size: 14px; border-left: 4px solid #1890ff; }
@@ -116,7 +126,8 @@
             if (type === "banner") {
                 newComp.data = { 
                     height: 400,
-                    images: ["https://via.placeholder.com/1200x400/1890ff/ffffff?text=PC+Banner+1"] 
+                    interval: 3000,
+                    images: ["https://via.placeholder.com/1200x400/1890ff/ffffff?text=Banner+1"] 
                 };
             } else if (type === "notice") {
                 newComp.data = { text: "📢 欢迎光临！网页端专享优惠活动进行中！" };
@@ -159,7 +170,15 @@
                 let contentHtml = "";
                 if (comp.type === "banner") {
                     const h = comp.data.height || 400;
-                    contentHtml = `<div class="preview-banner"><img src="${comp.data.images[0] || 'https://via.placeholder.com/1200x400'}" style="height:${h}px;"></div>`;
+                    const imgs = comp.data.images || [];
+                    const firstImg = imgs[0] || 'https://via.placeholder.com/1200x400';
+                    contentHtml = `
+                        <div class="preview-banner" style="position:relative;">
+                            <img src="${firstImg}" style="height:${h}px;">
+                            <span style="position:absolute; bottom:10px; right:10px; background:rgba(0,0,0,0.6); color:#fff; padding:2px 8px; border-radius:10px; font-size:12px;">
+                                共 ${imgs.length} 张图 (自动轮播)
+                            </span>
+                        </div>`;
                 } else if (comp.type === "notice") {
                     contentHtml = `<div class="preview-notice">${comp.data.text || '暂无内容'}</div>`;
                 } else if (comp.type === "products") {
@@ -198,14 +217,34 @@
             let formHtml = `<div class="panel-title">设置 ${comp.type} 模块</div>`;
 
             if (comp.type === "banner") {
+                const images = comp.data.images || [];
+                let imgItemsHtml = "";
+
+                images.forEach((url, i) => {
+                    imgItemsHtml += `
+                        <div class="banner-item">
+                            <img src="${url}" title="预览">
+                            <input type="text" value="${url}" onchange="updateBannerUrl(${i}, this.value)">
+                            <span class="btn-remove" onclick="removeBannerImage(${i})">✕</span>
+                        </div>`;
+                });
+
                 formHtml += `
                     <div class="form-item">
-                        <label>图片 URL 地址</label>
-                        <input type="text" value="${comp.data.images[0] || ''}" onchange="updateData('images', [this.value])">
+                        <label>轮播图片列表 (${images.length} 张)</label>
+                        <div class="banner-list">${imgItemsHtml}</div>
+                        <label class="upload-btn" id="upload-label">
+                            ➕ 上传新 Banner 图
+                            <input type="file" class="upload-input" accept="image/*" onchange="addBannerImage(this)">
+                        </label>
                     </div>
                     <div class="form-item">
                         <label>Banner 高度 (px)</label>
                         <input type="number" value="${comp.data.height || 400}" onchange="updateData('height', Number(this.value))">
+                    </div>
+                    <div class="form-item">
+                        <label>切换间隔毫秒数 (默认 3000ms)</label>
+                        <input type="number" value="${comp.data.interval || 3000}" step="500" onchange="updateData('interval', Number(this.value))">
                     </div>`;
             } else if (comp.type === "notice") {
                 formHtml += `
@@ -242,6 +281,66 @@
             }
 
             panel.innerHTML = formHtml;
+        }
+
+        // 上传新图片到 Banner 列表
+        async function addBannerImage(fileInput) {
+            const file = fileInput.files[0];
+            if (!file) return;
+
+            const uploadLabel = document.getElementById("upload-label");
+            uploadLabel.innerHTML = "⏳ 图片上传中...";
+
+            try {
+                const fileExt = file.name.split('.').pop();
+                const fileName = `banner_${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${fileExt}`;
+                const filePath = `banners/${fileName}`;
+
+                const { error } = await supabaseClient.storage
+                    .from("decorations")
+                    .upload(filePath, file);
+
+                if (error) {
+                    alert("上传失败: " + error.message);
+                    renderConfigPanel();
+                    return;
+                }
+
+                const { data: publicUrlData } = supabaseClient.storage
+                    .from("decorations")
+                    .getPublicUrl(filePath);
+
+                const publicUrl = publicUrlData.publicUrl;
+
+                // 追加到列表
+                if (activeIndex >= 0) {
+                    if (!pageComponents[activeIndex].data.images) {
+                        pageComponents[activeIndex].data.images = [];
+                    }
+                    pageComponents[activeIndex].data.images.push(publicUrl);
+                    renderCanvas();
+                }
+            } catch (err) {
+                console.error("上传错误:", err);
+                alert("上传失败！");
+                renderConfigPanel();
+            }
+        }
+
+        // 修改某张图片 URL
+        function updateBannerUrl(imgIdx, newUrl) {
+            if (activeIndex >= 0 && pageComponents[activeIndex].data.images) {
+                pageComponents[activeIndex].data.images[imgIdx] = newUrl;
+                renderCanvas();
+            }
+        }
+
+        // 删除某张图片
+        function removeBannerImage(imgIdx) {
+            if (activeIndex >= 0 && pageComponents[activeIndex].data.images) {
+                pageComponents[activeIndex].data.images.splice(imgIdx, 1);
+                renderCanvas();
+            }
         }
 
         function updateData(key, value) {
