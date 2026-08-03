@@ -1,6 +1,6 @@
 // 1. 初始化 Supabase 客户端 (请替换为你的 URL 和 Key)
-const SUPABASE_URL = 'https://your-supabase-url.supabase.co';
-const SUPABASE_KEY = 'your-anon-key';
+const SUPABASE_URL = 'https://ukxxmxnubxjezkwbbxdr.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_2IFHfms3ombozpvZCvaeEg_2VZ2z5hJ';
 const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let currentProductId = null; // 当前正在管理的商品 ID
