@@ -77,33 +77,33 @@ H5顶部
 }
 
 /* =====================
-Banner & 动态轮播图支持 (已针对 1734x907 原图完整显示进行优化)
+Banner & 动态轮播图支持 (原生 aspect-ratio 精准适配 1734x907)
 ===================== */
 
 .banner{
     width: 100%;
-    /* 利用百分比 padding 实现 1734:907 (约 1.91:1) 的自适应比例，确保整张大图完整展示不裁切 */
-    padding-top: 52.3%; 
-    height: 0;
-    background-image: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)), url("https://images.unsplash.com/photo-1598301257982-0cf014dabbcd");
-    background-size: contain; 
+    /* 采用 CSS 现代原生宽高比，精准锁定 1734x907，绝不裁切 */
+    aspect-ratio: 1734 / 907; 
+    height: auto;
+    
+    background-image: url("https://images.unsplash.com/photo-1598301257982-0cf014dabbcd");
+    background-size: 100% 100%; /* 铺满容器内部比例，100%完整展现 */
     background-repeat: no-repeat;
     background-position: center;
     position: relative;
     overflow: hidden;
-    transition: all 0.3s ease;
 }
 
-/* 兼容轮播图 <img> 标签的完整显示 */
+/* 兼容轮播图框架（如果使用 <img> 标签引入图片） */
 .banner img, 
 .slider-slide img {
     width: 100% !important;
-    height: auto !important;
-    object-fit: contain !important;
+    height: 100% !important;
+    object-fit: fill !important;
     display: block;
 }
 
-/* 浮动标题与按钮 */
+/* Banner 浮动文字与按钮 */
 .banner-content,
 .banner > div {
     position: absolute;
@@ -117,14 +117,14 @@ Banner & 动态轮播图支持 (已针对 1734x907 原图完整显示进行优�
 }
 
 .banner h1{
-    font-size: 42px;
-    text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+    font-size: 38px;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.7);
 }
 
 .banner p{
-    font-size: 18px;
+    font-size: 16px;
     margin: 10px 0;
-    text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+    text-shadow: 0 2px 8px rgba(0,0,0,0.7);
 }
 
 .btn{
@@ -142,7 +142,7 @@ Banner & 动态轮播图支持 (已针对 1734x907 原图完整显示进行优�
 /* 轮播图指示器Dots */
 .slider-dots {
     position: absolute;
-    bottom: 15px;
+    bottom: 12px;
     left: 50%;
     transform: translateX(-50%);
     z-index: 3;
@@ -558,23 +558,22 @@ footer{
         display:none;
     }
 
-    /* 移动端维持同比例展示 */
     .banner{
-        padding-top: 52.3%; 
-        height: 0;
+        aspect-ratio: 1734 / 907;
+        height: auto;
     }
 
     .banner h1{
-        font-size: 20px;
+        font-size: 18px;
     }
 
     .banner p{
         font-size: 12px;
-        margin: 5px;
+        margin: 3px 0;
     }
 
     .btn{
-        padding: 6px 16px;
+        padding: 4px 12px;
         font-size: 12px;
     }
 
