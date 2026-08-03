@@ -30,7 +30,7 @@
         .product-grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
         .product-grid-5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px; }
         
-        .p-card { background: #fff; border: 1px solid #f0f0f0; border-radius: 6px; overflow: hidden; transition: all 0.2s; cursor: pointer; }
+        .p-card { background: #fff; border: 1px solid #f0f0f0; border-radius: 6px; overflow: hidden; transition: all 0.2s; cursor: pointer; display: flex; flex-direction: column; justify-content: space-between; }
         .p-card:hover { transform: translateY(-4px); box-shadow: 0 6px 16px rgba(0,0,0,0.1); border-color: #e8e8e8; }
         .p-card img { width: 100%; height: 200px; object-fit: cover; }
         .p-card .p-info { padding: 12px; }
@@ -49,7 +49,9 @@
     </header>
 
     <!-- 动态渲染区 -->
-    <div class="container" id="pc-shop-container"></div>
+    <div class="container" id="pc-shop-container">
+        <p style="text-align:center; padding:50px; color:#999;">页面加载中...</p>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
@@ -62,22 +64,33 @@
         async function renderPcPage() {
             const container = document.getElementById("pc-shop-container");
 
-            const { data: decoData, error } = await supabaseClient
+            // 1. 读取装修配置 (id=1)
+            const { data: decoData, error: decoError } = await supabaseClient
                 .from("decorations")
                 .select("config")
                 .eq("id", 1)
                 .single();
 
-            if (error || !decoData) {
-                container.innerHTML = "<p style='text-align:center; padding:50px;'>页面数据加载失败</p>";
+            if (decoError || !decoData || !decoData.config) {
+                container.innerHTML = "<p style='text-align:center; padding:50px; color:#999;'>暂无装修配置或加载失败</p>";
                 return;
             }
 
+            // 2. 预先一次性查询所有有效商品，提升渲染性能
+            const { data: allProducts, error: prodError } = await supabaseClient
+                .from("products")
+                .select("*");
+
+            const productList = allProducts || [];
             const config = decoData.config || [];
 
+            // 清空加载提示
+            container.innerHTML = "";
+
+            // 3. 按配置循环渲染视图
             for (let item of config) {
                 if (item.type === "banner") {
-                    const bannerImg = item.data.images[0] || "";
+                    const bannerImg = (item.data.images && item.data.images[0]) ? item.data.images[0] : "https://via.placeholder.com/1200x400";
                     const h = item.data.height || 400;
                     container.innerHTML += `
                         <div class="pc-banner">
@@ -87,27 +100,39 @@
                 else if (item.type === "notice") {
                     container.innerHTML += `
                         <div class="pc-notice">
-                            ${item.data.text}
+                            ${item.data.text || '暂无公告'}
                         </div>`;
                 } 
                 else if (item.type === "products") {
                     const cols = item.data.cols || 4;
                     const limit = item.data.limit || 8;
+                    const targetCategory = item.data.category || "全部";
 
-                    const { data: products } = await supabaseClient
-                        .from("products")
-                        .select("*")
-                        .eq("stock_status", "上架")
-                        .limit(limit);
+                    // 根据装修设定的分类过滤商品，并做数量截取
+                    let filteredProducts = productList.filter(p => {
+                        // 兼容上下架状态过滤（适配不同的数据库字段命名）
+                        const isStock = p.stock_status ? (p.stock_status === "上架") : true;
+                        if (!isStock) return false;
+
+                        if (targetCategory === "全部" || !targetCategory) return true;
+                        return p.category === targetCategory;
+                    });
+
+                    filteredProducts = filteredProducts.slice(0, limit);
 
                     let pListHtml = "";
-                    (products || []).forEach(p => {
+                    filteredProducts.forEach(p => {
+                        // 双向兼容字段名：优先取 title/image_url，没有则取 name/image
+                        const title = p.title || p.name || "未命名商品";
+                        const image = p.image_url || p.image || "https://via.placeholder.com/200";
+                        const price = parseFloat(p.price || 0).toFixed(2);
+
                         pListHtml += `
                             <div class="p-card">
-                                <img src="${p.image || 'https://via.placeholder.com/200'}" alt="${p.name}">
+                                <img src="${image}" alt="${title}">
                                 <div class="p-info">
-                                    <div class="p-name">${p.name}</div>
-                                    <div class="p-price">¥ ${p.price || 0}</div>
+                                    <div class="p-name">${title}</div>
+                                    <div class="p-price">¥ ${price}</div>
                                 </div>
                             </div>`;
                     });
@@ -116,7 +141,7 @@
                         <div class="pc-products">
                             <div class="sec-title">${item.data.title || '推荐商品'}</div>
                             <div class="product-grid-${cols}">
-                                ${pListHtml || '<p style="color:#999;">暂无上架商品</p>'}
+                                ${pListHtml || '<p style="color:#999; grid-column: 1 / -1; text-align:center; padding: 20px 0;">该分类下暂无上架商品</p>'}
                             </div>
                         </div>`;
                 }
