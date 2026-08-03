@@ -17,13 +17,12 @@ document.addEventListener('DOMContentLoaded', () => {
  * 2. 从后台/数据库读取数据并渲染
  * ========================================== */
 
-// 加载后台海报（同时支持后台整页装修 JSON 与常规 banners 表）
+// 加载后台海报
 async function loadBanners() {
     const bannerContainer = document.getElementById('banner');
     if (!bannerContainer) return;
 
     try {
-        // 1. 优先尝试读取装修后台保存的 page_decorations 配置
         let { data: decData } = await db.from('page_decorations').select('*').limit(1);
         
         if (decData && decData.length > 0 && decData[0].config) {
@@ -36,7 +35,6 @@ async function loadBanners() {
             }
         }
 
-        // 2. 如果装修数据查不到，自动降级去查 banners 表
         let { data, error } = await db.from('banners').select('*');
         if (error) throw error;
 
@@ -49,7 +47,7 @@ async function loadBanners() {
     }
 }
 
-// 从数据库渲染后台上传的商品列表
+// 加载商品
 async function loadProducts() {
     const productContainer = document.getElementById('product-list');
     if (!productContainer) return;
@@ -66,7 +64,7 @@ async function loadProducts() {
     }
 }
 
-// 动态渲染商品 DOM
+// 渲染商品 DOM
 function renderProducts(products) {
     const productContainer = document.getElementById('product-list');
     if (!productContainer) return;
@@ -111,7 +109,29 @@ function filterProducts(category) {
 }
 
 /* ==========================================
- * 3. 头像菜单交互逻辑
+ * 3. 封面图独立上传逻辑
+ * ========================================== */
+function triggerCoverUpload() {
+    const coverInput = document.getElementById('coverInput');
+    if (coverInput) coverInput.click();
+}
+
+function uploadNewCover(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            const bannerContainer = document.getElementById('banner');
+            if (bannerContainer) {
+                bannerContainer.innerHTML = `<img src="${e.target.result}" alt="Uploaded Cover">`;
+            }
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+/* ==========================================
+ * 4. 头像菜单与独立上传逻辑
  * ========================================== */
 function toggleAvatarMenu(event) {
     event.stopPropagation();
