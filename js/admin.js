@@ -49,8 +49,8 @@ function loadPage(page, id = "") {
             break;
 
         // 前端装修
-        case "decoration":
-            url = "admin-decoration.html";
+        case "decorate":
+            url = "admin-decorate.html";
             break;
 
         // eBay同步
