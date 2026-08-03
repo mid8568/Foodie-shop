@@ -23,17 +23,25 @@ SUPABASE_URL,
 SUPABASE_KEY
 );
 
+
+
 // =======================
-// 分页设置
+// 分页
 // =======================
+
 
 const PAGE_SIZE = 15;
 
+
 let currentPage = 1;
+
 
 let totalPages = 1;
 
+
 let currentKeyword = "";
+
+
 
 
 // =======================
@@ -55,10 +63,10 @@ loadProducts();
 
 
 
-
 // =======================
 // 加载商品
 // =======================
+
 
 async function loadProducts(
 keyword="",
@@ -67,6 +75,7 @@ page=1
 
 
 currentPage = page;
+
 
 currentKeyword = keyword;
 
@@ -78,7 +87,7 @@ let start =
 
 
 let end =
-start + PAGE_SIZE - 1;
+start+PAGE_SIZE-1;
 
 
 
@@ -142,28 +151,33 @@ return;
 
 totalPages =
 Math.ceil(
-count / PAGE_SIZE
+count/PAGE_SIZE
 );
 
 
 
-renderProducts(data);
+renderProducts(
+data
+);
 
 
 renderPagination();
+
 
 
 }
 
 
 
+
+
+
 // =======================
-// 显示商品列表
+// 商品列表
 // =======================
 
 
 function renderProducts(products){
-
 
 
 const box =
@@ -177,9 +191,7 @@ box.innerHTML="";
 
 
 
-
 products.forEach(item=>{
-
 
 
 let tr =
@@ -194,19 +206,15 @@ tr.innerHTML = `
 
 <td>
 
-
 <img
 
 src="${item.image || ''}"
 
 class="table-image"
 
-
 >
 
-
 </td>
-
 
 
 
@@ -214,14 +222,21 @@ class="table-image"
 
 
 <div>
+
 ${item.name || ""}
+
 </div>
 
 
-<a 
+<a
+
 href="${item['1688_url'] || '#'}"
+
 target="_blank"
-class="1688-link">
+
+class="1688-link"
+
+>
 
 1688链接
 
@@ -233,11 +248,12 @@ class="1688-link">
 
 
 
-<td class="product-name-en">
+<td>
 
 ${item.name_en || ""}
 
 </td>
+
 
 
 
@@ -251,17 +267,18 @@ type="number"
 
 value="${item.price || 0}"
 
-class="edit-price"
-
 id="price-${item.id}"
 
-onblur="updateProductField('${item.id}')"
+class="edit-price"
 
+onblur="updateProductField('${item.id}')"
 
 >
 
 
 </td>
+
+
 
 
 
@@ -274,12 +291,11 @@ type="number"
 
 value="${item.stock_quantity || 0}"
 
-class="edit-stock"
-
 id="stock-${item.id}"
 
-onblur="updateProductField('${item.id}')"
+class="edit-stock"
 
+onblur="updateProductField('${item.id}')"
 
 >
 
@@ -287,17 +303,18 @@ onblur="updateProductField('${item.id}')"
 </td>
 
 
+
+
+
 <td>
 
 
 <button
 
-onclick="toggleStatus(
-'${item.id}',
-'${item.stock_status}'
-)"
+onclick="toggleStatus('${item.id}','${item.stock_status}')"
 
 >
+
 
 ${item.stock_status || "下架"}
 
@@ -306,6 +323,7 @@ ${item.stock_status || "下架"}
 
 
 </td>
+
 
 
 
@@ -328,7 +346,6 @@ onclick="editProduct('${item.id}')"
 </td>
 
 
-
 `;
 
 
@@ -340,10 +357,7 @@ box.appendChild(tr);
 });
 
 
-
 }
-
-
 
 
 
@@ -383,15 +397,12 @@ keyword,
 
 
 
-
-
 // =======================
-// 编辑跳转
+// 编辑商品
 // =======================
 
 
 function editProduct(id){
-
 
 
 console.log(
@@ -401,15 +412,42 @@ id
 
 
 
-window.location.href =
+/*
 
-"admin-edit.html?id="+id;
+iframe模式
+
+返回父页面打开编辑
+
+*/
+
+
+if(
+window.parent &&
+window.parent.openPage
+){
+
+
+
+window.parent.openPage(
+"edit",
+id
+);
+
+
+
+}else{
+
+
+window.location.href =
+"admin.html?page=edit&id="+id;
 
 
 
 }
 
 
+
+}
 
 
 
@@ -425,11 +463,9 @@ window.location.href =
 function addProduct(){
 
 
-
 alert(
 "添加商品功能开发中"
 );
-
 
 
 }
@@ -439,28 +475,11 @@ alert(
 
 
 
+
+
+
 // =======================
-// 暴露给HTML
-// =======================
-
-
-window.editProduct =
-editProduct;
-
-
-window.searchProduct =
-searchProduct;
-
-
-window.addProduct =
-addProduct;
-window.toggleStatus =
-toggleStatus;
-window.updateProductField =
-updateProductField;
-// =======================
-// 自动保存价格库存
-// 点击空白处触发
+// 更新价格库存
 // =======================
 
 
@@ -469,7 +488,6 @@ async function updateProductField(id){
 
 
 let price =
-
 document.getElementById(
 "price-"+id
 ).value;
@@ -477,7 +495,6 @@ document.getElementById(
 
 
 let stock =
-
 document.getElementById(
 "stock-"+id
 ).value;
@@ -522,15 +539,22 @@ return;
 
 
 console.log(
-"商品价格库存已更新",
+"保存成功",
 id
 );
 
 
-
 }
+
+
+
+
+
+
+
+
 // =======================
-// 切换上下架
+// 上下架
 // =======================
 
 
@@ -572,8 +596,6 @@ id
 
 if(error){
 
-console.log(error);
-
 alert(
 "修改失败"
 );
@@ -591,6 +613,12 @@ currentPage
 
 
 }
+
+
+
+
+
+
 // =======================
 // 分页
 // =======================
@@ -606,9 +634,7 @@ document.getElementById(
 
 
 
-if(!box){
-return;
-}
+if(!box)return;
 
 
 
@@ -620,11 +646,11 @@ let html="";
 
 
 
-html += `
+html+=`
 
 <button
 
-onclick="loadProducts('${currentKeyword}',${currentPage-1})"
+onclick="changePage(${currentPage-1})"
 
 ${currentPage<=1?"disabled":""}
 
@@ -638,6 +664,7 @@ ${currentPage<=1?"disabled":""}
 
 
 
+
 for(
 let i=1;
 i<=totalPages;
@@ -645,11 +672,11 @@ i++
 ){
 
 
-html += `
+html+=`
 
 <button
 
-onclick="loadProducts('${currentKeyword}',${i})"
+onclick="changePage(${i})"
 
 class="${i===currentPage?'active':''}"
 
@@ -661,17 +688,15 @@ ${i}
 
 `;
 
-
-
 }
 
 
 
-html += `
+html+=`
 
 <button
 
-onclick="loadProducts('${currentKeyword}',${currentPage+1})"
+onclick="changePage(${currentPage+1})"
 
 ${currentPage>=totalPages?"disabled":""}
 
@@ -685,12 +710,70 @@ ${currentPage>=totalPages?"disabled":""}
 
 
 
-box.innerHTML = html;
+box.innerHTML=html;
 
 
 }
 
 
 
+
+
+function changePage(page){
+
+
+if(
+page<1 ||
+page>totalPages
+){
+
+return;
+
+}
+
+
+loadProducts(
+currentKeyword,
+page
+);
+
+
+}
+
+
+
+
+
+
+
+// =======================
+// 暴露
+// =======================
+
+
 window.loadProducts =
 loadProducts;
+
+
+window.searchProduct =
+searchProduct;
+
+
+window.addProduct =
+addProduct;
+
+
+window.editProduct =
+editProduct;
+
+
+window.toggleStatus =
+toggleStatus;
+
+
+window.updateProductField =
+updateProductField;
+
+
+window.changePage =
+changePage;
