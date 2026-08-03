@@ -1,7 +1,7 @@
 /* ==========================================
  * 1. Supabase 数据库初始化配置
  * ========================================== */
-const SUPABASE_URL = 'https://YOUR_SUPABASE_URL.supabase.co';
+const SUPABASE_URL = 'https://ukxxmxnubxjezkwbbxdr.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_2IFHfms3ombozpvZCvaeEg_2VZ2z5hJ';
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
