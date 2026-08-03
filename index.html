@@ -1,149 +1,85 @@
-/* ==========================================
- * 1. Supabase 数据库初始化配置
- * ========================================== */
-const SUPABASE_URL = 'https://ukxxmxnubxjezkwbbxdr.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_2IFHfms3ombozpvZCvaeEg_2VZ2z5hJ';
-const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>China Direct Shop | Chinese Products</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
 
-let allProducts = [];
+<!-- 手机端顶部 Header -->
+<header class="h5-header">
+    <div class="h5-logo">🇨🇳 China Direct Shop</div>
+    <a href="https://m.me/你的Facebook主页用户名" class="h5-cart" target="_blank">💬</a>
+</header>
 
-// 页面加载完成后自动请求数据库
-document.addEventListener('DOMContentLoaded', () => {
-    loadBanners();
-    loadProducts();
-});
+<!-- 顶部大型封面海报区 (已限制高度，绝不撑满一屏) -->
+<section class="banner">
+    <!-- 如果后台JS插入图片，会自动动态填入这里；如果静态使用，取消下面注释填入链接即可 -->
+    <!-- <img src="YOUR_BANNER_IMAGE.jpg" alt="China Direct Shop Banner"> -->
+</section>
 
-/* ==========================================
- * 2. 从后台/数据库读取数据并渲染
- * ========================================== */
+<!-- Facebook 风格店铺主页简介区 -->
+<section class="page-profile-section">
+    <div class="profile-container">
+        <!-- 圆形 Logo / 头像 -->
+        <div class="profile-avatar">
+            <img src="https://images.unsplash.com/photo-1544717305-2782549b5136?w=200" alt="China Direct Shop Logo" id="site-logo">
+        </div>
+        
+        <!-- 店铺名称与简介 -->
+        <div class="profile-info">
+            <h1 class="shop-name">China Direct Shop</h1>
+            <p class="shop-meta">0 位粉丝 · 关注 0 人</p>
+            <p class="shop-sub">🇨🇳 Authentic products from China</p>
+            <p class="shop-desc">Snacks | Tea | Gifts | Daily goods</p>
+            <p class="shop-shipping">Direct shipping from China worldwide 🌏</p>
+            <p class="shop-action">Message us to order.</p>
+            <span class="shop-tag">🛍️ 零售购物</span>
+        </div>
+        
+        <!-- 右侧/下方按钮 -->
+        <div class="profile-actions">
+            <a href="https://m.me/你的Facebook主页用户名" class="btn-fb-msg" target="_blank">💬 联系我们</a>
+        </div>
+    </div>
+</section>
 
-// 从数据库渲染后台上传的 Banner 海报
-async function loadBanners() {
-    const bannerContainer = document.getElementById('banner');
-    if (!bannerContainer) return;
+<!-- 搜索栏 -->
+<div class="h5-search">
+    <input id="search" placeholder="Search products..." oninput="searchProducts()">
+</div>
 
-    try {
-        const { data, error } = await db.from('banners').select('*');
-        if (error) throw error;
+<!-- 商品分类 -->
+<div class="h5-category">
+    <button onclick="filterProducts('全部')">All</button>
+    <button onclick="filterProducts('茶叶')">🍵 Tea</button>
+    <button onclick="filterProducts('零食')">🍜 Snacks</button>
+    <button onclick="filterProducts('礼品')">🎁 Gifts</button>
+    <button onclick="filterProducts('生活用品')">🏠 Daily Goods</button>
+</div>
 
-        console.log('Banners Data Fetched:', data); // 输出到控制台方便查看数据字段
+<h2 class="title">Featured Products</h2>
 
-        if (data && data.length > 0) {
-            bannerContainer.innerHTML = data.map(b => {
-                // 兼容多种可能的字段名（image_url / url / image / banner_url）
-                const imgSrc = b.image_url || b.url || b.image || b.banner_url || '';
-                return `<img src="${imgSrc}" alt="Banner">`;
-            }).join('');
-        } else {
-            console.warn('banners 表为空');
-        }
-    } catch (err) {
-        console.error('Error loading banners:', err);
-    }
-}
+<!-- 商品列表 -->
+<section class="products" id="product-list">
+    Loading products...
+</section>
 
-// 从数据库渲染后台上传的商品列表
-async function loadProducts() {
-    const productContainer = document.getElementById('product-list');
-    if (!productContainer) return;
+<!-- 底部导航 (手机端) -->
+<div class="mobile-nav">
+    <a href="index.html">🏠<span>Home</span></a>
+    <a href="#product-list">🛍️<span>Products</span></a>
+    <a href="https://m.me/你的Facebook主页用户名" target="_blank">💬<span>Contact</span></a>
+    <a href="about.html">🌏<span>About</span></a>
+</div>
 
-    try {
-        const { data, error } = await db.from('products').select('*');
-        if (error) throw error;
+<footer>
+    © China Direct Shop
+</footer>
 
-        allProducts = data || [];
-        renderProducts(allProducts);
-    } catch (err) {
-        console.error('Error loading products:', err);
-        productContainer.innerHTML = '<p style="text-align:center; padding:20px;">Failed to load products.</p>';
-    }
-}
-
-// 动态渲染商品 DOM
-function renderProducts(products) {
-    const productContainer = document.getElementById('product-list');
-    if (!productContainer) return;
-
-    if (products.length === 0) {
-        productContainer.innerHTML = '<p style="text-align:center; padding:20px;">暂无商品，请在后台添加。</p>';
-        return;
-    }
-
-    productContainer.innerHTML = products.map(p => {
-        const pImg = p.image_url || p.url || p.image || 'https://via.placeholder.com/200';
-        return `
-            <div class="product-card">
-                <img src="${pImg}" alt="${p.title || p.name}">
-                <h3>${p.title || p.name || 'Untitled'}</h3>
-                <p class="desc">${p.description || ''}</p>
-                <p class="price">$${p.price || '0.00'}</p>
-                <a href="https://m.me/你的Facebook主页用户名" target="_blank" class="btn-main">Message to Buy</a>
-            </div>
-        `;
-    }).join('');
-}
-
-// 搜索商品
-function searchProducts() {
-    const query = document.getElementById('search').value.toLowerCase();
-    const filtered = allProducts.filter(p => {
-        const name = (p.title || p.name || '').toLowerCase();
-        return name.includes(query);
-    });
-    renderProducts(filtered);
-}
-
-// 分类筛选商品
-function filterProducts(category) {
-    if (category === '全部') {
-        renderProducts(allProducts);
-    } else {
-        const filtered = allProducts.filter(p => p.category === category);
-        renderProducts(filtered);
-    }
-}
-
-/* ==========================================
- * 3. FB 风格头像交互逻辑
- * ========================================== */
-function toggleAvatarMenu(event) {
-    event.stopPropagation();
-    const dropdown = document.getElementById('avatarDropdown');
-    if (dropdown) dropdown.classList.toggle('show');
-}
-
-document.addEventListener('click', function (e) {
-    const dropdown = document.getElementById('avatarDropdown');
-    const avatarBtn = document.getElementById('avatarBtn');
-    if (dropdown && avatarBtn && !avatarBtn.contains(e.target) && !dropdown.contains(e.target)) {
-        dropdown.classList.remove('show');
-    }
-});
-
-function viewAvatar() {
-    const logoImg = document.getElementById('site-logo').src;
-    window.open(logoImg, '_blank');
-    closeAvatarMenu();
-}
-
-function triggerAvatarUpload() {
-    const fileInput = document.getElementById('avatarInput');
-    if (fileInput) fileInput.click();
-    closeAvatarMenu();
-}
-
-function uploadNewAvatar(event) {
-    const file = event.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-            document.getElementById('site-logo').src = e.target.result;
-        };
-        reader.readAsDataURL(file);
-    }
-}
-
-function closeAvatarMenu() {
-    const dropdown = document.getElementById('avatarDropdown');
-    if (dropdown) dropdown.classList.remove('show');
-}
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
