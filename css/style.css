@@ -77,35 +77,29 @@ H5顶部
 }
 
 /* =====================
-Banner & 动态轮播图支持 (原生 aspect-ratio 精准适配 1734x907)
+Banner & 动态轮播图支持 (终极修复：保持原图100%正确比例不压扁)
 ===================== */
 
 .banner{
     width: 100%;
-    /* 采用 CSS 现代原生宽高比，精准锁定 1734x907，绝不裁切 */
-    aspect-ratio: 1734 / 907; 
-    height: auto;
-    
-    background-image: url("https://images.unsplash.com/photo-1598301257982-0cf014dabbcd");
-    background-size: 100% 100%; /* 铺满容器内部比例，100%完整展现 */
-    background-repeat: no-repeat;
-    background-position: center;
+    height: auto !important; /* 允许由图片真实高度支撑，绝不压扁 */
     position: relative;
     overflow: hidden;
+    background: #160b05;
 }
 
-/* 兼容轮播图框架（如果使用 <img> 标签引入图片） */
+/* 无论是直接放 <img> 还是轮播图组件，都按原图等比例缩放 */
 .banner img, 
 .slider-slide img {
     width: 100% !important;
-    height: 100% !important;
-    object-fit: fill !important;
-    display: block;
+    height: auto !important; /* 关键：高度设为 auto，确保长宽比与真实原图完全一致 */
+    display: block !important;
+    object-fit: contain !important;
 }
 
-/* Banner 浮动文字与按钮 */
+/* 浮动文字与按钮（若需在图片上加按钮，保留定位） */
 .banner-content,
-.banner > div {
+.banner > div:not(.slider-dots) {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -114,6 +108,11 @@ Banner & 动态轮播图支持 (原生 aspect-ratio 精准适配 1734x907)
     color: white;
     width: 90%;
     z-index: 2;
+    pointer-events: none; /* 防止文字框影响图片点击 */
+}
+
+.banner-content *, .banner > div * {
+    pointer-events: auto;
 }
 
 .banner h1{
@@ -559,8 +558,12 @@ footer{
     }
 
     .banner{
-        aspect-ratio: 1734 / 907;
-        height: auto;
+        height: auto !important;
+    }
+
+    .banner img {
+        width: 100% !important;
+        height: auto !important;
     }
 
     .banner h1{
