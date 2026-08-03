@@ -1,3 +1,114 @@
+/* ==========================================
+ * 1. 整体布局与容器
+ * ========================================== */
+.product-page {
+    padding: 20px;
+    background-color: #f8f9fa;
+    min-height: 100vh;
+    box-sizing: border-box;
+}
+
+.product-page h1 {
+    font-size: 22px;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+/* 包含表格的白色大卡片 */
+#product-box, #image-detail-box {
+    background: #ffffff;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    border: 1px solid #eef0f3;
+}
+
+/* ==========================================
+ * 2. 表格样式 (解决对齐和乱码问题)
+ * ========================================== */
+#product-box table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+#product-box th, 
+#product-box td {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid #eef0f3;
+    vertical-align: middle;
+}
+
+#product-box th {
+    background-color: #f4f6f8;
+    color: #555;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+#product-box tr:hover {
+    background-color: #fcfbf9;
+}
+
+.table-thumb {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 4px;
+    border: 1px solid #e0e0e0;
+    background-color: #f5f5f5;
+    display: block;
+}
+
+/* ==========================================
+ * 3. 详情页头部与按钮
+ * ========================================== */
+.detail-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.detail-header h2 {
+    margin: 0;
+    font-size: 18px;
+    color: #333;
+}
+
+.btn-back {
+    padding: 6px 12px;
+    background: #e9ecef;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    color: #495057;
+    font-size: 13px;
+}
+
+.btn-back:hover {
+    background: #dee2e6;
+}
+
+.btn-manage {
+    background: #8c1c1c;
+    color: #f7e3ad;
+    border: 1px solid #d4af37;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: bold;
+    transition: all 0.2s;
+}
+
+.btn-manage:hover {
+    background: #a32222;
+}
+
 /* 操作标题栏 */
 .section-title-bar {
     display: flex;
@@ -51,7 +162,9 @@
     color: #fff;
 }
 
-/* 图片网格与多选卡片 */
+/* ==========================================
+ * 4. 图片网格与多选卡片
+ * ========================================== */
 .image-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
@@ -113,11 +226,4 @@
     color: #a09080;
     padding: 30px 0;
     font-size: 14px;
-}
-
-.table-thumb {
-    width: 45px;
-    height: 45px;
-    object-fit: cover;
-    border-radius: 4px;
 }
