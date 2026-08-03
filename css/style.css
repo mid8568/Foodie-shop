@@ -423,3 +423,82 @@ footer{
         color:#65676b;
     }
 }
+/* =====================
+FB 风格头像点击弹窗样式
+===================== */
+.profile-avatar-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.profile-avatar {
+    cursor: pointer;
+    position: relative;
+}
+
+/* 鼠标悬停头像时变暗显示相框图标 */
+.profile-avatar .avatar-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 24px;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.profile-avatar:hover .avatar-overlay {
+    opacity: 1;
+}
+
+/* 弹出下拉菜单样式 */
+.avatar-dropdown {
+    display: none; /* 默认隐藏 */
+    position: absolute;
+    top: 95px; /* 在头像下方弹出 */
+    left: 0;
+    background: #ffffff;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    border-radius: 8px;
+    width: 180px;
+    padding: 6px 0;
+    z-index: 1000;
+}
+
+/* 显示菜单状态 */
+.avatar-dropdown.show {
+    display: block;
+    animation: fadeIn 0.15s ease-in-out;
+}
+
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    font-size: 14px;
+    color: #050505;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.dropdown-item:hover {
+    background: #f2f2f2;
+}
+
+.dropdown-item .icon {
+    font-size: 16px;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
