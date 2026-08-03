@@ -9,7 +9,7 @@
 }
 
 body{
-    background:#f0f2f5; /* FB 网页端标准灰色背景 */
+    background:#f0f2f5; /* FB 经典淡灰背景 */
     color:#1c1e21;
     padding-bottom:70px;
 }
@@ -18,19 +18,11 @@ a{
     text-decoration:none;
 }
 
-/* FB 页面居中大容器 */
-.fb-page-wrapper {
-    max-width: 1250px;
-    margin: 0 auto;
-    background: #ffffff;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-}
-
 /* =====================
-H5 顶部 Header
+H5 顶部
 ===================== */
 .h5-header{
-    display:none;
+    display:flex;
     justify-content:space-between;
     align-items:center;
     background:#160b05;
@@ -52,63 +44,68 @@ H5 顶部 Header
 }
 
 /* =====================
-1. 顶部海报（不裁剪、完整按比例展示）
+顶部大封面海报 (限制高度，绝不占满一屏)
 ===================== */
 .banner{
     width: 100% !important;
-    height: auto !important; /* 恢复自动高度，保证海报100%完整不切图 */
-    background: #e4e6eb !important;
+    height: 380px !important; /* PC端固定高度，可自由调整为 300px~400px */
+    max-height: 45vh !important;
+    background: #160b05 !important;
     margin: 0 !important;
     padding: 0 !important;
     overflow: hidden;
     display: block;
-    border-bottom: 1px solid #e4e6eb;
+    position: relative;
 }
 
+/* 兼容静态或 JS 动态渲染图片，等比截取填充，不压扁 */
 .banner img, 
 .banner > div img,
 .slider-slide img {
     width: 100% !important;
-    height: auto !important; /* 不限制 height，显示全部画面 */
+    height: 100% !important;
     display: block !important;
-    object-fit: contain !important;
+    object-fit: cover !important; /* 核心：裁剪适应容器，保持等比例不压扁 */
+    object-position: center !important; /* 保证海报主体居中 */
     margin: 0 !important;
     border: none;
 }
 
-/* 隐藏杂乱文本 */
+/* 清理海报上可能重叠的默认文字与按钮 */
 .banner h1, .banner p, .banner .btn {
     display: none !important;
 }
 
 /* =====================
-2. Profile 专页简介区 (完美重叠头像)
+FB 风格店铺主页简介区 (Profile Section)
 ===================== */
 .page-profile-section {
     background: #ffffff;
-    padding: 0 30px 20px 30px;
+    padding: 20px 8%;
     border-bottom: 1px solid #e4e6eb;
+    margin-bottom: 15px;
 }
 
 .profile-container {
     display: flex;
     align-items: flex-start;
-    gap: 20px;
+    gap: 25px;
+    max-width: 1200px;
+    margin: 0 auto;
     position: relative;
 }
 
-/* 头像：强制向上提 80px，精确悬浮压在海报边缘上 */
+/* 圆形 Logo */
 .profile-avatar {
-    width: 168px;
-    height: 168px;
+    width: 130px;
+    height: 130px;
     border-radius: 50%;
     overflow: hidden;
-    border: 4px solid #ffffff; /* FB 经典白边 */
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    border: 4px solid #ffffff;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.15);
     flex-shrink: 0;
-    margin-top: -80px; /* 核心：往上提压住海报 */
-    background: #ffffff;
-    z-index: 10;
+    margin-top: -40px; /* 向上压在海报边缘，营造专页悬浮感 */
+    background: #fff;
 }
 
 .profile-avatar img {
@@ -117,98 +114,66 @@ H5 顶部 Header
     object-fit: cover;
 }
 
-/* 文本简介 */
+/* 文本简介区 */
 .profile-info {
     flex: 1;
-    padding-top: 15px;
-    line-height: 1.5;
+    line-height: 1.6;
 }
 
 .shop-name {
-    font-size: 32px;
-    font-weight: 800;
+    font-size: 28px;
+    font-weight: 700;
     color: #050505;
-    margin-bottom: 2px;
 }
 
 .shop-meta {
-    font-size: 15px;
-    font-weight: 600;
+    font-size: 14px;
     color: #65676b;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
 }
 
-.shop-sub span {
-    font-size: 11px;
-    background: #e4e6eb;
-    color: #050505;
-    padding: 1px 4px;
-    border-radius: 3px;
-    font-weight: bold;
-    text-transform: uppercase;
-    margin-right: 4px;
-}
-
-.shop-sub, .shop-desc, .shop-shipping, .shop-action, .shop-tag {
+.shop-sub, .shop-desc, .shop-shipping, .shop-action {
     font-size: 14px;
     color: #050505;
-    margin-bottom: 3px;
 }
 
 .shop-tag {
+    display: inline-block;
+    margin-top: 6px;
+    font-size: 13px;
+    font-weight: 600;
     color: #65676b;
-    font-weight: 600;
-    margin-top: 5px;
+    background: #f0f2f5;
+    padding: 3px 10px;
+    border-radius: 6px;
 }
 
-/* 右侧 FB 风格操作按钮组 */
+/* 右侧交互按钮 */
 .profile-actions {
-    display: flex;
-    gap: 8px;
-    padding-top: 25px;
-    align-items: center;
-}
-
-.btn-fb-panel {
-    background: #0866ff;
-    color: #ffffff;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 6px;
-    font-weight: 600;
-    font-size: 14px;
-    cursor: pointer;
-}
-
-.btn-fb-edit {
-    background: #e4e6eb;
-    color: #050505;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 6px;
-    font-weight: 600;
-    font-size: 14px;
-    cursor: pointer;
+    align-self: center;
 }
 
 .btn-fb-msg {
-    background: #e4e6eb;
-    color: #050505;
-    padding: 8px 16px;
-    border-radius: 6px;
-    font-weight: 600;
-    font-size: 14px;
     display: inline-block;
+    background: #0866ff; /* FB 经典蓝色 */
+    color: #ffffff;
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 15px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transition: background 0.2s;
 }
 
-.btn-fb-panel:hover { background: #0052cc; }
-.btn-fb-edit:hover, .btn-fb-msg:hover { background: #d8dadf; }
+.btn-fb-msg:hover {
+    background: #0052cc;
+}
 
 /* =====================
-3. 搜索与分类
+搜索栏
 ===================== */
 .h5-search{
-    padding: 20px 30px 10px;
+    padding: 0 8% 15px;
 }
 
 .h5-search input{
@@ -219,23 +184,26 @@ H5 顶部 Header
     padding:0 20px;
     font-size:15px;
     outline: none;
-    background: #f0f2f5;
+    background: #fff;
 }
 
+/* =====================
+分类按钮
+===================== */
 .h5-category{
     display:flex;
     gap:10px;
-    padding: 10px 30px 15px;
+    padding: 0 8% 15px;
     overflow-x:auto;
 }
 
 .h5-category button{
     padding:8px 18px;
     white-space:nowrap;
-    background:#f0f2f5;
+    background:#ffffff;
     color:#050505;
     border-radius:20px;
-    border: none;
+    border: 1px solid #ced0d4;
     cursor: pointer;
     font-weight: 600;
     font-size: 14px;
@@ -247,18 +215,18 @@ H5 顶部 Header
 }
 
 /* =====================
-4. 商品列表
+标题与商品列表
 ===================== */
 .title{
     text-align:left;
-    padding: 10px 30px;
-    font-size:20px;
+    padding: 10px 8%;
+    font-size:22px;
     font-weight: bold;
     color: #050505;
 }
 
 .products{
-    padding:10px 30px 40px;
+    padding:10px 8% 30px;
     display:grid;
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     gap:15px;
@@ -266,9 +234,9 @@ H5 顶部 Header
 
 .product-card, .card {
     background:white;
-    border-radius:8px;
+    border-radius:10px;
     overflow:hidden;
-    border: 1px solid #ced0d4;
+    box-shadow: 0 1px 3px rgba(0,0,0,.1);
     transition: transform 0.2s;
     display: flex;
     flex-direction: column;
@@ -276,8 +244,7 @@ H5 顶部 Header
 }
 
 .product-card:hover, .card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    transform: translateY(-3px);
 }
 
 .product-card img, .card img{
@@ -289,10 +256,10 @@ H5 顶部 Header
 
 .product-card h3, .card h3{
     padding:10px 12px 4px;
-    font-size:15px;
+    font-size:16px;
     color: #050505;
     line-height: 1.3;
-    height: 40px;
+    height: 42px;
     overflow: hidden;
 }
 
@@ -309,6 +276,7 @@ H5 顶部 Header
     color:#b8860b;
 }
 
+/* 商城按钮 */
 .btn-main{
     display:block;
     width:calc(100% - 24px);
@@ -341,50 +309,48 @@ footer{
 }
 
 /* =====================
-移动端响应式适配
+手机端响应式适配
 ===================== */
 @media(max-width:768px){
-    body {
-        background: #ffffff;
-    }
-
     .h5-header{
         display:flex;
     }
 
-    .fb-page-wrapper {
-        box-shadow: none;
+    /* 手机端 Banner 适中高度 */
+    .banner {
+        height: 180px !important;
     }
 
     .page-profile-section {
-        padding: 0 15px 15px;
+        padding: 15px;
     }
 
     .profile-container {
         flex-direction: column;
         align-items: center;
         text-align: center;
-        gap: 10px;
+        gap: 12px;
     }
 
     .profile-avatar {
-        width: 120px;
-        height: 120px;
-        margin-top: -60px; /* 移动端头像上提高度 */
-    }
-
-    .profile-info {
-        padding-top: 0;
+        width: 100px;
+        height: 100px;
+        margin-top: -35px;
     }
 
     .shop-name {
-        font-size: 24px;
+        font-size: 22px;
     }
 
     .profile-actions {
         width: 100%;
-        padding-top: 10px;
-        justify-content: center;
+        margin-top: 5px;
+    }
+
+    .btn-fb-msg {
+        display: block;
+        width: 100%;
+        text-align: center;
     }
 
     .h5-search, .h5-category, .title, .products {
@@ -422,83 +388,4 @@ footer{
         font-size:11px;
         color:#65676b;
     }
-}
-/* =====================
-FB 风格头像点击弹窗样式
-===================== */
-.profile-avatar-wrapper {
-    position: relative;
-    display: inline-block;
-}
-
-.profile-avatar {
-    cursor: pointer;
-    position: relative;
-}
-
-/* 鼠标悬停头像时变暗显示相框图标 */
-.profile-avatar .avatar-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.3);
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: white;
-    font-size: 24px;
-    opacity: 0;
-    transition: opacity 0.2s;
-}
-
-.profile-avatar:hover .avatar-overlay {
-    opacity: 1;
-}
-
-/* 弹出下拉菜单样式 */
-.avatar-dropdown {
-    display: none; /* 默认隐藏 */
-    position: absolute;
-    top: 95px; /* 在头像下方弹出 */
-    left: 0;
-    background: #ffffff;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-    border-radius: 8px;
-    width: 180px;
-    padding: 6px 0;
-    z-index: 1000;
-}
-
-/* 显示菜单状态 */
-.avatar-dropdown.show {
-    display: block;
-    animation: fadeIn 0.15s ease-in-out;
-}
-
-.dropdown-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 16px;
-    font-size: 14px;
-    color: #050505;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background 0.2s;
-}
-
-.dropdown-item:hover {
-    background: #f2f2f2;
-}
-
-.dropdown-item .icon {
-    font-size: 16px;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-5px); }
-    to { opacity: 1; transform: translateY(0); }
 }
