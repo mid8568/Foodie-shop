@@ -1,413 +1,84 @@
 <!DOCTYPE html>
-
 <html lang="en">
-
-
 <head>
-
-<meta charset="UTF-8">
-
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-
-
-<title>
-China Direct Shop | Chinese Products
-</title>
-
-
-<link rel="stylesheet" href="css/style.css">
-
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>China Direct Shop | Chinese Products</title>
+    <link rel="stylesheet" href="css/style.css">
 </head>
-
-
 <body>
 
-
-<!-- 手机顶部 -->
-
+<!-- 手机端顶部简易 Nav -->
 <header class="h5-header">
-
-
-<div class="h5-logo">
-
-🇨🇳 China Direct Shop
-
-</div>
-
-
-
-<a
-
-href="https://m.me/你的Facebook主页用户名"
-
-class="h5-cart"
-
-target="_blank">
-
-💬
-
-</a>
-
-
+    <div class="h5-logo">🇨🇳 China Direct Shop</div>
+    <a href="https://m.me/你的Facebook主页用户名" class="h5-cart" target="_blank">💬</a>
 </header>
 
-
-
-
-<!-- Banner -->
-
+<!-- 顶部大型封面海报区 -->
 <section class="banner">
-
-
-<div>
-
-
-<h1>
-
-Authentic Chinese Products
-
-</h1>
-
-
-
-<p>
-
-Direct From China · Worldwide Shipping
-
-</p>
-
-
-
-<a
-
-href="#product-list"
-
-class="btn">
-
-Shop Now
-
-</a>
-
-
-</div>
-
-
+    <!-- 如果后台JS插入图片，会自动填入这里；如果是固定图片，可以放 <img src="你的海报.jpg"> -->
 </section>
 
+<!-- 专页个人/品牌信息栏区域 (仿 Facebook 专页界面) -->
+<section class="page-profile-section">
+    <div class="profile-container">
+        <!-- 圆形 Logo / 头像 -->
+        <div class="profile-avatar">
+            <img src="https://images.unsplash.com/photo-1544717305-2782549b5136?w=200" alt="China Direct Shop Logo" id="site-logo">
+        </div>
+        
+        <!-- 店铺名称与简介 -->
+        <div class="profile-info">
+            <h1 class="shop-name">China Direct Shop</h1>
+            <p class="shop-meta">0 位粉丝 · 关注 0 人</p>
+            <p class="shop-sub">🇨🇳 Authentic products from China</p>
+            <p class="shop-desc">Snacks | Tea | Gifts | Daily goods</p>
+            <p class="shop-shipping">Direct shipping from China worldwide 🌏</p>
+            <p class="shop-action">Message us to order.</p>
+            <span class="shop-tag">🛍️ 零售购物</span>
+        </div>
+        
+        <!-- 右侧/下方按钮 -->
+        <div class="profile-actions">
+            <a href="https://m.me/你的Facebook主页用户名" class="btn-fb-msg" target="_blank">💬 联系我们</a>
+        </div>
+    </div>
+</section>
 
-
-
-
-
-
-<!-- 搜索 -->
-
-
+<!-- 搜索栏 -->
 <div class="h5-search">
-
-
-<input
-
-id="search"
-
-placeholder="Search products..."
-
-oninput="searchProducts()"
-
->
-
-
+    <input id="search" placeholder="Search products..." oninput="searchProducts()">
 </div>
-
-
-
-
-
-
-
 
 <!-- 商品分类 -->
-
-
 <div class="h5-category">
-
-
-<button
-
-onclick="filterProducts('全部')">
-
-All
-
-</button>
-
-
-
-<button
-
-onclick="filterProducts('茶叶')">
-
-🍵 Tea
-
-</button>
-
-
-
-<button
-
-onclick="filterProducts('零食')">
-
-🍜 Snacks
-
-</button>
-
-
-
-<button
-
-onclick="filterProducts('礼品')">
-
-🎁 Gifts
-
-</button>
-
-
-
-<button
-
-onclick="filterProducts('生活用品')">
-
-🏠 Daily Goods
-
-</button>
-
-
-
+    <button onclick="filterProducts('全部')">All</button>
+    <button onclick="filterProducts('茶叶')">🍵 Tea</button>
+    <button onclick="filterProducts('零食')">🍜 Snacks</button>
+    <button onclick="filterProducts('礼品')">🎁 Gifts</button>
+    <button onclick="filterProducts('生活用品')">🏠 Daily Goods</button>
 </div>
 
-
-
-
-
-
-
-
-<h2 class="title">
-
-Featured Products
-
-</h2>
-
-
-
-
-
-
+<h2 class="title">Featured Products</h2>
 
 <!-- 商品列表 -->
-
-<section
-
-class="products"
-
-id="product-list">
-
-
-Loading products...
-
-
+<section class="products" id="product-list">
+    Loading products...
 </section>
 
-
-
-
-
-
-
-
-
-<!-- 品牌介绍 -->
-
-
-<section class="brand">
-
-
-<h2>
-
-China Direct Shop
-
-</h2>
-
-
-<p>
-
-Discover authentic products from China.
-
-We select quality Chinese tea, snacks, gifts and daily products.
-
-Worldwide shipping available.
-
-</p>
-
-
-</section>
-
-
-
-
-
-
-
-
-
-<!-- 联系按钮 -->
-
-
-<section class="contact-box">
-
-
-<a
-
-href="https://m.me/你的Facebook主页用户名"
-
-class="btn"
-
-target="_blank">
-
-💬 Contact Us
-
-</a>
-
-
-</section>
-
-
-
-
-
-
-
-
-
-<!-- 底部导航 -->
-
-
+<!-- 底部导航 (手机端) -->
 <div class="mobile-nav">
-
-
-
-<a href="index.html">
-
-
-🏠
-
-<span>
-
-Home
-
-</span>
-
-
-</a>
-
-
-
-
-
-
-<a href="#product-list">
-
-
-🛍️
-
-<span>
-
-Products
-
-</span>
-
-
-</a>
-
-
-
-
-
-
-<a
-
-href="https://m.me/你的Facebook主页用户名"
-
-target="_blank">
-
-
-💬
-
-<span>
-
-Contact
-
-</span>
-
-
-</a>
-
-
-
-
-
-
-<a href="about.html">
-
-
-🌏
-
-<span>
-
-About
-
-</span>
-
-
-</a>
-
-
-
+    <a href="index.html">🏠<span>Home</span></a>
+    <a href="#product-list">🛍️<span>Products</span></a>
+    <a href="https://m.me/你的Facebook主页用户名" target="_blank">💬<span>Contact</span></a>
+    <a href="about.html">🌏<span>About</span></a>
 </div>
 
-
-
-
-
-
-
-
-
 <footer>
-
-
-© China Direct Shop
-
-
+    © China Direct Shop
 </footer>
 
-
-
-
-
-
-
-
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-
-
 <script src="js/app.js"></script>
-
-
-
 </body>
-
-
-</html> 
+</html>
