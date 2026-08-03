@@ -1,7 +1,9 @@
-// 1. 初始化 Supabase 客户端 (请替换为你的 URL 和 Key)
+// 1. 初始化 Supabase 客户端 (改用 supabaseClient 命名，避免与全局 window.supabase 冲突)
 const SUPABASE_URL = 'https://ukxxmxnubxjezkwbbxdr.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_2IFHfms3ombozpvZCvaeEg_2VZ2z5hJ';
-const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// ⚠️ 关键修改：通过 window.supabase 调用，且变量命名为 supabaseClient
+const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
 
 let currentProductId = null; // 当前正在管理的商品 ID
 let currentProductData = null; // 当前商品数据
@@ -11,7 +13,12 @@ document.addEventListener('DOMContentLoaded', fetchProducts);
 
 // 从数据库获取商品列表
 async function fetchProducts() {
-    const { data, error } = await supabase.from('products').select('*');
+    if (!supabaseClient) {
+        alert('Supabase SDK 加载失败，请检查 HTML 中是否引入了 Supabase CDN！');
+        return;
+    }
+
+    const { data, error } = await supabaseClient.from('products').select('*');
     if (error) {
         alert('获取商品失败：' + error.message);
         return;
@@ -22,13 +29,19 @@ async function fetchProducts() {
 // 渲染商品列表
 function renderProductList(products) {
     const tbody = document.getElementById('image-product-list');
+    if (!tbody) return;
     tbody.innerHTML = '';
+
+    if (!products || products.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding: 20px;">暂无商品数据</td></tr>';
+        return;
+    }
 
     products.forEach(product => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
-            <td><img src="${product.cover_url || 'images/default.jpg'}" class="table-thumb"></td>
-            <td><strong>${product.name}</strong></td>
+            <td><img src="${product.cover_url || 'images/default.jpg'}" class="table-thumb" style="width: 45px; height: 45px; object-fit: cover; border-radius: 4px;"></td>
+            <td><strong>${product.name || '未命名商品'}</strong></td>
             <td>
                 <button class="btn-manage" onclick="showImageDetail(${product.id})">🖼️ 管理图片</button>
             </td>
@@ -42,19 +55,19 @@ async function showImageDetail(productId) {
     currentProductId = productId;
     
     // 查询当前商品最新的图片数组
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
         .from('products')
         .select('*')
         .eq('id', productId)
         .single();
 
     if (error) {
-        alert('加载商品图片失败');
+        alert('加载商品图片失败: ' + error.message);
         return;
     }
 
     currentProductData = data;
-    document.getElementById('current-product-name').innerText = data.name;
+    document.getElementById('current-product-name').innerText = data.name || '商品详情';
 
     // 渲染主图与详情图
     renderImages('main', data.main_images || []);
@@ -67,9 +80,10 @@ async function showImageDetail(productId) {
 // 渲染图片网格 (带勾选框)
 function renderImages(type, imgUrls) {
     const container = document.getElementById(type === 'main' ? 'main-images' : 'detail-images');
+    if (!container) return;
     container.innerHTML = '';
 
-    if (imgUrls.length === 0) {
+    if (!imgUrls || imgUrls.length === 0) {
         container.innerHTML = `<div class="empty-tip">暂无图片，请点击右上角批量上传</div>`;
         return;
     }
@@ -91,7 +105,8 @@ function renderImages(type, imgUrls) {
 
 // 触发隐藏的上传 Input
 function triggerUpload(type) {
-    document.getElementById(type === 'main' ? 'upload-main-input' : 'upload-detail-input').click();
+    const input = document.getElementById(type === 'main' ? 'upload-main-input' : 'upload-detail-input');
+    if (input) input.click();
 }
 
 // ==========================================
@@ -110,8 +125,8 @@ async function handleBatchUpload(event, type) {
         // 生成唯一文件名防止覆盖
         const fileName = `${Date.now()}_${Math.random().toString(36).substring(2, 7)}_${file.name}`;
         
-        // 1. 上传至 Supabase Storage (假设 bucket 名称为 product-images)
-        const { data, error } = await supabase.storage
+        // 1. 上传至 Supabase Storage (存储桶名称: product-images)
+        const { data, error } = await supabaseClient.storage
             .from('product-images')
             .upload(fileName, file);
 
@@ -121,11 +136,13 @@ async function handleBatchUpload(event, type) {
         }
 
         // 2. 获取公开访问链接
-        const { data: publicUrlData } = supabase.storage
+        const { data: publicUrlData } = supabaseClient.storage
             .from('product-images')
             .getPublicUrl(fileName);
 
-        uploadedUrls.push(publicUrlData.publicUrl);
+        if (publicUrlData && publicUrlData.publicUrl) {
+            uploadedUrls.push(publicUrlData.publicUrl);
+        }
     }
 
     if (uploadedUrls.length > 0) {
@@ -133,7 +150,7 @@ async function handleBatchUpload(event, type) {
         const fieldName = type === 'main' ? 'main_images' : 'detail_images';
         const updatedImages = [...(currentProductData[fieldName] || []), ...uploadedUrls];
 
-        const { error: dbError } = await supabase
+        const { error: dbError } = await supabaseClient
             .from('products')
             .update({ [fieldName]: updatedImages })
             .eq('id', currentProductId);
@@ -145,6 +162,8 @@ async function handleBatchUpload(event, type) {
         } else {
             alert('数据库更新失败：' + dbError.message);
         }
+    } else {
+        alert('图片上传失败，请检查 Storage 权限设置');
     }
     
     // 清空 input 状态
@@ -176,7 +195,7 @@ async function handleBatchDelete(type) {
     );
 
     // 2. 更新数据库
-    const { error } = await supabase
+    const { error } = await supabaseClient
         .from('products')
         .update({ [fieldName]: remainingImages })
         .eq('id', currentProductId);
@@ -186,11 +205,11 @@ async function handleBatchDelete(type) {
         return;
     }
 
-    // 3. (可选) 从 Storage 中移除文件物理存储
+    // 3. 从 Storage 中物理删除（可选）
     for (let url of selectedUrls) {
         const filePath = url.split('/product-images/')[1];
         if (filePath) {
-            await supabase.storage.from('product-images').remove([filePath]);
+            await supabaseClient.storage.from('product-images').remove([filePath]);
         }
     }
 
