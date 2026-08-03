@@ -19,8 +19,12 @@
     <section class="banner" id="banner">
         <!-- 海报图片由 JS 动态渲染插入 -->
     </section>
+    
+    <!-- 隐藏的封面图文件上传框 -->
+    <input type="file" id="coverInput" accept="image/*" style="display: none;" onchange="uploadNewCover(event)">
+    
     <!-- 右下角编辑封面照片按钮 -->
-    <button class="btn-edit-cover" onclick="triggerAvatarUpload()">
+    <button class="btn-edit-cover" onclick="triggerCoverUpload()">
         📷 <span>编辑封面照片</span>
     </button>
 </div>
@@ -40,7 +44,7 @@
                 <span class="online-status"></span>
             </div>
 
-            <!-- 隐藏的本地图片上传框 -->
+            <!-- 隐藏的头像文件上传框 -->
             <input type="file" id="avatarInput" accept="image/*" style="display: none;" onchange="uploadNewAvatar(event)">
 
             <!-- 点击头像弹出的菜单 -->
