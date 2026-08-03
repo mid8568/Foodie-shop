@@ -5,7 +5,6 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    /* 优先使用优雅的中文字体族 */
     font-family: "PingFang SC", "Lantinghei SC", "Microsoft YaHei", "Hiragino Sans GB", "Kaiti", serif;
 }
 
@@ -50,24 +49,36 @@ a {
 }
 
 /* ==========================================
- * 布局版心控制
- * 封面通栏 100%，下方内容“收紧”至 1250px 居中
+ * 统一版心与居中对齐 (核心重点)
+ * 封面、店铺信息、搜索/分类、商品列表全部统一 1250px 居中
  * ========================================== */
+.fb-cover-container,
+.page-profile-section .profile-container,
+.h5-search, 
+.h5-category, 
+.title, 
+.products {
+    max-width: 1250px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    width: 100%;
+}
 
-/* 1. 封面图：通栏铺满，展现气势 */
+/* ==========================================
+ * 封面 Banner（自然撑开高度 + 居中对齐）
+ * ========================================== */
 .fb-cover-container {
-    width: 100% !important;
-    max-width: 100% !important;
-    margin: 0 !important;
-    border-radius: 0 !important;
     position: relative;
-    background: #1f1a17;
+    border-radius: 0 0 12px 12px;
     overflow: hidden;
+    background: #1f1a17;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
 
 .banner, #banner {
     width: 100% !important;
-    height: 460px !important;
+    height: auto !important;          /* 关键：高度由图片自然撑开 */
+    min-height: 180px;                 /* 容错最低高度 */
     position: relative !important;
     overflow: hidden !important;
 }
@@ -77,31 +88,18 @@ a {
 .slider-slide img,
 #banner img {
     width: 100% !important;
-    height: 100% !important;
-    object-fit: cover !important;
-    object-position: center top !important;
+    height: auto !important;          /* 关键：等比例自适应，不拉伸变形 */
+    max-width: 100% !important;
     display: block !important;
-}
-
-/* 封面底部水墨渐变蒙层 */
-.banner::after, #banner::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 100px;
-    background: linear-gradient(to top, rgba(26, 18, 15, 0.7), transparent);
-    pointer-events: none;
-    z-index: 2;
+    object-fit: contain !important;    /* 完整显示图片内容 */
 }
 
 /* 封面编辑按钮 - 中式朱红古风按钮 */
 .btn-edit-cover {
     position: absolute;
     bottom: 20px;
-    right: 32px;
-    background: rgba(255, 255, 255, 0.9);
+    right: 24px;
+    background: rgba(255, 255, 255, 0.92);
     color: #8c1c1c;
     border: 1px solid #c8a061;
     padding: 7px 16px;
@@ -122,20 +120,8 @@ a {
     color: #f7e3ad;
 }
 
-/* 2. 下方内容受控版心 (1250px 居中) */
-.page-profile-section .profile-container,
-.h5-search, 
-.h5-category, 
-.title, 
-.products {
-    max-width: 1250px !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
-    width: 100%;
-}
-
 /* ==========================================
- * 中国风店铺个人主页信息区
+ * 中国风店铺个人主页信息区 (自然撑开高度)
  * ========================================== */
 .page-profile-section {
     width: 100%;
@@ -151,9 +137,10 @@ a {
     gap: 30px;
     position: relative;
     padding: 0 32px 20px;
+    height: auto !important; /* 自然撑开 */
 }
 
-/* 左侧头像区域 - 带中式描边与光晕 */
+/* 左侧头像区域 - 带中式描边 */
 .profile-avatar-wrapper {
     margin-top: -35px !important;
     flex-shrink: 0;
@@ -183,7 +170,7 @@ a {
     height: 140px !important;
     border-radius: 50%;
     border: 4px solid #ffffff;
-    box-shadow: 0 4px 12px rgba(140, 28, 28, 0.15), 0 0 0 2px #d4af37; /* 双层古典框线 */
+    box-shadow: 0 4px 12px rgba(140, 28, 28, 0.15), 0 0 0 2px #d4af37;
     background: #ffffff;
     overflow: hidden;
     cursor: pointer;
@@ -195,24 +182,25 @@ a {
     object-fit: cover;
 }
 
-/* 在线状态点 - 玉石翡翠绿 */
+/* 在线状态点 - 翡翠绿 */
 .online-status {
     position: absolute;
     bottom: 10px;
     right: 10px;
     width: 18px;
     height: 18px;
-    background-color: #00a870; /* 翡翠绿 */
+    background-color: #00a870;
     border: 3px solid #ffffff;
     border-radius: 50%;
     z-index: 6;
 }
 
-/* 店铺信息文案 */
+/* 店铺信息文案（高度自然撑开） */
 .profile-info {
     flex: 1;
     padding-top: 15px !important;
     line-height: 1.6;
+    height: auto !important;
 }
 
 .shop-name {
@@ -226,7 +214,7 @@ a {
 .shop-meta {
     font-size: 13px;
     font-weight: 600;
-    color: #8c6a4a; /* 樟木棕 */
+    color: #8c6a4a;
     margin-bottom: 8px;
 }
 
@@ -296,7 +284,7 @@ a {
 }
 
 /* ==========================================
- * 搜索栏 & 分类（中式框线与竹简按键）
+ * 搜索栏 & 分类
  * ========================================== */
 .h5-search {
     margin-bottom: 20px;
@@ -307,7 +295,7 @@ a {
     width: 100%;
     height: 44px;
     border-radius: 22px;
-    border: 1px solid #c8a061; /* 金棕色边框 */
+    border: 1px solid #c8a061;
     padding: 0 20px;
     font-size: 14px;
     outline: none;
@@ -347,7 +335,7 @@ a {
 }
 
 /* ==========================================
- * 商品列表（水墨风卡片与金价）
+ * 商品列表（与整体对齐）
  * ========================================== */
 .title {
     padding: 0 15px 15px;
@@ -356,8 +344,7 @@ a {
     font-weight: bold;
     color: #8c1c1c;
     letter-spacing: 1px;
-    border-left: 4px solid #8c1c1c; /* 左侧红柱 */
-    margin-left: 15px !important;
+    border-left: 4px solid #8c1c1c;
 }
 
 .products {
@@ -412,10 +399,10 @@ a {
     padding: 8px 14px;
     font-size: 18px;
     font-weight: bold;
-    color: #b81c1c; /* 朱红售价 */
+    color: #b81c1c;
 }
 
-/* 商品购买按钮：暗红烫金 */
+/* 商品购买按钮 */
 .btn-main {
     display: block;
     width: calc(100% - 28px);
@@ -465,10 +452,6 @@ footer {
         max-width: 100% !important;
         border-radius: 0;
     }
-    
-    .banner, #banner {
-        height: 220px !important;
-    }
 
     .profile-container {
         flex-direction: column;
@@ -478,7 +461,7 @@ footer {
     }
 
     .profile-avatar-wrapper {
-        margin-top: -45px !important;
+        margin-top: -40px !important;
     }
 
     .profile-avatar {
