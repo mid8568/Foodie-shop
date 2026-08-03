@@ -77,45 +77,79 @@ H5顶部
 }
 
 /* =====================
-Banner & 动态轮播图支持
+Banner & 动态轮播图支持 (已针对 1734x907 原图完整显示进行优化)
 ===================== */
 
 .banner{
-    height:450px;
-    background: linear-gradient(rgba(0,0,0,.55), rgba(0,0,0,.55)), url("https://images.unsplash.com/photo-1598301257982-0cf014dabbcd");
-    background-size:cover;
-    background-position:center;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    text-align:center;
-    color:white;
+    width: 100%;
+    /* 利用百分比 padding 实现 1734:907 (约 1.91:1) 的自适应比例，确保整张大图完整展示不裁切 */
+    padding-top: 52.3%; 
+    height: 0;
+    background-image: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)), url("https://images.unsplash.com/photo-1598301257982-0cf014dabbcd");
+    background-size: contain; 
+    background-repeat: no-repeat;
+    background-position: center;
     position: relative;
     overflow: hidden;
     transition: all 0.3s ease;
 }
 
+/* 兼容轮播图 <img> 标签的完整显示 */
+.banner img, 
+.slider-slide img {
+    width: 100% !important;
+    height: auto !important;
+    object-fit: contain !important;
+    display: block;
+}
+
+/* 浮动标题与按钮 */
+.banner-content,
+.banner > div {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: white;
+    width: 90%;
+    z-index: 2;
+}
+
 .banner h1{
-    font-size:60px;
+    font-size: 42px;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.6);
 }
 
 .banner p{
-    font-size:24px;
-    margin:20px;
+    font-size: 18px;
+    margin: 10px 0;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.6);
 }
 
 .btn{
     display:inline-block;
     background:#d4af37;
     color:#000;
-    padding:12px 35px;
+    padding:10px 28px;
     border-radius:30px;
     cursor: pointer;
     font-weight: bold;
     border: none;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
 }
 
 /* 轮播图指示器Dots */
+.slider-dots {
+    position: absolute;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 3;
+    display: flex;
+    gap: 8px;
+}
+
 .slider-dots .slider-dot.active {
     background: #d4af37 !important;
     width: 20px !important;
@@ -181,7 +215,7 @@ Banner & 动态轮播图支持
 }
 
 /* =====================
-商品列表 (解决 JS 无法读取/显示卡片的问题)
+商品列表
 ===================== */
 
 .products{
@@ -191,7 +225,7 @@ Banner & 动态轮播图支持
     gap:20px;
 }
 
-/* JS 动态生成的卡片类名兼容支持 */
+/* 支持 JS 动态生成的卡片类名 */
 .product-card, .card {
     background:white;
     border-radius:15px;
@@ -515,7 +549,7 @@ footer{
 }
 
 /* =====================
-手机端响应式适配 (Mobile)
+手机端响应式适配
 ===================== */
 
 @media(max-width:768px){
@@ -524,17 +558,24 @@ footer{
         display:none;
     }
 
+    /* 移动端维持同比例展示 */
     .banner{
-        height:280px;
+        padding-top: 52.3%; 
+        height: 0;
     }
 
     .banner h1{
-        font-size:28px;
+        font-size: 20px;
     }
 
     .banner p{
-        font-size:14px;
-        margin: 10px;
+        font-size: 12px;
+        margin: 5px;
+    }
+
+    .btn{
+        padding: 6px 16px;
+        font-size: 12px;
     }
 
     .title{
