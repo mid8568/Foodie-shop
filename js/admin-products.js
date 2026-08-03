@@ -4,7 +4,6 @@ console.log("admin-products.js 启动成功");
 // Supabase 初始化
 // =======================
 const SUPABASE_URL = "https://ukxxmxnubxjezkwbbxdr.supabase.co";
-// ⚠️ 注意：前端请确保使用 anon (public) key，避免泄漏后台管理权限的 service_role key
 const SUPABASE_KEY = "sb_publishable_2IFHfms3ombozpvZCvaeEg_2VZ2z5hJ";
 
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -22,7 +21,7 @@ let filterParams = {
     keywordTitle: "", // 商品标题
     keywordId: "",    // 商品ID
     keywordCode: "",  // 商家编码
-    statusTab: "全部"  // 当前选中Tab：全部 / 出售中 / 仓库中
+    statusTab: "出售中"  // 默认同 HTML HTML 一致为 "出售中"
 };
 
 // =======================
@@ -165,7 +164,7 @@ function renderProducts(products) {
         const safeNameEn = escapeHtml(item.name_en || "-");
         const url1688 = item['1688_url'] ? escapeHtml(item['1688_url']) : '';
 
-        // 严格按照表头8列拼接 <td>
+        // 拼接 HTML <td>
         tr.innerHTML = `
             <!-- 1. 选择框 -->
             <td width="30">
@@ -324,9 +323,10 @@ function toggleSelectAll(masterCheckbox) {
 // 分页控件及交互逻辑
 // =======================
 function renderPaginationInfo() {
-    const infoBox = document.getElementById("page-info");
+    // 支持兼容查找 page-info 或 pagination 容器
+    const infoBox = document.getElementById("page-info") || document.getElementById("pagination");
     if (!infoBox) {
-        console.warn("⚠️ 注意：未在 HTML 中找到 id='page-info' 的容器，分页控件将无法显示！");
+        console.warn("⚠️ 注意：未在 HTML 中找到分页容器！");
         return;
     }
 
@@ -344,7 +344,7 @@ function renderPaginationInfo() {
         <button class="btn-page" onclick="changePage(${currentPage + 1})" ${currentPage >= totalPages ? "disabled" : ""}>下一页 &gt;</button>
         
         <span style="margin-left: 12px; color: #666;">
-            跳转至 <input type="number" id="jump-page-input" min="1" max="${totalPages}" value="${currentPage}" style="width: 45px; text-align: center; height: 24px; border: 1px solid #ccc; border-radius: 3px;"> 页
+            跳转至 <input type="number" id="jump-page-input" min="1" max="${totalPages}" value="${currentPage}" style="width: 45px; text-align: center; height: 26px; border: 1px solid #ccc; border-radius: 3px; outline: none;"> 页
             <button class="btn-page" onclick="jumpToPage()" style="margin-left: 4px;">GO</button>
         </span>
     `;
