@@ -4,6 +4,7 @@ console.log("admin-products.js 启动成功");
 // Supabase 初始化
 // =======================
 const SUPABASE_URL = "https://ukxxmxnubxjezkwbbxdr.supabase.co";
+// ⚠️ 注意：前端请确保使用 anon (public) key，避免泄漏后台管理权限的 service_role key
 const SUPABASE_KEY = "sb_publishable_2IFHfms3ombozpvZCvaeEg_2VZ2z5hJ";
 
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -25,6 +26,19 @@ let filterParams = {
 };
 
 // =======================
+// 工具函数 (转义 HTML，防止 XSS 和属性破裂)
+// =======================
+function escapeHtml(str) {
+    if (!str) return "";
+    return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+// =======================
 // 页面加载绑定
 // =======================
 document.addEventListener("DOMContentLoaded", () => {
@@ -43,7 +57,7 @@ function initTabs() {
             tabs.forEach(t => t.classList.remove("active"));
             this.classList.add("active");
             
-            // 提取 Tab 名称 (去掉后面的数字)
+            // 提取 Tab 名称 (去掉后面的数字，如 "出售中(10)" -> "出售中")
             const tabName = this.innerText.split('(')[0].trim();
             filterParams.statusTab = tabName;
             
@@ -80,7 +94,7 @@ async function loadProducts(page = 1) {
         query = query.ilike("name", `%${filterParams.keywordTitle}%`);
     }
 
-    // 3. 组合框筛选：商品ID (支持逗号分隔多个ID)
+    // 3. 组合框筛选：商品ID (支持逗号/空格分隔多个ID)
     if (filterParams.keywordId) {
         const ids = filterParams.keywordId
             .split(/[,，\s]+/)
@@ -100,6 +114,15 @@ async function loadProducts(page = 1) {
 
     if (error) {
         console.error("加载商品失败:", error);
+        
+        // 界面错误兜底处理
+        const box = document.getElementById("product-list");
+        if (box) {
+            box.innerHTML = `<tr><td colspan="8" style="text-align:center; color:red; padding: 20px;">数据加载失败，请检查数据库配置或网络连接！</td></tr>`;
+        }
+        totalCount = 0;
+        totalPages = 1;
+        renderPaginationInfo();
         return;
     }
 
@@ -112,7 +135,7 @@ async function loadProducts(page = 1) {
 }
 
 // =======================
-// 商品列表渲染（修复对齐错位）
+// 商品列表渲染
 // =======================
 function renderProducts(products) {
     const box = document.getElementById("product-list");
@@ -133,12 +156,16 @@ function renderProducts(products) {
         const statusClass = isOnline ? "status-tag" : "status-tag offline";
         const statusText = item.stock_status || "下架";
 
-        // 格式化时间 (如果没有 created_at，显示默认)
+        // 格式化时间
         const createTime = item.created_at 
             ? new Date(item.created_at).toLocaleString('zh-CN', { hour12: false }) 
-            : '2026/8/1 00:00:00';
+            : '-';
 
-        // 严格按照表头8列的顺序拼接 <td>
+        const safeName = escapeHtml(item.name || "未命名商品");
+        const safeNameEn = escapeHtml(item.name_en || "-");
+        const url1688 = item['1688_url'] ? escapeHtml(item['1688_url']) : '';
+
+        // 严格按照表头8列拼接 <td>
         tr.innerHTML = `
             <!-- 1. 选择框 -->
             <td width="30">
@@ -147,19 +174,19 @@ function renderProducts(products) {
 
             <!-- 2. 图片 -->
             <td width="70">
-                <img src="${item.image || 'https://via.placeholder.com/50'}" class="table-image" alt="商品图">
+                <img src="${escapeHtml(item.image) || 'https://via.placeholder.com/50'}" class="table-image" alt="商品图">
             </td>
 
             <!-- 3. 中文标题 -->
             <td class="product-name">
-                <div title="${item.name || ''}">${item.name || "未命名商品"}</div>
+                <div title="${safeName}">${safeName}</div>
                 <div style="color: #999; font-size: 12px; margin-top: 4px;">ID: ${item.id}</div>
-                ${item['1688_url'] ? `<a href="${item['1688_url']}" target="_blank" class="1688-link">1688链接</a>` : ''}
+                ${url1688 ? `<a href="${url1688}" target="_blank" class="link-1688">1688链接</a>` : ''}
             </td>
 
             <!-- 4. 英文标题 -->
             <td class="product-name-en">
-                <div title="${item.name_en || ''}">${item.name_en || "-"}</div>
+                <div title="${safeNameEn}">${safeNameEn}</div>
             </td>
 
             <!-- 5. 价格 (带有 ¥ 符号和实时编辑) -->
@@ -238,7 +265,7 @@ async function updateProductField(id) {
 
     if (error) {
         console.error("保存失败:", error);
-        alert("实时修改价格/库存失败！");
+        alert("实时修改价格/库存失败，请确认是否有权限！");
         return;
     }
 
@@ -259,7 +286,7 @@ async function toggleStatus(id, currentStatus) {
         .eq("id", id);
 
     if (error) {
-        console.error(error);
+        console.error("切换状态失败:", error);
         alert("切换状态失败");
         return;
     }
@@ -294,27 +321,55 @@ function toggleSelectAll(masterCheckbox) {
 }
 
 // =======================
-// 分页控件
+// 分页控件及交互逻辑
 // =======================
 function renderPaginationInfo() {
     const infoBox = document.getElementById("page-info");
-    if (!infoBox) return;
+    if (!infoBox) {
+        console.warn("⚠️ 注意：未在 HTML 中找到 id='page-info' 的容器，分页控件将无法显示！");
+        return;
+    }
 
+    // 切页时重置主全选复选框（如果存在）
+    const masterCb = document.getElementById("select-all");
+    if (masterCb) masterCb.checked = false;
+
+    // 拼接分页 UI HTML
     infoBox.innerHTML = `
-        共 <strong>${totalCount}</strong> 件商品 &nbsp; 
-        <button class="btn-page" onclick="changePage(${currentPage - 1})" ${currentPage <= 1 ? "disabled" : ""}>&lt;</button>
-        <span>${currentPage} / ${totalPages}</span>
-        <button class="btn-page" onclick="changePage(${currentPage + 1})" ${currentPage >= totalPages ? "disabled" : ""}>&gt;</button>
+        <span style="margin-right: 10px; color: #666;">
+            共 <strong>${totalCount}</strong> 件商品
+        </span>
+        <button class="btn-page" onclick="changePage(${currentPage - 1})" ${currentPage <= 1 ? "disabled" : ""}>&lt; 上一页</button>
+        <span style="margin: 0 8px; font-weight: bold;">${currentPage} / ${totalPages}</span>
+        <button class="btn-page" onclick="changePage(${currentPage + 1})" ${currentPage >= totalPages ? "disabled" : ""}>下一页 &gt;</button>
+        
+        <span style="margin-left: 12px; color: #666;">
+            跳转至 <input type="number" id="jump-page-input" min="1" max="${totalPages}" value="${currentPage}" style="width: 45px; text-align: center; height: 24px; border: 1px solid #ccc; border-radius: 3px;"> 页
+            <button class="btn-page" onclick="jumpToPage()" style="margin-left: 4px;">GO</button>
+        </span>
     `;
 }
 
 function changePage(page) {
-    if (page < 1 || page > totalPages) return;
+    if (page < 1 || page > totalPages || page === currentPage) return;
     loadProducts(page);
 }
 
+function jumpToPage() {
+    const input = document.getElementById("jump-page-input");
+    if (!input) return;
+
+    let targetPage = parseInt(input.value, 10);
+    if (isNaN(targetPage)) return;
+
+    if (targetPage < 1) targetPage = 1;
+    if (targetPage > totalPages) targetPage = totalPages;
+
+    changePage(targetPage);
+}
+
 // =======================
-// 导出给全局全局调用
+// 导出给 HTML 全局调用
 // =======================
 window.loadProducts = loadProducts;
 window.searchProduct = searchProduct;
@@ -324,4 +379,5 @@ window.editProduct = editProduct;
 window.toggleStatus = toggleStatus;
 window.updateProductField = updateProductField;
 window.changePage = changePage;
+window.jumpToPage = jumpToPage;
 window.toggleSelectAll = toggleSelectAll;
