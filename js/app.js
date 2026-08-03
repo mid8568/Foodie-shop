@@ -15,34 +15,46 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /* ==========================================
- * 2. 页面初始化：读取已保存的头像与封面
+ * 2. 读取保存的头像与封面 (数据库优先，本地缓存备用)
  * ========================================== */
 async function loadSiteAssets() {
+    // 先尝试从 localStorage 恢复（保证瞬间渲染不闪烁）
+    const localAvatar = localStorage.getItem('site_avatar_url');
+    const localCover = localStorage.getItem('site_cover_url');
+
+    if (localAvatar) {
+        const avatarImg = document.getElementById('site-logo');
+        if (avatarImg) avatarImg.src = localAvatar;
+    }
+    if (localCover) {
+        const bannerContainer = document.getElementById('banner');
+        if (bannerContainer) bannerContainer.innerHTML = `<img src="${localCover}" alt="Cover Banner">`;
+    }
+
+    // 再从 Supabase 数据库同步最新链接
     try {
         const { data, error } = await db.from('site_settings').select('*');
         if (error) {
-            console.warn('site_settings 数据表可能不存在或无数据，使用默认展示', error);
+            console.warn('site_settings 读取失败或不存在:', error.message);
             return;
         }
 
         if (data && data.length > 0) {
             data.forEach(setting => {
-                // 如果数据库中有保存头像，自动替换
                 if (setting.key === 'avatar_url' && setting.value) {
                     const avatarImg = document.getElementById('site-logo');
                     if (avatarImg) avatarImg.src = setting.value;
+                    localStorage.setItem('site_avatar_url', setting.value);
                 }
-                // 如果数据库中有保存封面图，自动替换
                 if (setting.key === 'cover_url' && setting.value) {
                     const bannerContainer = document.getElementById('banner');
-                    if (bannerContainer) {
-                        bannerContainer.innerHTML = `<img src="${setting.value}" alt="Cover Banner">`;
-                    }
+                    if (bannerContainer) bannerContainer.innerHTML = `<img src="${setting.value}" alt="Cover Banner">`;
+                    localStorage.setItem('site_cover_url', setting.value);
                 }
             });
         }
     } catch (err) {
-        console.error('加载站点资源失败:', err);
+        console.error('加载站点资源异常:', err);
     }
 }
 
@@ -50,19 +62,25 @@ async function loadSiteAssets() {
  * 3. 核心工具：图片上传至 Supabase Storage
  * ========================================== */
 async function uploadToSupabaseStorage(file, pathFolder) {
+    // 限制文件大小不超过 5MB
+    if (file.size > 5 * 1024 * 1024) {
+        throw new Error('图片大小不能超过 5MB！');
+    }
+
     const fileExt = file.name.split('.').pop();
     const fileName = `${pathFolder}/${Date.now()}.${fileExt}`;
 
-    // 1. 上传文件至 Supabase Storage 的 images 存储桶
+    // 上传到 images 存储桶
     const { data, error } = await db.storage
         .from('images')
         .upload(fileName, file, { cacheControl: '3600', upsert: true });
 
     if (error) {
-        throw new Error('图片上传失败: ' + error.message);
+        console.error('Storage Upload Error:', error);
+        throw new Error('图片上传存储桶失败: ' + error.message);
     }
 
-    // 2. 获取图片的公开 URL
+    // 获取公开访问 URL
     const { data: publicUrlData } = db.storage
         .from('images')
         .getPublicUrl(fileName);
@@ -72,17 +90,22 @@ async function uploadToSupabaseStorage(file, pathFolder) {
 
 // 保存配置到 site_settings 表
 async function saveSettingToDB(key, value) {
+    // 同步写入 localStorage
+    if (key === 'avatar_url') localStorage.setItem('site_avatar_url', value);
+    if (key === 'cover_url') localStorage.setItem('site_cover_url', value);
+
     const { error } = await db
         .from('site_settings')
         .upsert({ key: key, value: value }, { onConflict: 'key' });
-    
+
     if (error) {
         console.error(`保存 ${key} 到数据库失败:`, error.message);
+        alert(`警告: 本地已更新，但保存至数据库失败 (${error.message})`);
     }
 }
 
 /* ==========================================
- * 4. 封面海报独立上传逻辑（永久生效）
+ * 4. 封面海报上传逻辑
  * ========================================== */
 function triggerCoverUpload() {
     const coverInput = document.getElementById('coverInput');
@@ -95,29 +118,26 @@ async function uploadNewCover(event) {
 
     const bannerContainer = document.getElementById('banner');
     if (bannerContainer) {
-        bannerContainer.innerHTML = `<p style="color:#fff; text-align:center;">正在上传封面...</p>`;
+        bannerContainer.innerHTML = `<p style="color:#fff; text-align:center; padding-top:100px;">正在上传封面，请稍候...</p>`;
     }
 
     try {
-        // 上传到 Storage
         const imageUrl = await uploadToSupabaseStorage(file, 'covers');
         
-        // 渲染到页面
         if (bannerContainer) {
             bannerContainer.innerHTML = `<img src="${imageUrl}" alt="Uploaded Cover">`;
         }
 
-        // 保存链接到数据库，保证刷新不丢失
         await saveSettingToDB('cover_url', imageUrl);
-        alert('封面照片修改成功！');
+        alert('封面照片修改成功并已保存！');
     } catch (err) {
-        alert(err.message);
-        loadBanners(); // 失败时恢复
+        alert('修改封面失败: ' + err.message);
+        loadBanners(); // 恢复默认
     }
 }
 
 /* ==========================================
- * 5. 头像菜单与独立上传逻辑（永久生效）
+ * 5. 头像菜单与上传逻辑
  * ========================================== */
 function toggleAvatarMenu(event) {
     event.stopPropagation();
@@ -152,17 +172,14 @@ async function uploadNewAvatar(event) {
     const avatarImg = document.getElementById('site-logo');
 
     try {
-        // 上传到 Storage
         const imageUrl = await uploadToSupabaseStorage(file, 'avatars');
         
-        // 渲染页面头像
         if (avatarImg) avatarImg.src = imageUrl;
 
-        // 保存链接到数据库
         await saveSettingToDB('avatar_url', imageUrl);
-        alert('头像修改成功！');
+        alert('头像修改成功并已保存！');
     } catch (err) {
-        alert(err.message);
+        alert('修改头像失败: ' + err.message);
     }
 }
 
@@ -172,25 +189,16 @@ function closeAvatarMenu() {
 }
 
 /* ==========================================
- * 6. 加载商品与 Banner 数据库数据
+ * 6. 加载商品与 Banner 数据
  * ========================================== */
 async function loadBanners() {
     const bannerContainer = document.getElementById('banner');
     if (!bannerContainer) return;
 
-    try {
-        let { data: decData } = await db.from('page_decorations').select('*').limit(1);
-        
-        if (decData && decData.length > 0 && decData[0].config) {
-            const config = typeof decData[0].config === 'string' ? JSON.parse(decData[0].config) : decData[0].config;
-            const bannerComponent = config.find(c => c.type === 'banner' || c.type === 'slider');
-            
-            if (bannerComponent && bannerComponent.images && bannerComponent.images.length > 0) {
-                bannerContainer.innerHTML = `<img src="${bannerComponent.images[0]}" alt="China Direct Shop Banner">`;
-                return;
-            }
-        }
+    // 如果已经有封面图，不再被后台 Banner 覆盖
+    if (localStorage.getItem('site_cover_url')) return;
 
+    try {
         let { data, error } = await db.from('banners').select('*');
         if (error) throw error;
 
