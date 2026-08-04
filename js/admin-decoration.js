@@ -44,9 +44,10 @@ loadDecorations();
 
 
 
-// =====================
+
+// =========================
 // 加载装修模块
-// =====================
+// =========================
 
 async function loadDecorations(){
 
@@ -57,8 +58,12 @@ error
 }=await supabaseClient
 .from("decorations")
 .select("*")
+.eq(
+"page_name",
+"home"
+)
 .order(
-"sort_order",
+"sort",
 {
 ascending:true
 }
@@ -69,7 +74,7 @@ ascending:true
 if(error){
 
 console.error(
-"读取失败:",
+"装修读取失败:",
 error
 );
 
@@ -94,36 +99,42 @@ renderPreview();
 
 
 
-// =====================
+
+// =========================
 // 模块列表
-// =====================
+// =========================
 
 function renderModuleList(){
 
 
-let box=
+let box =
 document.getElementById(
 "module-list"
 );
 
 
+
 if(!box)return;
+
 
 
 box.innerHTML="";
 
 
+
 decorations.forEach(item=>{
 
 
-let div=
+let div =
 document.createElement(
 "div"
 );
 
 
-div.className=
+
+div.className =
 "module-item";
+
 
 
 if(
@@ -139,26 +150,36 @@ div.classList.add(
 
 
 
-div.dataset.id=item.id;
+
+div.dataset.id =
+item.id;
 
 
-div.innerHTML=
+
+div.innerHTML =
+
 `
 
 <div>
-${item.title||"未命名模块"}
+${item.module_name||"未命名模块"}
 </div>
 
+
 <span>
-${item.type||"banner"}
+${item.module_type||"banner"}
 </span>
 
 `;
 
 
 
-div.onclick=
-()=>editModule(item);
+
+div.onclick=()=>{
+
+editModule(item);
+
+};
+
 
 
 
@@ -173,6 +194,7 @@ box.appendChild(div);
 initDrag();
 
 
+
 }
 
 
@@ -181,9 +203,10 @@ initDrag();
 
 
 
-// =====================
+
+// =========================
 // 编辑模块
-// =====================
+// =========================
 
 function editModule(item){
 
@@ -194,40 +217,40 @@ currentModule=item;
 
 document.getElementById(
 "module-id"
-).value=
+).value =
 item.id;
 
 
 
 document.getElementById(
 "module-title"
-).value=
-item.title||"";
+).value =
+item.module_name||"";
 
 
 
 document.getElementById(
 "module-type"
-).value=
-item.type||"banner";
+).value =
+item.module_type||"banner";
 
 
 
 document.getElementById(
 "module-sort"
-).value=
-item.sort_order||0;
+).value =
+item.sort||0;
 
 
 
 document.getElementById(
 "module-status"
-).checked=
+).checked =
 item.status!==false;
 
 
 
-let content=
+let content =
 item.content||{};
 
 
@@ -250,39 +273,89 @@ content={};
 
 
 
-if(
-document.getElementById("banner-url")
-){
 
+// Banner图片地址
+
+let bannerUrl =
 document.getElementById(
 "banner-url"
-).value=
+);
+
+
+
+if(bannerUrl){
+
+bannerUrl.value =
 content.url||"";
 
 }
 
 
 
+
+// Banner预览
+
+let bannerPreview =
+document.getElementById(
+"banner-preview"
+);
+
+
+
 if(
-document.getElementById("notice-content")
+bannerPreview &&
+content.image
 ){
 
+bannerPreview.innerHTML=
+
+`
+
+<img 
+src="${content.image}"
+style="
+max-width:100%;
+height:120px;
+object-fit:cover;
+">
+
+`;
+
+
+
+}
+
+
+
+
+// 公告
+
+let notice =
 document.getElementById(
 "notice-content"
-).value=
+);
+
+
+
+if(notice){
+
+notice.value =
 content.text||"";
 
 }
 
 
 
-selectedProducts=
+
+
+selectedProducts =
 content.product_ids||[];
 
 
 
+
 showEditor(
-item.type
+item.module_type
 );
 
 
@@ -290,6 +363,7 @@ item.type
 renderSelectedProducts();
 
 
+
 }
 
 
@@ -297,59 +371,77 @@ renderSelectedProducts();
 
 
 
-// =====================
-// 编辑区域切换
-// =====================
+
+
+
+// =========================
+// 编辑区域显示
+// =========================
 
 function showEditor(type){
 
 
-let banner=
+
+let banner =
 document.getElementById(
 "banner-editor"
 );
 
 
-let products=
+
+let products =
 document.getElementById(
 "product-editor"
 );
 
 
-let notice=
+
+let notice =
 document.getElementById(
 "notice-editor"
 );
 
 
 
-if(banner)
-banner.style.display=
+
+if(banner){
+
+banner.style.display =
 type==="banner"
 ?
 "block"
 :
 "none";
 
+}
 
 
-if(products)
-products.style.display=
+
+
+if(products){
+
+products.style.display =
 type==="products"
 ?
 "block"
 :
 "none";
 
+}
 
 
-if(notice)
-notice.style.display=
+
+
+if(notice){
+
+notice.style.display =
 type==="notice"
 ?
 "block"
 :
 "none";
+
+}
 
 
 }
@@ -359,42 +451,60 @@ type==="notice"
 
 
 
-// =====================
+
+
+
+// =========================
 // 新增模块
-// =====================
+// =========================
 
 async function addModule(){
+
 
 
 let module={
 
 
-page_name:"home",
+
+page_name:
+"home",
 
 
-title:"新模块",
+
+module_name:
+"首页Banner",
 
 
-type:"banner",
+
+module_type:
+"banner",
 
 
-content:{},
 
+content:
+{},
 
-config:{},
+config:
+{},
 
-
-sort_order:
+sort:
 decorations.length,
 
 
-status:true,
+
+status:
+true,
 
 
-is_published:false
+
+is_published:
+false
+
 
 
 };
+
+
 
 
 
@@ -409,11 +519,17 @@ error
 
 
 
+
+
 if(error){
 
+
 alert(
+"新增失败:"
++
 error.message
 );
+
 
 return;
 
@@ -421,26 +537,32 @@ return;
 
 
 
+
 decorations.push(data);
+
 
 
 renderModuleList();
 
 
+
 editModule(data);
 
 
+
 }
-// =====================
+// =========================
 // 保存模块
-// =====================
+// =========================
 
 async function saveModule(){
 
 
 if(!currentModule){
 
-alert("请选择模块");
+alert(
+"请选择模块"
+);
 
 return;
 
@@ -459,25 +581,27 @@ let content={};
 
 
 
+
 // Banner
 
 if(type==="banner"){
 
 
-let oldContent=
+let old =
 currentModule.content||{};
 
 
-if(typeof oldContent==="string"){
+
+if(typeof old==="string"){
 
 try{
 
-oldContent=JSON.parse(oldContent);
+old=JSON.parse(old);
 
 }
 catch{
 
-oldContent={};
+old={};
 
 }
 
@@ -488,17 +612,19 @@ oldContent={};
 content={
 
 image:
-oldContent.image||"",
+old.image||"",
 
 url:
 document.getElementById(
 "banner-url"
-).value
+).value||""
 
 };
 
 
+
 }
+
 
 
 
@@ -513,7 +639,7 @@ content={
 text:
 document.getElementById(
 "notice-content"
-).value
+).value||""
 
 };
 
@@ -523,7 +649,8 @@ document.getElementById(
 
 
 
-// 推荐商品
+
+// 商品推荐
 
 if(type==="products"){
 
@@ -545,24 +672,35 @@ selectedProducts
 let update={
 
 
-title:
+module_name:
 document.getElementById(
 "module-title"
 ).value,
 
 
-type:type,
+
+module_type:
+type,
 
 
-content:content,
+
+content:
+content,
 
 
-sort_order:
+
+config:
+currentModule.config||{},
+
+
+
+sort:
 Number(
 document.getElementById(
 "module-sort"
 ).value
 ),
+
 
 
 status:
@@ -571,11 +709,14 @@ document.getElementById(
 ).checked,
 
 
+
 updated_at:
 new Date().toISOString()
 
 
+
 };
+
 
 
 
@@ -592,7 +733,10 @@ currentModule.id
 
 
 
+
+
 if(error){
+
 
 alert(
 "保存失败:"
@@ -600,9 +744,13 @@ alert(
 error.message
 );
 
+
 return;
 
+
 }
+
+
 
 
 
@@ -614,6 +762,7 @@ update
 
 
 renderModuleList();
+
 
 renderPreview();
 
@@ -633,9 +782,10 @@ alert(
 
 
 
-// =====================
+
+// =========================
 // 删除模块
-// =====================
+// =========================
 
 async function deleteModule(){
 
@@ -649,12 +799,15 @@ return;
 
 
 if(
-!confirm("确定删除模块?")
+!confirm(
+"确定删除模块?"
+)
 ){
 
 return;
 
 }
+
 
 
 
@@ -670,19 +823,25 @@ currentModule.id
 
 
 
+
 if(error){
+
 
 alert(
 error.message
 );
 
+
 return;
+
 
 }
 
 
 
-decorations=
+
+
+decorations =
 decorations.filter(
 x=>
 x.id!==currentModule.id
@@ -695,6 +854,7 @@ currentModule=null;
 
 
 renderModuleList();
+
 
 renderPreview();
 
@@ -710,9 +870,9 @@ renderPreview();
 
 
 
-// =====================
-// Banner图片上传
-// =====================
+// =========================
+// Banner上传
+// =========================
 
 async function uploadBanner(file){
 
@@ -734,16 +894,15 @@ file.name
 
 let filename =
 
-"banner_"
+"banner/"
 
 +
 Date.now()
-
 +
 "_"
-
 +
 file.name;
+
 
 
 
@@ -770,25 +929,25 @@ upsert:true
 
 
 
+
 if(error){
 
 
 console.error(
-"Storage上传错误:",
 error
 );
 
 
 
 alert(
-"上传失败:\n"
+"图片上传失败:"
 +
 error.message
 );
 
 
-
 return;
+
 
 }
 
@@ -796,18 +955,12 @@ return;
 
 
 
-console.log(
-"上传成功:",
-data
-);
-
-
-
-
 
 const {
 data:urlData
-}=supabaseClient
+}
+=
+supabaseClient
 .storage
 .from(
 "decorations"
@@ -818,8 +971,11 @@ filename
 
 
 
+
+
 let imageUrl =
 urlData.publicUrl;
+
 
 
 
@@ -827,6 +983,7 @@ console.log(
 "图片地址:",
 imageUrl
 );
+
 
 
 
@@ -841,7 +998,6 @@ currentModule.content||{};
 
 
 if(typeof content==="string"){
-
 
 try{
 
@@ -859,26 +1015,19 @@ content={};
 
 
 
+
 content.image =
 imageUrl;
 
 
 
-currentModule.content =
-content;
-
-
-
-
-
-
-// 自动保存图片地址
-
 await supabaseClient
 .from("decorations")
 .update({
 
-content:content,
+content:
+content,
+
 
 updated_at:
 new Date().toISOString()
@@ -891,12 +1040,19 @@ currentModule.id
 
 
 
+
+currentModule.content =
+content;
+
+
+
 }
 
 
 
 
-// 立即显示
+
+
 
 let preview =
 document.getElementById(
@@ -914,12 +1070,18 @@ preview.innerHTML=
 
 <img 
 src="${imageUrl}"
-style="max-width:100%"
->
+style="
+max-width:100%;
+height:120px;
+object-fit:cover;
+">
 
 `;
 
+
+
 }
+
 
 
 
@@ -929,11 +1091,23 @@ renderPreview();
 
 
 }
-// =====================
+
+
+
+
+
+
+
+
+
+
+
+// =========================
 // 商品加载
-// =====================
+// =========================
 
 async function loadProducts(){
+
 
 
 const {
@@ -953,12 +1127,15 @@ ascending:false
 
 
 
+
+
 if(error){
 
+
 console.error(
-"商品读取失败:",
 error
 );
+
 
 return;
 
@@ -966,7 +1143,11 @@ return;
 
 
 
-allProducts=data||[];
+
+
+allProducts =
+data||[];
+
 
 
 renderProductList(
@@ -985,22 +1166,25 @@ allProducts
 
 
 
-// =====================
+
+
+
+// =========================
 // 商品选择列表
-// =====================
+// =========================
 
 function renderProductList(list){
 
 
-let box=
+
+let box =
 document.getElementById(
 "product-select-list"
 );
 
 
 
-if(!box)
-return;
+if(!box)return;
 
 
 
@@ -1008,18 +1192,20 @@ box.innerHTML="";
 
 
 
+
 list.forEach(product=>{
 
 
-let div=
+let div =
 document.createElement(
 "div"
 );
 
 
 
-div.className=
+div.className =
 "product-card";
+
 
 
 
@@ -1034,6 +1220,8 @@ div.classList.add(
 );
 
 }
+
+
 
 
 
@@ -1053,7 +1241,10 @@ ${product.name||""}
 $${product.price||0}
 </div>
 
+
 `;
+
+
 
 
 
@@ -1067,10 +1258,12 @@ product.id
 ){
 
 
-selectedProducts=
+selectedProducts =
 selectedProducts.filter(
-id=>id!==product.id
+id=>
+id!==product.id
 );
+
 
 
 div.classList.remove(
@@ -1079,7 +1272,8 @@ div.classList.remove(
 
 
 
-}else{
+}
+else{
 
 
 selectedProducts.push(
@@ -1102,11 +1296,13 @@ div.classList.add(
 
 
 
+
 box.appendChild(div);
 
 
 
 });
+
 
 
 }
@@ -1118,23 +1314,21 @@ box.appendChild(div);
 
 
 
-
-// =====================
-// 已选择商品显示
-// =====================
+// =========================
+// 已选商品
+// =========================
 
 function renderSelectedProducts(){
 
 
-let box=
+let box =
 document.getElementById(
 "selected-products"
 );
 
 
 
-if(!box)
-return;
+if(!box)return;
 
 
 
@@ -1142,18 +1336,20 @@ box.innerHTML="";
 
 
 
+
 selectedProducts.forEach(id=>{
 
 
-let product=
+let product =
 allProducts.find(
-x=>x.id==id
+x=>
+x.id==id
 );
 
 
 
-if(!product)
-return;
+if(!product)return;
+
 
 
 
@@ -1180,33 +1376,21 @@ ${product.name}
 
 
 }
-
-
-
-
-
-
-
-
-
-
-
-// =====================
+// =========================
 // 首页实时预览
-// =====================
+// =========================
 
 function renderPreview(){
 
 
-let box=
+let box =
 document.getElementById(
 "home-preview"
 );
 
 
 
-if(!box)
-return;
+if(!box)return;
 
 
 
@@ -1214,23 +1398,21 @@ box.innerHTML="";
 
 
 
+
+
 decorations
 .filter(
 item=>
-
 item.status===true
-
 )
 .sort(
 (a,b)=>
-
-a.sort_order-b.sort_order
-
+(a.sort||0)-(b.sort||0)
 )
 .forEach(item=>{
 
 
-let content=
+let content =
 item.content||{};
 
 
@@ -1240,7 +1422,7 @@ if(typeof content==="string"){
 
 try{
 
-content=
+content =
 JSON.parse(content);
 
 }
@@ -1256,12 +1438,13 @@ content={};
 
 
 
+
+
 // Banner
 
 if(
-item.type==="banner"
+item.module_type==="banner"
 ){
-
 
 
 if(content.image){
@@ -1275,7 +1458,11 @@ box.innerHTML+=
 
 <img 
 src="${content.image}"
->
+style="
+width:100%;
+max-height:220px;
+object-fit:cover;
+">
 
 </div>
 
@@ -1286,8 +1473,8 @@ src="${content.image}"
 }
 
 
-
 }
+
 
 
 
@@ -1298,9 +1485,8 @@ src="${content.image}"
 // 公告
 
 if(
-item.type==="notice"
+item.module_type==="notice"
 ){
-
 
 
 box.innerHTML+=
@@ -1313,6 +1499,7 @@ ${content.text||""}
 
 </div>
 
+
 `;
 
 
@@ -1325,12 +1512,12 @@ ${content.text||""}
 
 
 
+
 // 推荐商品
 
 if(
-item.type==="products"
+item.module_type==="products"
 ){
-
 
 
 box.innerHTML+=
@@ -1343,16 +1530,20 @@ box.innerHTML+=
 推荐商品：
 
 ${content.product_ids?.length||0}
+
 个
 
 
 </div>
+
 
 `;
 
 
 
 }
+
+
 
 
 
@@ -1372,15 +1563,16 @@ ${content.product_ids?.length||0}
 
 
 
-
-// =====================
+// =========================
 // 拖拽排序
-// =====================
+// =========================
 
 function initDrag(){
 
 
+
 let dragId=null;
+
 
 
 
@@ -1396,14 +1588,19 @@ item.draggable=true;
 
 
 
+
+
 item.ondragstart=()=>{
 
 
-dragId=
+dragId =
 item.dataset.id;
 
 
 };
+
+
+
 
 
 
@@ -1420,24 +1617,42 @@ e.preventDefault();
 
 
 
+
+
 item.ondrop=async()=>{
 
 
-let oldIndex=
+let oldIndex =
 decorations.findIndex(
-x=>x.id==dragId
+x=>
+x.id==dragId
 );
 
 
 
-let newIndex=
+let newIndex =
 decorations.findIndex(
-x=>x.id==item.dataset.id
+x=>
+x.id==item.dataset.id
 );
 
 
 
-let move=
+
+if(
+oldIndex===-1 ||
+newIndex===-1
+){
+
+return;
+
+}
+
+
+
+
+
+let move =
 decorations.splice(
 oldIndex,
 1
@@ -1455,6 +1670,7 @@ move
 
 
 
+
 for(
 let i=0;
 i<decorations.length;
@@ -1462,7 +1678,7 @@ i++
 ){
 
 
-decorations[i].sort_order=i;
+decorations[i].sort=i;
 
 
 
@@ -1470,7 +1686,7 @@ await supabaseClient
 .from("decorations")
 .update({
 
-sort_order:i
+sort:i
 
 })
 .eq(
@@ -1488,11 +1704,13 @@ decorations[i].id
 
 renderModuleList();
 
+
 renderPreview();
 
 
 
 };
+
 
 
 
@@ -1512,16 +1730,19 @@ renderPreview();
 
 
 
-
-// =====================
+// =========================
 // 事件绑定
-// =====================
+// =========================
 
 function bindEvents(){
 
 
 
-let addBtn=
+
+
+// 新增
+
+let addBtn =
 document.getElementById(
 "add-module-btn"
 );
@@ -1530,8 +1751,10 @@ document.getElementById(
 
 if(addBtn){
 
-addBtn.onclick=
+
+addBtn.onclick =
 addModule;
+
 
 }
 
@@ -1541,7 +1764,10 @@ addModule;
 
 
 
-let saveBtn=
+
+// 保存
+
+let saveBtn =
 document.getElementById(
 "save-module-btn"
 );
@@ -1550,8 +1776,10 @@ document.getElementById(
 
 if(saveBtn){
 
-saveBtn.onclick=
+
+saveBtn.onclick =
 saveModule;
+
 
 }
 
@@ -1562,7 +1790,9 @@ saveModule;
 
 
 
-let deleteBtn=
+// 删除
+
+let deleteBtn =
 document.getElementById(
 "delete-module-btn"
 );
@@ -1571,8 +1801,10 @@ document.getElementById(
 
 if(deleteBtn){
 
-deleteBtn.onclick=
+
+deleteBtn.onclick =
 deleteModule;
+
 
 }
 
@@ -1584,7 +1816,9 @@ deleteModule;
 
 
 
-let typeSelect=
+// 类型切换
+
+let typeSelect =
 document.getElementById(
 "module-type"
 );
@@ -1594,7 +1828,9 @@ document.getElementById(
 if(typeSelect){
 
 
+
 typeSelect.onchange=e=>{
+
 
 showEditor(
 e.target.value
@@ -1615,7 +1851,9 @@ e.target.value
 
 
 
-let upload=
+// Banner上传
+
+let upload =
 document.getElementById(
 "banner-upload"
 );
@@ -1625,13 +1863,13 @@ document.getElementById(
 if(upload){
 
 
+
 upload.onchange=e=>{
 
 
 uploadBanner(
 e.target.files[0]
 );
-
 
 
 };
@@ -1648,7 +1886,11 @@ e.target.files[0]
 
 
 
-let productBtn=
+
+
+// 打开商品选择
+
+let productBtn =
 document.getElementById(
 "open-product-select"
 );
@@ -1658,10 +1900,11 @@ document.getElementById(
 if(productBtn){
 
 
+
 productBtn.onclick=()=>{
 
 
-let modal=
+let modal =
 document.getElementById(
 "product-modal"
 );
@@ -1670,9 +1913,11 @@ document.getElementById(
 
 if(modal){
 
+
 modal.classList.add(
 "show"
 );
+
 
 }
 
@@ -1696,7 +1941,9 @@ loadProducts();
 
 
 
-let closeBtn=
+// 关闭商品选择
+
+let closeBtn =
 document.getElementById(
 "close-product-modal"
 );
@@ -1706,10 +1953,11 @@ document.getElementById(
 if(closeBtn){
 
 
+
 closeBtn.onclick=()=>{
 
 
-let modal=
+let modal =
 document.getElementById(
 "product-modal"
 );
@@ -1718,11 +1966,14 @@ document.getElementById(
 
 if(modal){
 
+
 modal.classList.remove(
 "show"
 );
 
+
 }
+
 
 
 };
@@ -1739,7 +1990,9 @@ modal.classList.remove(
 
 
 
-let confirmBtn=
+// 确认商品
+
+let confirmBtn =
 document.getElementById(
 "confirm-product-btn"
 );
@@ -1749,6 +2002,7 @@ document.getElementById(
 if(confirmBtn){
 
 
+
 confirmBtn.onclick=()=>{
 
 
@@ -1756,7 +2010,7 @@ renderSelectedProducts();
 
 
 
-let modal=
+let modal =
 document.getElementById(
 "product-modal"
 );
@@ -1765,9 +2019,11 @@ document.getElementById(
 
 if(modal){
 
+
 modal.classList.remove(
 "show"
 );
+
 
 }
 
@@ -1778,6 +2034,8 @@ modal.classList.remove(
 
 
 }
+
+
 
 
 
