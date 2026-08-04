@@ -27,6 +27,7 @@ let allProducts=[];
 
 
 
+
 document.addEventListener(
 "DOMContentLoaded",
 ()=>{
@@ -45,9 +46,10 @@ loadDecorations();
 
 
 
-// =========================
+
+// =====================
 // 加载装修模块
-// =========================
+// =====================
 
 async function loadDecorations(){
 
@@ -63,7 +65,7 @@ error
 "home"
 )
 .order(
-"sort",
+"sort_order",
 {
 ascending:true
 }
@@ -74,7 +76,7 @@ ascending:true
 if(error){
 
 console.error(
-"装修读取失败:",
+"读取装修失败:",
 error
 );
 
@@ -92,6 +94,7 @@ renderModuleList();
 renderPreview();
 
 
+
 }
 
 
@@ -100,9 +103,11 @@ renderPreview();
 
 
 
-// =========================
-// 模块列表
-// =========================
+
+
+// =====================
+// 渲染模块列表
+// =====================
 
 function renderModuleList(){
 
@@ -119,6 +124,7 @@ if(!box)return;
 
 
 box.innerHTML="";
+
 
 
 
@@ -150,26 +156,30 @@ div.classList.add(
 
 
 
-
 div.dataset.id =
 item.id;
 
 
 
-div.innerHTML =
+div.innerHTML=
 
 `
 
 <div>
-${item.module_name||"未命名模块"}
+
+${item.title||"未命名模块"}
+
 </div>
 
 
 <span>
-${item.module_type||"banner"}
+
+${item.type||"banner"}
+
 </span>
 
 `;
+
 
 
 
@@ -194,7 +204,6 @@ box.appendChild(div);
 initDrag();
 
 
-
 }
 
 
@@ -204,9 +213,12 @@ initDrag();
 
 
 
-// =========================
+
+
+
+// =====================
 // 编辑模块
-// =========================
+// =====================
 
 function editModule(item){
 
@@ -215,38 +227,88 @@ currentModule=item;
 
 
 
+let id =
 document.getElementById(
 "module-id"
-).value =
-item.id;
+);
 
 
 
+if(id){
+
+id.value=item.id;
+
+}
+
+
+
+
+let title =
 document.getElementById(
 "module-title"
-).value =
-item.module_name||"";
+);
 
 
 
+if(title){
+
+title.value=
+item.title||"";
+
+}
+
+
+
+
+let type =
 document.getElementById(
 "module-type"
-).value =
-item.module_type||"banner";
+);
 
 
 
+if(type){
+
+type.value=
+item.type||"banner";
+
+}
+
+
+
+
+let sort =
 document.getElementById(
 "module-sort"
-).value =
-item.sort||0;
+);
 
 
 
+if(sort){
+
+sort.value=
+item.sort_order||0;
+
+}
+
+
+
+
+let status =
 document.getElementById(
 "module-status"
-).checked =
+);
+
+
+
+if(status){
+
+status.checked=
 item.status!==false;
+
+}
+
+
 
 
 
@@ -256,6 +318,7 @@ item.content||{};
 
 
 if(typeof content==="string"){
+
 
 try{
 
@@ -274,18 +337,21 @@ content={};
 
 
 
-// Banner图片地址
 
-let bannerUrl =
+
+
+// Banner链接
+
+let url =
 document.getElementById(
 "banner-url"
 );
 
 
 
-if(bannerUrl){
+if(url){
 
-bannerUrl.value =
+url.value=
 content.url||"";
 
 }
@@ -293,9 +359,12 @@ content.url||"";
 
 
 
-// Banner预览
 
-let bannerPreview =
+
+
+// Banner图片预览
+
+let preview =
 document.getElementById(
 "banner-preview"
 );
@@ -303,11 +372,12 @@ document.getElementById(
 
 
 if(
-bannerPreview &&
+preview &&
 content.image
 ){
 
-bannerPreview.innerHTML=
+
+preview.innerHTML=
 
 `
 
@@ -328,6 +398,7 @@ object-fit:cover;
 
 
 
+
 // 公告
 
 let notice =
@@ -339,11 +410,10 @@ document.getElementById(
 
 if(notice){
 
-notice.value =
+notice.value=
 content.text||"";
 
 }
-
 
 
 
@@ -355,7 +425,7 @@ content.product_ids||[];
 
 
 showEditor(
-item.module_type
+item.type
 );
 
 
@@ -374,9 +444,9 @@ renderSelectedProducts();
 
 
 
-// =========================
-// 编辑区域显示
-// =========================
+// =====================
+// 显示编辑区域
+// =====================
 
 function showEditor(type){
 
@@ -404,6 +474,7 @@ document.getElementById(
 
 
 
+
 if(banner){
 
 banner.style.display =
@@ -414,7 +485,6 @@ type==="banner"
 "none";
 
 }
-
 
 
 
@@ -431,7 +501,6 @@ type==="products"
 
 
 
-
 if(notice){
 
 notice.style.display =
@@ -444,6 +513,7 @@ type==="notice"
 }
 
 
+
 }
 
 
@@ -454,9 +524,10 @@ type==="notice"
 
 
 
-// =========================
+
+// =====================
 // 新增模块
-// =========================
+// =====================
 
 async function addModule(){
 
@@ -465,41 +536,36 @@ async function addModule(){
 let module={
 
 
-
 page_name:
 "home",
 
 
-
-module_name:
-"首页Banner",
-
+title:
+"新模块",
 
 
-module_type:
+type:
 "banner",
-
 
 
 content:
 {},
 
+
 config:
 {},
 
-sort:
-decorations.length,
 
+sort_order:
+decorations.length,
 
 
 status:
 true,
 
 
-
 is_published:
 false
-
 
 
 };
@@ -538,6 +604,7 @@ return;
 
 
 
+
 decorations.push(data);
 
 
@@ -545,15 +612,14 @@ decorations.push(data);
 renderModuleList();
 
 
-
 editModule(data);
 
 
 
 }
-// =========================
+// =====================
 // 保存模块
-// =========================
+// =====================
 
 async function saveModule(){
 
@@ -582,6 +648,7 @@ let content={};
 
 
 
+
 // Banner
 
 if(type==="banner"){
@@ -594,9 +661,11 @@ currentModule.content||{};
 
 if(typeof old==="string"){
 
+
 try{
 
-old=JSON.parse(old);
+old=
+JSON.parse(old);
 
 }
 catch{
@@ -609,10 +678,12 @@ old={};
 
 
 
+
 content={
 
 image:
 old.image||"",
+
 
 url:
 document.getElementById(
@@ -650,7 +721,7 @@ document.getElementById(
 
 
 
-// 商品推荐
+// 推荐商品
 
 if(type==="products"){
 
@@ -669,24 +740,21 @@ selectedProducts
 
 
 
+
+
 let update={
 
 
-module_name:
+title:
 document.getElementById(
 "module-title"
 ).value,
 
 
-
-module_type:
-type,
+type:type,
 
 
-
-content:
-content,
-
+content:content,
 
 
 config:
@@ -694,7 +762,7 @@ currentModule.config||{},
 
 
 
-sort:
+sort_order:
 Number(
 document.getElementById(
 "module-sort"
@@ -721,6 +789,8 @@ new Date().toISOString()
 
 
 
+
+
 const {
 error
 }=await supabaseClient
@@ -730,6 +800,7 @@ error
 "id",
 currentModule.id
 );
+
 
 
 
@@ -749,6 +820,8 @@ return;
 
 
 }
+
+
 
 
 
@@ -783,11 +856,15 @@ alert(
 
 
 
-// =========================
+
+
+
+// =====================
 // 删除模块
-// =========================
+// =====================
 
 async function deleteModule(){
+
 
 
 if(!currentModule){
@@ -798,15 +875,17 @@ return;
 
 
 
+
 if(
 !confirm(
-"确定删除模块?"
+"确定删除这个模块?"
 )
 ){
 
 return;
 
 }
+
 
 
 
@@ -820,6 +899,7 @@ error
 "id",
 currentModule.id
 );
+
 
 
 
@@ -841,11 +921,14 @@ return;
 
 
 
+
+
 decorations =
 decorations.filter(
-x=>
-x.id!==currentModule.id
+item=>
+item.id!==currentModule.id
 );
+
 
 
 
@@ -870,9 +953,11 @@ renderPreview();
 
 
 
-// =========================
+
+
+// =====================
 // Banner上传
-// =========================
+// =====================
 
 async function uploadBanner(file){
 
@@ -885,6 +970,7 @@ return;
 
 
 
+
 console.log(
 "开始上传:",
 file.name
@@ -892,9 +978,11 @@ file.name
 
 
 
+
+
 let filename =
 
-"banner/"
+"banner_"
 
 +
 Date.now()
@@ -902,6 +990,8 @@ Date.now()
 "_"
 +
 file.name;
+
+
 
 
 
@@ -930,17 +1020,19 @@ upsert:true
 
 
 
+
 if(error){
 
 
 console.error(
+"上传失败:",
 error
 );
 
 
 
 alert(
-"图片上传失败:"
+"上传失败:"
 +
 error.message
 );
@@ -973,8 +1065,11 @@ filename
 
 
 
+
 let imageUrl =
 urlData.publicUrl;
+
+
 
 
 
@@ -983,6 +1078,7 @@ console.log(
 "图片地址:",
 imageUrl
 );
+
 
 
 
@@ -998,6 +1094,7 @@ currentModule.content||{};
 
 
 if(typeof content==="string"){
+
 
 try{
 
@@ -1016,8 +1113,11 @@ content={};
 
 
 
+
 content.image =
 imageUrl;
+
+
 
 
 
@@ -1025,8 +1125,7 @@ await supabaseClient
 .from("decorations")
 .update({
 
-content:
-content,
+content:content,
 
 
 updated_at:
@@ -1037,6 +1136,7 @@ new Date().toISOString()
 "id",
 currentModule.id
 );
+
 
 
 
@@ -1054,10 +1154,12 @@ content;
 
 
 
+
 let preview =
 document.getElementById(
 "banner-preview"
 );
+
 
 
 
@@ -1068,7 +1170,7 @@ preview.innerHTML=
 
 `
 
-<img 
+<img
 src="${imageUrl}"
 style="
 max-width:100%;
@@ -1102,9 +1204,9 @@ renderPreview();
 
 
 
-// =========================
+// =====================
 // 商品加载
-// =========================
+// =====================
 
 async function loadProducts(){
 
@@ -1133,11 +1235,13 @@ if(error){
 
 
 console.error(
+"商品读取失败:",
 error
 );
 
 
 return;
+
 
 }
 
@@ -1147,6 +1251,7 @@ return;
 
 allProducts =
 data||[];
+
 
 
 
@@ -1169,9 +1274,9 @@ allProducts
 
 
 
-// =========================
+// =====================
 // 商品选择列表
-// =========================
+// =====================
 
 function renderProductList(list){
 
@@ -1193,7 +1298,9 @@ box.innerHTML="";
 
 
 
+
 list.forEach(product=>{
+
 
 
 let div =
@@ -1220,7 +1327,6 @@ div.classList.add(
 );
 
 }
-
 
 
 
@@ -1291,8 +1397,8 @@ div.classList.add(
 }
 
 
-
 };
+
 
 
 
@@ -1314,11 +1420,15 @@ box.appendChild(div);
 
 
 
-// =========================
-// 已选商品
-// =========================
+
+
+
+// =====================
+// 已选择商品
+// =====================
 
 function renderSelectedProducts(){
+
 
 
 let box =
@@ -1337,7 +1447,9 @@ box.innerHTML="";
 
 
 
+
 selectedProducts.forEach(id=>{
+
 
 
 let product =
@@ -1348,7 +1460,9 @@ x.id==id
 
 
 
+
 if(!product)return;
+
 
 
 
@@ -1359,11 +1473,14 @@ box.innerHTML+=
 
 <div class="selected-product">
 
+
 <img src="${product.image||''}">
+
 
 <span>
 ${product.name}
 </span>
+
 
 </div>
 
@@ -1376,9 +1493,9 @@ ${product.name}
 
 
 }
-// =========================
+// =====================
 // 首页实时预览
-// =========================
+// =====================
 
 function renderPreview(){
 
@@ -1407,9 +1524,10 @@ item.status===true
 )
 .sort(
 (a,b)=>
-(a.sort||0)-(b.sort||0)
+a.sort_order-b.sort_order
 )
 .forEach(item=>{
+
 
 
 let content =
@@ -1422,7 +1540,7 @@ if(typeof content==="string"){
 
 try{
 
-content =
+content=
 JSON.parse(content);
 
 }
@@ -1443,11 +1561,13 @@ content={};
 // Banner
 
 if(
-item.module_type==="banner"
+item.type==="banner"
 ){
 
 
+
 if(content.image){
+
 
 
 box.innerHTML+=
@@ -1456,7 +1576,8 @@ box.innerHTML+=
 
 <div class="preview-banner">
 
-<img 
+
+<img
 src="${content.image}"
 style="
 width:100%;
@@ -1464,7 +1585,9 @@ max-height:220px;
 object-fit:cover;
 ">
 
+
 </div>
+
 
 `;
 
@@ -1473,7 +1596,9 @@ object-fit:cover;
 }
 
 
+
 }
+
 
 
 
@@ -1485,8 +1610,9 @@ object-fit:cover;
 // 公告
 
 if(
-item.module_type==="notice"
+item.type==="notice"
 ){
+
 
 
 box.innerHTML+=
@@ -1495,7 +1621,9 @@ box.innerHTML+=
 
 <div class="preview-notice">
 
+
 ${content.text||""}
+
 
 </div>
 
@@ -1513,11 +1641,13 @@ ${content.text||""}
 
 
 
+
 // 推荐商品
 
 if(
-item.module_type==="products"
+item.type==="products"
 ){
+
 
 
 box.innerHTML+=
@@ -1563,9 +1693,9 @@ ${content.product_ids?.length||0}
 
 
 
-// =========================
+// =====================
 // 拖拽排序
-// =========================
+// =====================
 
 function initDrag(){
 
@@ -1639,9 +1769,10 @@ x.id==item.dataset.id
 
 
 
+
 if(
-oldIndex===-1 ||
-newIndex===-1
+oldIndex<0 ||
+newIndex<0
 ){
 
 return;
@@ -1657,6 +1788,8 @@ decorations.splice(
 oldIndex,
 1
 )[0];
+
+
 
 
 
@@ -1678,7 +1811,8 @@ i++
 ){
 
 
-decorations[i].sort=i;
+
+decorations[i].sort_order=i;
 
 
 
@@ -1686,7 +1820,7 @@ await supabaseClient
 .from("decorations")
 .update({
 
-sort:i
+sort_order:i
 
 })
 .eq(
@@ -1697,6 +1831,7 @@ decorations[i].id
 
 
 }
+
 
 
 
@@ -1730,9 +1865,9 @@ renderPreview();
 
 
 
-// =========================
+// =====================
 // 事件绑定
-// =========================
+// =====================
 
 function bindEvents(){
 
@@ -1740,7 +1875,7 @@ function bindEvents(){
 
 
 
-// 新增
+// 新增模块
 
 let addBtn =
 document.getElementById(
@@ -1872,13 +2007,12 @@ e.target.files[0]
 );
 
 
+
 };
 
 
 
 }
-
-
 
 
 
