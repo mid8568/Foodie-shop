@@ -3,83 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>China Direct Shop | Chinese Products</title>
-    <link rel="stylesheet" href="css/style.css">
+    <title>China Direct Shop - 首页</title>
+    <!-- 引入独立样式文件 -->
+    <link rel="stylesheet" href="style.css">
+    <!-- 引入 Supabase JS SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
-<!-- 手机端顶部 Header -->
-<header class="h5-header">
-    <div class="h5-logo">🇨🇳 China Direct Shop</div>
-    <a href="https://m.me/你的Facebook主页用户名" class="h5-cart" target="_blank">💬</a>
-</header>
+    <header>
+        China Direct Shop
+    </header>
 
-<!-- 1:1 复刻 Facebook 风格封面海报容器 -->
-<div class="fb-cover-container">
-    <section class="banner" id="banner">
-        <!-- 海报图片由 JS 动态渲染插入 -->
-    </section>
-    
-</div>
+    <main class="container" id="home-container">
+        <div class="loading">正在载入首页装修...</div>
+    </main>
 
-<!-- Facebook 风格店铺主页简介区 -->
-<section class="page-profile-section">
-    <div class="profile-container">
-               <div class="profile-avatar-wrapper">
-            <div class="profile-avatar" id="avatarBtn" onclick="toggleAvatarMenu(event)">
-                <img src="https://images.unsplash.com/photo-1544717305-2782549b5136?w=200" alt="China Direct Shop Logo" id="site-logo">
-                <!-- 右下角在线小绿点 -->
-                <span class="online-status"></span>
-            </div>
-        </div>
-        
-        <!-- 中间店铺名称与简介 -->
-        <div class="profile-info">
-            <h1 class="shop-name">China Direct Shop</h1>
-            <p class="shop-meta">95621位粉丝 · 关注86547人</p>
-            <p class="shop-sub">🇨🇳 Authentic products from China</p>
-            <p class="shop-desc">Snacks | Tea | Gifts | Daily goods</p>
-            <p class="shop-shipping">Direct shipping from China worldwide 🌏</p>
-            <p class="shop-action">Message us to order.</p>
-        </div>
-
-    </div>
-</section>
-
-<!-- 搜索栏 -->
-<div class="h5-search">
-    <input id="search" placeholder="Search products..." oninput="searchProducts()">
-</div>
-
-<!-- 商品分类 -->
-<div class="h5-category">
-    <button onclick="filterProducts('全部')">All</button>
-    <button onclick="filterProducts('茶叶')">🍵 Tea</button>
-    <button onclick="filterProducts('零食')">🍜 Snacks</button>
-    <button onclick="filterProducts('礼品')">🎁 Gifts</button>
-    <button onclick="filterProducts('生活用品')">🏠 Daily Goods</button>
-</div>
-
-<h2 class="title">Featured Products</h2>
-
-<!-- 商品列表区 -->
-<section class="products" id="product-list">
-    Loading products...
-</section>
-
-<!-- 底部导航 (手机端) -->
-<div class="mobile-nav">
-    <a href="index.html">🏠<span>Home</span></a>
-    <a href="#product-list">🛍️<span>Products</span></a>
-    <a href="https://m.me/你的Facebook主页用户名" target="_blank">💬<span>Contact</span></a>
-    <a href="about.html">🌏<span>About</span></a>
-</div>
-
-<footer>
-    © China Direct Shop
-</footer>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/app.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
