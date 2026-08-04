@@ -643,7 +643,7 @@ filename,
 file,
 {
 cacheControl:"3600",
-upsert:false
+upsert:true
 }
 );
 
