@@ -1,317 +1,2039 @@
-// ==========================================
-// 1. Supabase 初始化
-// ==========================================
-const SUPABASE_URL = "https://ukxxmxnubxjezkwbbxdr.supabase.co";
-const SUPABASE_KEY = "sb_publishable_2IFHfms3ombozpvZCvaeEg_2VZ2z5hJ";
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+console.log("admin-decoration.js启动");
 
-// 全局状态管理
-let currentModules = []; // 当前装修模块列表
-let selectedModule = null; // 当前正在编辑的模块
-let allProducts = []; // 商品库全局列表
-let selectedProductIds = []; // 选中的商品 ID 数组
 
-// ==========================================
-// 2. DOM 元素获取
-// ==========================================
-const moduleTreeEl = document.getElementById("module-tree");
-const formEdit = document.getElementById("form-module-edit");
-const inputId = document.getElementById("edit-module-id");
-const inputName = document.getElementById("edit-module-name");
-const selectType = document.getElementById("edit-module-type");
-const inputSort = document.getElementById("edit-module-sort");
-const checkStatus = document.getElementById("edit-module-status");
-const dynamicEditorEl = document.getElementById("dynamic-content-editor");
-const btnDelete = document.getElementById("btn-delete-module");
+const SUPABASE_URL =
+"https://ukxxmxnubxjezkwbbxdr.supabase.co";
 
-// 弹窗元素
-const modalProduct = document.getElementById("modal-product-select");
-const btnCloseModal = document.getElementById("btn-close-modal");
-const btnConfirmProducts = document.getElementById("btn-confirm-products");
-const productSelectListEl = document.getElementById("product-select-list");
-const inputSearchProduct = document.getElementById("search-product-input");
 
-// ==========================================
-// 3. 核心功能：加载与渲染模块列表
-// ==========================================
-async function loadModules() {
-  moduleTreeEl.innerHTML = '<div class="loading">加载中...</div>';
+const SUPABASE_KEY =
+"sb_publishable_2IFHfms3ombozpvZCvaeEg_2VZ2z5hJ";
 
-  const { data, error } = await supabase
-    .from("decorations")
-    .select("*")
-    .order("sort", { ascending: true });
 
-  if (error) {
-    alert("加载首页模块失败: " + error.message);
-    return;
-  }
+const supabaseClient =
+supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
 
-  currentModules = data || [];
-  renderModuleList();
 
-  // 默认选中第一个模块编辑
-  if (currentModules.length > 0) {
-    selectModuleForEdit(currentModules[0]);
-  } else {
-    resetEditForm();
-  }
+
+let decorations=[];
+
+
+let currentModule=null;
+
+
+let selectedProducts=[];
+
+
+let allProducts=[];
+
+
+
+
+document.addEventListener(
+"DOMContentLoaded",
+()=>{
+
+
+loadDecorations();
+
+
+bindEvents();
+
+
+});
+ 
+
+
+
+
+
+
+
+// ==========================
+// 加载装修模块
+// ==========================
+
+
+async function loadDecorations(){
+
+
+const {
+data,
+error
+}=await supabaseClient
+.from("decorations")
+.select("*")
+.order(
+"sort_order",
+{
+ascending:true
+}
+);
+
+
+
+if(error){
+
+console.error(
+"加载装修失败",
+error
+);
+
+return;
+
 }
 
-function renderModuleList() {
-  if (currentModules.length === 0) {
-    moduleTreeEl.innerHTML = '<p style="color:#888;">暂无装修模块，请新建</p>';
-    return;
-  }
 
-  moduleTreeEl.innerHTML = currentModules
-    .map((mod) => {
-      const isActive = selectedModule && selectedModule.id === mod.id;
-      return `
-      <div class="module-item ${isActive ? "active" : ""}" onclick="handleSelectModule(${mod.id})">
-        <div>
-          <strong>${escapeHtml(mod.module_name)}</strong>
-          <span class="module-tag">${mod.module_type}</span>
-        </div>
-        <small style="color:${mod.status ? "#10b981" : "#ef4444"}">
-          ${mod.status ? "显示" : "隐藏"}
-        </small>
-      </div>
-    `;
-    })
-    .join("");
+
+decorations=data||[];
+
+
+
+renderModuleList();
+
+
+renderPreview();
+
+
+
 }
 
-window.handleSelectModule = function (id) {
-  const mod = currentModules.find((m) => m.id === id);
-  if (mod) selectModuleForEdit(mod);
+
+
+
+
+
+
+
+
+// ==========================
+// 左侧模块列表
+// ==========================
+
+
+function renderModuleList(){
+
+
+const box=
+document.getElementById(
+"module-list"
+);
+
+
+
+if(!box)return;
+
+
+
+box.innerHTML="";
+
+
+
+if(!decorations.length){
+
+
+box.innerHTML=
+`
+<div class="empty">
+暂无装修模块
+</div>
+`;
+
+return;
+
+
+}
+
+
+
+
+
+decorations.forEach(item=>{
+
+
+let div=
+document.createElement(
+"div"
+);
+
+
+
+div.className=
+"module-item";
+
+
+
+if(
+currentModule &&
+currentModule.id===item.id
+){
+
+div.classList.add(
+"active"
+);
+
+}
+
+
+
+div.draggable=true;
+
+
+div.dataset.id=item.id;
+
+
+
+div.innerHTML=
+
+`
+<div class="title">
+
+${item.title}
+
+<span class="drag-icon">
+☰
+</span>
+
+</div>
+
+
+<div class="type">
+
+${getTypeName(item.type)}
+
+</div>
+`;
+
+
+
+
+
+div.onclick=()=>{
+
+
+editModule(item);
+
+
 };
 
-// ==========================================
-// 4. 动态解析并渲染编辑面板 (支持 JSONB)
-// ==========================================
-function selectModuleForEdit(mod) {
-  selectedModule = mod;
-  renderModuleList(); // 刷新高亮状态
 
-  inputId.value = mod.id;
-  inputName.value = mod.module_name;
-  selectType.value = mod.module_type;
-  inputSort.value = mod.sort || 0;
-  checkStatus.checked = mod.status;
 
-  renderDynamicEditor(mod.module_type, mod.content || {});
+box.appendChild(div);
+
+
+
+});
+
+
+
 }
 
-function renderDynamicEditor(type, content) {
-  dynamicEditorEl.innerHTML = "";
 
-  if (type === "product_section") {
-    selectedProductIds = content.product_ids || [];
-    dynamicEditorEl.innerHTML = `
-      <div class="form-item">
-        <label>模块展示标题 (Title)</label>
-        <input type="text" id="json-title" value="${escapeHtml(content.title || "")}" placeholder="如：Featured Products" />
-      </div>
-      <div class="form-item">
-        <label>关联推荐商品 (${selectedProductIds.length} 个已选择)</label>
-        <button type="button" class="btn secondary" onclick="openProductModal()">选择商品</button>
-        <div id="selected-products-preview" style="margin-top:10px; font-size:12px; color:#666;">
-          ${selectedProductIds.length > 0 ? `已选 ID: ${selectedProductIds.join(", ")}` : "尚未选择商品"}
-        </div>
-      </div>
-    `;
-  } else if (type === "notice") {
-    dynamicEditorEl.innerHTML = `
-      <div class="form-item">
-        <label>公告文案</label>
-        <textarea id="json-text" rows="3">${escapeHtml(content.text || "")}</textarea>
-      </div>
-      <div class="form-item">
-        <label>跳转链接 (选填)</label>
-        <input type="text" id="json-link" value="${escapeHtml(content.link || "")}" placeholder="/promotions" />
-      </div>
-    `;
-  } else if (type === "banner_grid") {
-    dynamicEditorEl.innerHTML = `
-      <p style="font-size:13px; color:#666;">海报广告模块通过 content JSON 直接配置，你可以稍后自由扩充。</p>
-    `;
-  }
-}
 
-// 获取当前动态组件里输入的 JSON 结构
-function buildContentFromUI(type) {
-  const content = selectedModule ? { ...selectedModule.content } : {};
 
-  if (type === "product_section") {
-    content.title = document.getElementById("json-title")?.value || "";
-    content.product_ids = selectedProductIds;
-  } else if (type === "notice") {
-    content.text = document.getElementById("json-text")?.value || "";
-    content.link = document.getElementById("json-link")?.value || "";
-  }
 
-  return content;
-}
 
-// ==========================================
-// 5. 保存与删除逻辑 (保存到 Supabase)
-// ==========================================
-formEdit.addEventListener("submit", async (e) => {
-  e.preventDefault();
 
-  const id = inputId.value;
-  const moduleName = inputName.value.trim();
-  const moduleType = selectType.value;
-  const sort = parseInt(inputSort.value) || 0;
-  const status = checkStatus.checked;
-  const content = buildContentFromUI(moduleType);
 
-  if (!moduleName) {
-    alert("请输入模块名称");
-    return;
-  }
 
-  const payload = {
-    module_name: moduleName,
-    module_type: moduleType,
-    sort: sort,
-    status: status,
-    content: content,
-    updated_at: new Date().toISOString()
-  };
+// ==========================
+// 类型中文
+// ==========================
 
-  let res;
-  if (id) {
-    // 更新既有模块
-    res = await supabase.from("decorations").update(payload).eq("id", id);
-  } else {
-    // 新增模块
-    res = await supabase.from("decorations").insert([payload]);
-  }
 
-  if (res.error) {
-    alert("保存失败: " + res.error.message);
-  } else {
-    alert("保存成功！");
-    loadModules();
-  }
-});
+function getTypeName(type){
 
-btnDelete.addEventListener("click", async () => {
-  const id = inputId.value;
-  if (!id) return;
 
-  if (confirm("确定要删除这个装修模块吗？此操作无法撤销。")) {
-    const { error } = await supabase.from("decorations").delete().eq("id", id);
-    if (error) {
-      alert("删除失败: " + error.message);
-    } else {
-      alert("删除成功！");
-      loadModules();
-    }
-  }
-});
+let map={
 
-// 新建模块按钮
-document.getElementById("btn-open-add").addEventListener("click", () => {
-  selectedModule = null;
-  inputId.value = "";
-  inputName.value = "新首页模块";
-  selectType.disabled = false;
-  selectType.value = "product_section";
-  inputSort.value = 0;
-  checkStatus.checked = true;
-  selectedProductIds = [];
+banner:"首页Banner",
 
-  renderDynamicEditor("product_section", {});
-});
+products:"推荐商品",
 
-selectType.addEventListener("change", (e) => {
-  renderDynamicEditor(e.target.value, {});
-});
+notice:"首页公告"
 
-// ==========================================
-// 6. 商品选择弹窗逻辑 (绑定 products 表)
-// ==========================================
-window.openProductModal = async function () {
-  modalProduct.classList.add("open");
-  if (allProducts.length === 0) {
-    productSelectListEl.innerHTML = "加载商品中...";
-    const { data, error } = await supabase
-      .from("products")
-      .select("id, title, price, image");
-
-    if (error) {
-      productSelectListEl.innerHTML = "商品加载失败: " + error.message;
-      return;
-    }
-    allProducts = data || [];
-  }
-  renderProductGrid(allProducts);
 };
 
-function renderProductGrid(products) {
-  if (products.length === 0) {
-    productSelectListEl.innerHTML = '<p style="grid-column:1/-1;">无符合条件商品</p>';
-    return;
-  }
 
-  productSelectListEl.innerHTML = products
-    .map((prod) => {
-      const isSelected = selectedProductIds.includes(prod.id);
-      return `
-      <div class="product-card-select ${isSelected ? "selected" : ""}" onclick="toggleSelectProduct(${prod.id})">
-        <img src="${prod.image || "https://via.placeholder.com/80"}" alt="" />
-        <p style="font-size:12px; margin-top:5px; height:28px; overflow:hidden;">${escapeHtml(prod.title || "无标题")}</p>
-        <small>$${prod.price || 0}</small>
-      </div>
-    `;
-    })
-    .join("");
+return map[type]||type;
+
+
 }
 
-window.toggleSelectProduct = function (id) {
-  const index = selectedProductIds.indexOf(id);
-  if (index > -1) {
-    selectedProductIds.splice(index, 1);
-  } else {
-    selectedProductIds.push(id);
-  }
-  renderProductGrid(allProducts);
+
+
+
+
+
+
+
+
+// ==========================
+// 新增模块
+// ==========================
+
+
+async function addModule(){
+
+
+
+let module={
+
+
+title:"新首页模块",
+
+type:"products",
+
+
+content:{
+
+
+product_ids:[]
+
+},
+
+
+sort_order:
+decorations.length,
+
+
+status:true
+
+
 };
 
-inputSearchProduct.addEventListener("input", (e) => {
-  const keyword = e.target.value.toLowerCase();
-  const filtered = allProducts.filter((p) =>
-    (p.title || "").toLowerCase().includes(keyword)
-  );
-  renderProductGrid(filtered);
-});
 
-btnCloseModal.addEventListener("click", () => modalProduct.classList.remove("open"));
-btnConfirmProducts.addEventListener("click", () => {
-  modalProduct.classList.remove("open");
-  const preview = document.getElementById("selected-products-preview");
-  if (preview) {
-    preview.innerText = selectedProductIds.length > 0 ? `已选 ID: ${selectedProductIds.join(", ")}` : "尚未选择商品";
-  }
-});
 
-// 工具函数：转义 HTML 字符串
-function escapeHtml(str) {
-  return String(str)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
+
+const {
+data,
+error
+}=await supabaseClient
+.from("decorations")
+.insert(
+module
+)
+.select()
+.single();
+
+
+
+
+
+if(error){
+
+
+alert(
+"新增失败"
+);
+
+console.error(error);
+
+return;
+
 }
 
-function resetEditForm() {
-  inputId.value = "";
-  inputName.value = "";
-  dynamicEditorEl.innerHTML = "";
+
+
+
+
+decorations.push(data);
+
+
+
+renderModuleList();
+
+
+editModule(data);
+
+
+
 }
 
-// 首次加载
-loadModules();
+
+
+
+
+
+
+
+
+// ==========================
+// 编辑模块
+// ==========================
+
+
+function editModule(item){
+
+
+currentModule=item;
+
+
+
+document
+.getElementById(
+"module-id"
+).value=item.id;
+
+
+
+document
+.getElementById(
+"module-title"
+).value=
+item.title||"";
+
+
+
+document
+.getElementById(
+"module-type"
+).value=
+item.type;
+
+
+
+document
+.getElementById(
+"module-sort"
+).value=
+item.sort_order||0;
+
+
+
+document
+.getElementById(
+"module-status"
+).checked=
+item.status;
+
+
+
+let content=
+item.content||{};
+
+
+
+
+
+if(typeof content==="string"){
+
+try{
+
+content=
+JSON.parse(content);
+
+}catch{
+
+content={};
+
+}
+
+}
+
+
+
+
+
+document
+.getElementById(
+"banner-url"
+).value=
+content.url||"";
+
+
+
+
+document
+.getElementById(
+"notice-content"
+).value=
+content.text||"";
+
+
+
+
+
+selectedProducts=[];
+
+
+
+if(
+content.product_ids
+&&
+content.product_ids.length
+){
+
+
+selectedProducts=
+content.product_ids;
+
+
+}
+
+
+
+showEditorByType(
+item.type
+);
+
+
+
+renderSelectedProducts();
+
+
+
+}
+
+
+
+
+
+
+
+
+
+// ==========================
+// 根据类型显示编辑器
+// ==========================
+
+
+function showEditorByType(type){
+
+
+document
+.getElementById(
+"banner-editor"
+)
+.style.display=
+type==="banner"
+?
+"block"
+:
+"none";
+
+
+
+document
+.getElementById(
+"product-editor"
+)
+.style.display=
+type==="products"
+?
+"block"
+:
+"none";
+
+
+
+document
+.getElementById(
+"notice-editor"
+)
+.style.display=
+type==="notice"
+?
+"block"
+:
+"none";
+
+
+
+}
+// ==========================
+// 保存当前模块
+// ==========================
+
+
+async function saveModule(){
+
+
+if(!currentModule){
+
+alert("请选择模块");
+
+return;
+
+}
+
+
+
+let type=
+document.getElementById(
+"module-type"
+).value;
+
+
+
+let content={};
+
+
+
+if(type==="banner"){
+
+
+content={
+
+
+image:
+currentModule.content?.image||"",
+
+
+url:
+document.getElementById(
+"banner-url"
+).value.trim()
+
+
+};
+
+
+
+}
+
+
+
+if(type==="products"){
+
+
+content={
+
+
+product_ids:
+selectedProducts
+
+
+};
+
+
+
+}
+
+
+
+if(type==="notice"){
+
+
+content={
+
+
+text:
+document.getElementById(
+"notice-content"
+).value.trim()
+
+
+};
+
+
+}
+
+
+
+
+
+let updateData={
+
+
+title:
+document.getElementById(
+"module-title"
+).value.trim(),
+
+
+type:type,
+
+
+content:content,
+
+
+sort_order:
+Number(
+document.getElementById(
+"module-sort"
+).value
+),
+
+
+
+status:
+document.getElementById(
+"module-status"
+).checked,
+
+
+updated_at:
+new Date()
+
+
+};
+
+
+
+
+
+const {
+error
+}=await supabaseClient
+.from("decorations")
+.update(updateData)
+.eq(
+"id",
+currentModule.id
+);
+
+
+
+
+
+if(error){
+
+
+console.error(error);
+
+alert(
+"保存失败"
+);
+
+
+return;
+
+
+}
+
+
+
+
+
+Object.assign(
+currentModule,
+updateData
+);
+
+
+
+renderModuleList();
+
+
+renderPreview();
+
+
+
+alert(
+"保存成功"
+);
+
+
+}
+
+
+
+
+
+
+
+
+
+// ==========================
+// 删除模块
+// ==========================
+
+
+async function deleteModule(){
+
+
+
+if(!currentModule)return;
+
+
+
+if(
+!confirm(
+"确定删除这个模块?"
+)
+)return;
+
+
+
+
+
+const {
+error
+}=await supabaseClient
+.from("decorations")
+.delete()
+.eq(
+"id",
+currentModule.id
+);
+
+
+
+
+
+if(error){
+
+alert(
+"删除失败"
+);
+
+console.error(error);
+
+return;
+
+}
+
+
+
+
+
+decorations=
+decorations.filter(
+item=>
+item.id!==currentModule.id
+);
+
+
+
+currentModule=null;
+
+
+
+renderModuleList();
+
+
+renderPreview();
+
+
+}
+
+
+
+
+
+
+
+
+
+// ==========================
+// Banner上传
+// ==========================
+
+
+async function uploadBanner(file){
+
+
+
+if(!file)return "";
+
+
+
+
+let ext=
+file.name
+.split(".")
+.pop();
+
+
+
+let filename=
+
+"banner_"+
+Date.now()
++
+"."+
+ext;
+
+
+
+
+
+const {
+error
+}=await supabaseClient
+.storage
+.from(
+"decorations"
+)
+.upload(
+filename,
+file
+);
+
+
+
+if(error){
+
+
+console.error(
+"上传失败",
+error
+);
+
+
+alert(
+"图片上传失败"
+);
+
+
+return "";
+
+
+}
+
+
+
+
+
+const {
+data
+}=supabaseClient
+.storage
+.from(
+"decorations"
+)
+.getPublicUrl(
+filename
+);
+
+
+
+
+
+return data.publicUrl;
+
+
+
+}
+
+
+
+
+
+
+
+
+
+// ==========================
+// 加载商品
+// ==========================
+
+
+async function loadProducts(){
+
+
+const {
+data,
+error
+}=await supabaseClient
+.from(
+"products"
+)
+.select(
+"id,name,image,price"
+)
+.order(
+"id",
+{
+ascending:false
+}
+);
+
+
+
+if(error){
+
+console.error(error);
+
+return;
+
+}
+
+
+
+allProducts=data||[];
+
+
+
+renderProductSelector(
+allProducts
+);
+
+
+
+}
+
+
+
+
+
+
+
+
+
+// ==========================
+// 商品选择弹窗
+// ==========================
+
+
+function openProductModal(){
+
+
+
+document
+.getElementById(
+"product-modal"
+)
+.classList.add(
+"show"
+);
+
+
+
+if(!allProducts.length){
+
+loadProducts();
+
+}else{
+
+
+renderProductSelector(
+allProducts
+);
+
+
+}
+
+
+
+}
+
+
+
+
+
+
+
+
+
+function closeProductModal(){
+
+
+document
+.getElementById(
+"product-modal"
+)
+.classList.remove(
+"show"
+);
+
+
+
+}
+
+
+
+
+
+
+
+
+
+// ==========================
+// 商品列表
+// ==========================
+
+
+function renderProductSelector(list){
+
+
+
+let box=
+document.getElementById(
+"product-select-list"
+);
+
+
+
+if(!box)return;
+
+
+
+box.innerHTML="";
+
+
+
+list.forEach(product=>{
+
+
+
+let div=
+document.createElement(
+"div"
+);
+
+
+
+div.className=
+"product-card";
+
+
+
+if(
+selectedProducts.includes(
+product.id
+)
+){
+
+div.classList.add(
+"active"
+);
+
+
+}
+
+
+
+div.innerHTML=
+
+
+`
+<img src="${product.image||''}">
+
+
+<p>
+${product.name}
+</p>
+
+
+<p>
+$${product.price||0}
+</p>
+
+`;
+
+
+
+
+
+div.onclick=()=>{
+
+
+toggleProduct(
+product.id,
+div
+);
+
+
+};
+
+
+
+box.appendChild(div);
+
+
+
+});
+
+
+
+}
+
+
+
+
+
+
+
+
+
+function toggleProduct(id,dom){
+
+
+
+if(
+selectedProducts.includes(id)
+){
+
+
+selectedProducts=
+selectedProducts.filter(
+x=>x!==id
+);
+
+
+
+dom.classList.remove(
+"active"
+);
+
+
+
+}else{
+
+
+selectedProducts.push(id);
+
+
+dom.classList.add(
+"active"
+);
+
+
+
+}
+
+
+}
+
+
+
+
+
+
+
+
+
+
+// ==========================
+// 已选择商品显示
+// ==========================
+
+
+function renderSelectedProducts(){
+
+
+
+let box=
+document.getElementById(
+"selected-products"
+);
+
+
+
+if(!box)return;
+
+
+
+box.innerHTML="";
+
+
+
+selectedProducts.forEach(id=>{
+
+
+
+let p=
+allProducts.find(
+x=>x.id==id
+);
+
+
+
+if(!p)return;
+
+
+
+let div=
+document.createElement(
+"div"
+);
+
+
+
+div.className=
+"selected-product";
+
+
+
+div.innerHTML=
+
+`
+<img src="${p.image||''}">
+
+
+<p>
+${p.name}
+</p>
+`;
+
+
+
+box.appendChild(div);
+
+
+
+});
+
+
+}
+
+// ==========================
+// 拖拽排序
+// ==========================
+
+
+let dragId=null;
+
+
+
+function initDrag(){
+
+
+
+const items=
+document.querySelectorAll(
+".module-item"
+);
+
+
+
+items.forEach(item=>{
+
+
+
+item.addEventListener(
+"dragstart",
+()=>{
+
+
+dragId=item.dataset.id;
+
+
+}
+);
+
+
+
+
+
+item.addEventListener(
+"dragover",
+e=>{
+
+
+e.preventDefault();
+
+
+}
+);
+
+
+
+
+
+item.addEventListener(
+"drop",
+()=>{
+
+
+let targetId=
+item.dataset.id;
+
+
+
+if(
+dragId &&
+dragId!==targetId
+){
+
+
+changeSort(
+dragId,
+targetId
+);
+
+
+}
+
+
+
+}
+);
+
+
+
+});
+
+
+
+}
+
+
+
+
+
+
+
+
+
+async function changeSort(
+dragId,
+targetId
+){
+
+
+
+let oldIndex=
+decorations.findIndex(
+x=>x.id==dragId
+);
+
+
+
+let newIndex=
+decorations.findIndex(
+x=>x.id==targetId
+);
+
+
+
+
+
+let move=
+decorations.splice(
+oldIndex,
+1
+)[0];
+
+
+
+decorations.splice(
+newIndex,
+0,
+move
+);
+
+
+
+
+
+for(
+let i=0;
+i<decorations.length;
+i++
+){
+
+
+decorations[i].sort_order=i;
+
+
+
+await supabaseClient
+.from("decorations")
+.update({
+
+sort_order:i
+
+})
+.eq(
+"id",
+decorations[i].id
+);
+
+
+
+}
+
+
+
+
+renderModuleList();
+
+
+renderPreview();
+
+
+
+}
+
+
+
+
+
+
+
+
+
+// ==========================
+// Banner实时预览
+// ==========================
+
+
+async function previewBannerUpload(){
+
+
+
+let file=
+document
+.getElementById(
+"banner-upload"
+)
+.files[0];
+
+
+
+if(!file)return;
+
+
+
+let reader=
+new FileReader();
+
+
+
+reader.onload=function(e){
+
+
+
+document
+.getElementById(
+"banner-preview"
+)
+.innerHTML=
+
+`
+<img src="${e.target.result}">
+`;
+
+
+};
+
+
+
+reader.readAsDataURL(file);
+
+
+
+let url=
+await uploadBanner(file);
+
+
+
+if(currentModule){
+
+
+if(
+typeof currentModule.content!=="object"
+){
+
+currentModule.content={};
+
+}
+
+
+currentModule.content.image=url;
+
+
+
+}
+
+
+
+}
+
+
+
+
+
+
+
+
+
+// ==========================
+// 首页实时预览
+// ==========================
+
+
+function renderPreview(){
+
+
+
+let box=
+document.getElementById(
+"home-preview"
+);
+
+
+
+if(!box)return;
+
+
+
+box.innerHTML="";
+
+
+
+
+decorations
+.filter(
+x=>x.status
+)
+.sort(
+(a,b)=>
+a.sort_order-b.sort_order
+)
+.forEach(item=>{
+
+
+
+let content=
+item.content||{};
+
+
+
+if(typeof content==="string"){
+
+
+try{
+
+content=JSON.parse(content);
+
+
+}catch{
+
+content={};
+
+
+}
+
+
+}
+
+
+
+
+
+
+if(item.type==="banner"){
+
+
+
+box.innerHTML+=
+
+
+`
+
+<div class="preview-banner">
+
+
+<img src="${content.image||''}">
+
+
+</div>
+
+
+`;
+
+
+
+}
+
+
+
+
+
+
+
+if(item.type==="products"){
+
+
+
+let html="";
+
+
+
+(content.product_ids||[])
+.slice(0,6)
+.forEach(id=>{
+
+
+
+let p=
+allProducts.find(
+x=>x.id==id
+);
+
+
+
+if(p){
+
+
+
+html+=
+
+`
+
+<div class="preview-product">
+
+
+<img src="${p.image}">
+
+
+<p>
+${p.name}
+</p>
+
+
+</div>
+
+
+`;
+
+
+
+}
+
+
+});
+
+
+
+
+
+box.innerHTML+=
+
+
+`
+
+<h4>
+${item.title}
+</h4>
+
+
+<div class="preview-products">
+
+${html}
+
+</div>
+
+`;
+
+
+
+}
+
+
+
+
+
+
+
+
+
+if(item.type==="notice"){
+
+
+
+box.innerHTML+=
+
+
+`
+
+<div style="
+background:#fff7ed;
+padding:12px;
+border-radius:8px;
+margin-bottom:15px;
+">
+
+${content.text||""}
+
+</div>
+
+
+`;
+
+
+
+}
+
+
+
+
+});
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+// ==========================
+// 事件绑定
+// ==========================
+
+
+function bindEvents(){
+
+
+
+// 新增
+
+document
+.getElementById(
+"add-module-btn"
+)
+.onclick=
+addModule;
+
+
+
+
+
+// 保存全部
+
+document
+.getElementById(
+"save-all-btn"
+)
+.onclick=
+async()=>{
+
+
+for(
+let item of decorations
+){
+
+
+await supabaseClient
+.from("decorations")
+.update({
+
+sort_order:
+item.sort_order
+
+})
+.eq(
+"id",
+item.id
+);
+
+
+
+}
+
+
+
+alert(
+"全部保存完成"
+);
+
+
+
+};
+
+
+
+
+
+// 保存当前
+
+
+document
+.getElementById(
+"save-module-btn"
+)
+.onclick=
+saveModule;
+
+
+
+
+
+// 删除
+
+
+document
+.getElementById(
+"delete-module-btn"
+)
+.onclick=
+deleteModule;
+
+
+
+
+
+
+
+// 类型切换
+
+
+document
+.getElementById(
+"module-type"
+)
+.onchange=
+e=>{
+
+
+showEditorByType(
+e.target.value
+);
+
+
+};
+
+
+
+
+
+
+
+// 商品弹窗
+
+
+document
+.getElementById(
+"open-product-select"
+)
+.onclick=
+openProductModal;
+
+
+
+
+
+
+document
+.getElementById(
+"close-product-modal"
+)
+.onclick=
+closeProductModal;
+
+
+
+
+
+
+document
+.getElementById(
+"confirm-product-btn"
+)
+.onclick=
+()=>{
+
+
+renderSelectedProducts();
+
+
+closeProductModal();
+
+
+renderPreview();
+
+
+};
+
+
+
+
+
+
+
+
+// Banner上传
+
+
+document
+.getElementById(
+"banner-upload"
+)
+.onchange=
+previewBannerUpload;
+
+
+
+
+
+
+
+// 商品搜索
+
+
+document
+.getElementById(
+"product-search"
+)
+.oninput=
+e=>{
+
+
+let key=
+e.target.value
+.trim()
+.toLowerCase();
+
+
+
+let result=
+allProducts.filter(
+p=>
+
+p.name
+.toLowerCase()
+.includes(key)
+
+);
+
+
+
+renderProductSelector(
+result
+);
+
+
+
+};
+
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+// 暴露
+
+window.addModule=addModule;
+
+window.saveModule=saveModule;
+
+window.deleteModule=deleteModule;
+
+window.openProductModal=openProductModal;
+
+window.renderPreview=renderPreview;
+
+
+
+
+
+
+
+
+
+
+
+
+
