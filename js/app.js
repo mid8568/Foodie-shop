@@ -68,7 +68,7 @@ async function fetchDecorations() {
 async function fetchAllProductsMap() {
     const { data, error } = await supabaseClient
         .from("products")
-        .select("id, name, image, price");
+        .select("id, name, image, price, sale_price, currency");
 
     if (error) {
         console.error("fetchAllProducts Error:", error);
@@ -152,10 +152,12 @@ function createSectionNode(item, productsMap) {
                 const card = document.createElement("div");
                 card.className = "product-card";
                 card.innerHTML = `
-                    <img src="${product.image || ''}" alt="${product.name}">
-                    <div class="title">${product.name}</div>
-                    <div class="price">$${product.price || 0}</div>
-                `;
+                     <img src="${product.image || ''}" alt="${product.name}">
+                     <div class="title">${product.name}</div>
+                     <div class="price">
+                     ${product.currency || "$"}${product.sale_price || product.price || 0}
+                     </div>
+                      `;
                 grid.appendChild(card);
             }
         });
