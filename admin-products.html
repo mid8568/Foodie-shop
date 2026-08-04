@@ -6,205 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>商品管理</title>
     <link rel="stylesheet" href="css/admin.css">
-    <style>
-        /* 页面局部兼容样式 */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-        }
-
-        body {
-            background-color: #f5f7fa;
-            padding: 20px;
-            color: #333;
-            font-size: 14px;
-        }
-
-        .product-page {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 4px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-        }
-
-        /* 1. 顶部 Tab 状态栏 */
-        .tabs {
-            display: flex;
-            border-bottom: 1px solid #e8e8e8;
-            margin-bottom: 20px;
-        }
-
-        .tab-item {
-            padding: 10px 16px;
-            cursor: pointer;
-            color: #666;
-            font-size: 14px;
-            position: relative;
-        }
-
-        .tab-item.active {
-            color: #1890ff;
-            font-weight: bold;
-        }
-
-        .tab-item.active::after {
-            content: '';
-            position: absolute;
-            bottom: -1px;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background-color: #1890ff;
-        }
-
-        /* 2. 搜索筛选栏 */
-        .search-bar {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-
-        .input-group input {
-            height: 32px;
-            padding: 0 10px;
-            border: 1px solid #d9d9d9;
-            border-radius: 4px;
-            outline: none;
-            width: 180px;
-        }
-
-        .input-group input:focus {
-            border-color: #40a9ff;
-        }
-
-        /* 3. 操作按钮通用样式 */
-        .btn {
-            height: 32px;
-            padding: 0 15px;
-            border-radius: 4px;
-            border: 1px solid #d9d9d9;
-            background: #fff;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-size: 14px;
-        }
-
-        .btn-primary {
-            background: #2f54eb;
-            color: #fff;
-            border-color: #2f54eb;
-        }
-
-        .btn-primary:hover {
-            background: #597ef7;
-            color: #fff;
-        }
-
-        .btn:hover {
-            color: #40a9ff;
-            border-color: #40a9ff;
-        }
-
-        /* 4. 工具按钮栏 */
-        .toolbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-
-        .toolbar-left {
-            display: flex;
-            gap: 10px;
-        }
-
-        /* 5. 表格样式 */
-        .table-container {
-            width: 100%;
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-        }
-
-        th, td {
-            padding: 12px 10px;
-            border-bottom: 1px solid #e8e8e8;
-            vertical-align: middle;
-        }
-
-        th {
-            background-color: #fafafa;
-            color: #5c6b77;
-            font-weight: 500;
-            white-space: nowrap;
-        }
-
-        .edit-price, .edit-stock {
-            width: 70px;
-            padding: 4px 6px;
-            border: 1px solid #d9d9d9;
-            border-radius: 4px;
-        }
-
-        .table-image, .product-img {
-            width: 50px;
-            height: 50px;
-            border-radius: 4px;
-            object-fit: cover;
-            border: 1px solid #eee;
-        }
-
-        .status-tag {
-            color: #52c41a;
-            font-size: 12px;
-            display: block;
-        }
-
-        .status-tag.offline {
-            color: #ff4d4f;
-        }
-
-        /* 6. 分页控件与按钮样式适配 */
-        .pagination {
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            gap: 8px;
-            margin-top: 20px;
-            user-select: none;
-        }
-
-        .pagination .btn-page {
-            height: 28px;
-            padding: 0 10px;
-            border: 1px solid #d9d9d9;
-            background: #fff;
-            cursor: pointer;
-            border-radius: 4px;
-            transition: all 0.2s;
-            font-size: 13px;
-        }
-
-        .pagination .btn-page:hover:not(:disabled) {
-            color: #1890ff;
-            border-color: #1890ff;
-        }
-
-        .pagination .btn-page:disabled {
-            color: #ccc;
-            background: #f5f5f5;
-            border-color: #d9d9d9;
-            cursor: not-allowed;
-        }
-    </style>
+   
 </head>
 
 <body>
@@ -236,7 +38,6 @@
     <!-- 功能按钮栏 -->
     <div class="toolbar">
         <div class="toolbar-left">
-            <button class="btn btn-primary" onclick="addProduct()">发布商品</button>
             <button class="btn">商品装修</button>
             <button class="btn">SKU管理</button>
             <button class="btn">更多批量操作 ▾</button>
@@ -251,8 +52,8 @@
                     <th width="30"><input type="checkbox" id="select-all" onclick="toggleSelectAll(this)"></th>
                     <th width="70">图片</th>
                     <th class="name-column">中文标题</th>
-                    <th class="name-en-column">英文标题</th>
-                    <th>价格</th>
+                    <th>采购成本</th>
+                    <th>销售价格</th>
                     <th>库存</th>
                     <th>状态</th>
                     <th>操作</th>
