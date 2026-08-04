@@ -305,12 +305,7 @@ ${url1688?`<a href="${url1688}" target="_blank">1688链接</a>`:""}
 
 
 <td class="sale-price">
-$${getSalePrice(item)}
-</td>
-
-
-<td>
-¥<input type="number" step="0.01" value="${item.price||0}" id="price-${item.id}" class="edit-price" onblur="updateProductField('${item.id}')">
+$${item.price||getSalePrice(item)}
 </td>
 
 
