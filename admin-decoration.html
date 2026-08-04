@@ -10,7 +10,6 @@
 <body>
 
 <div class="decoration-container">
-
     <!-- 顶部 -->
     <header class="decoration-header">
         <div>
@@ -23,7 +22,6 @@
     </header>
 
     <div class="decoration-layout">
-
         <!-- 左侧模块 -->
         <section class="module-panel">
             <div class="panel-title">
@@ -70,28 +68,28 @@
                     </label>
                 </div>
 
-                <hr>
+                <hr style="margin-bottom: 15px;">
 
-                <!-- Banner编辑 -->
+                <!-- Banner编辑框 -->
                 <div id="banner-editor" class="dynamic-box">
                     <h4>Banner设置</h4>
                     <label>上传图片</label>
                     <input type="file" id="banner-upload" accept="image/*">
                     <div id="banner-preview" class="image-preview"></div>
-                    <div class="form-group" style="margin-top:10px;">
+                    <div class="form-group" style="margin-top: 10px;">
                         <label>跳转链接</label>
                         <input id="banner-url" placeholder="商品链接">
                     </div>
                 </div>
 
-                <!-- 商品编辑 -->
+                <!-- 商品编辑框 -->
                 <div id="product-editor" class="dynamic-box">
                     <h4>推荐商品</h4>
                     <button class="btn primary" id="open-product-select">选择商品</button>
                     <div id="selected-products" class="selected-products"></div>
                 </div>
 
-                <!-- 公告编辑 -->
+                <!-- 公告编辑框 -->
                 <div id="notice-editor" class="dynamic-box">
                     <h4>公告内容</h4>
                     <textarea id="notice-content" rows="5" placeholder="请输入公告"></textarea>
@@ -114,9 +112,7 @@
                 <div id="home-preview" class="home-preview"></div>
             </div>
         </section>
-
     </div>
-
 </div>
 
 <!-- 商品选择弹窗 -->
@@ -124,7 +120,7 @@
     <div class="modal-box">
         <div class="modal-head">
             <h3>选择推荐商品</h3>
-            <button id="close-product-modal">×</button>
+            <button id="close-product-modal" style="border:none;background:none;font-size:20px;cursor:pointer;">×</button>
         </div>
         <div class="modal-search">
             <input id="product-search" placeholder="搜索商品">
