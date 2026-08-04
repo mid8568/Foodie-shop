@@ -1,138 +1,590 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>首页装修管理</title>
-    <link rel="stylesheet" href="css/admin-decoration.css">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>首页装修管理</title>
+
+<link rel="stylesheet" href="css/admin-decoration.css">
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 </head>
+
+
 <body>
 
+
 <div class="decoration-container">
-    <!-- 顶部 -->
-    <header class="decoration-header">
-        <div>
-            <h2>🏠 首页装修管理</h2>
-            <p>PC商城首页模块管理</p>
-        </div>
-        <div>
-            <button class="btn primary" id="save-all-btn">保存全部修改</button>
-        </div>
-    </header>
 
-    <div class="decoration-layout">
-        <!-- 左侧模块 -->
-        <section class="module-panel">
-            <div class="panel-title">
-                <h3>首页模块</h3>
-                <button class="btn success" id="add-module-btn">+ 新增模块</button>
-            </div>
-            <div id="module-list" class="module-list">
-                <div class="empty">加载装修模块...</div>
-            </div>
-        </section>
 
-        <!-- 中间编辑 -->
-        <section class="editor-panel">
-            <div class="panel-title">
-                <h3 id="editor-title">模块编辑</h3>
-            </div>
-            <div class="editor-body">
-                <input type="hidden" id="module-id">
+<header class="decoration-header">
 
-                <div class="form-group">
-                    <label>模块名称</label>
-                    <input id="module-title" placeholder="例如：热销推荐">
-                </div>
+<div>
 
-                <div class="form-group">
-                    <label>模块类型</label>
-                    <select id="module-type">
-                        <option value="banner">首页Banner</option>
-                        <option value="products">推荐商品</option>
-                        <option value="notice">公告模块</option>
-                    </select>
-                </div>
+<h2>🏠 首页装修管理</h2>
 
-                <div class="form-group">
-                    <label>排序</label>
-                    <input type="number" id="module-sort" value="0">
-                </div>
+<p>PC商城首页模块管理</p>
 
-                <div class="form-group">
-                    <label>显示状态</label>
-                    <label class="switch">
-                        <input type="checkbox" id="module-status" checked>
-                        <span></span>
-                    </label>
-                </div>
-
-                <hr style="margin-bottom: 15px;">
-
-                <!-- Banner编辑框 -->
-                <div id="banner-editor" class="dynamic-box">
-                    <h4>Banner设置</h4>
-                    <label>上传图片</label>
-                    <input type="file" id="banner-upload" accept="image/*">
-                    <div id="banner-preview" class="image-preview"></div>
-                    <div class="form-group" style="margin-top: 10px;">
-                        <label>跳转链接</label>
-                        <input id="banner-url" placeholder="商品链接">
-                    </div>
-                </div>
-
-                <!-- 商品编辑框 -->
-                <div id="product-editor" class="dynamic-box">
-                    <h4>推荐商品</h4>
-                    <button class="btn primary" id="open-product-select">选择商品</button>
-                    <div id="selected-products" class="selected-products"></div>
-                </div>
-
-                <!-- 公告编辑框 -->
-                <div id="notice-editor" class="dynamic-box">
-                    <h4>公告内容</h4>
-                    <textarea id="notice-content" rows="5" placeholder="请输入公告"></textarea>
-                </div>
-
-                <div class="editor-buttons">
-                    <button class="btn primary" id="save-module-btn">保存模块</button>
-                    <button class="btn danger" id="delete-module-btn">删除模块</button>
-                </div>
-            </div>
-        </section>
-
-        <!-- 右侧预览 -->
-        <section class="preview-panel">
-            <div class="panel-title">
-                <h3>首页实时预览</h3>
-            </div>
-            <div class="preview-browser">
-                <div class="preview-header">China Direct Shop</div>
-                <div id="home-preview" class="home-preview"></div>
-            </div>
-        </section>
-    </div>
 </div>
+
+
+<div>
+
+<button class="btn primary" id="save-all-btn">
+保存全部修改
+</button>
+
+</div>
+
+
+</header>
+
+
+
+<div class="decoration-layout">
+
+
+
+<section class="module-panel">
+
+
+<div class="panel-title">
+
+<h3>首页模块</h3>
+
+
+<button class="btn success" id="add-module-btn">
++ 新增模块
+</button>
+
+
+</div>
+
+
+<div id="module-list" class="module-list">
+
+<div class="empty">
+加载装修模块...
+</div>
+
+</div>
+
+
+</section>
+
+
+
+
+
+<section class="editor-panel">
+
+
+<div class="panel-title">
+
+<h3 id="editor-title">
+模块编辑
+</h3>
+
+</div>
+
+
+
+<div class="editor-body">
+
+
+<input type="hidden" id="module-id">
+
+
+
+<div class="form-group">
+
+<label>
+模块名称
+</label>
+
+
+<input id="module-title" placeholder="例如：热销推荐">
+
+</div>
+
+
+
+
+
+<div class="form-group">
+
+
+<label>
+模块类型
+</label>
+
+
+<select id="module-type">
+
+
+<option value="banner">
+首页Banner
+</option>
+
+
+<option value="products">
+推荐商品
+</option>
+
+
+<option value="notice">
+公告模块
+</option>
+
+
+</select>
+
+
+</div>
+
+
+
+
+
+<div class="form-group">
+
+
+<label>
+排序
+</label>
+
+
+<input type="number" id="module-sort" value="0">
+
+
+</div>
+
+
+
+
+
+<div class="form-group">
+
+
+<label>
+显示状态
+</label>
+
+
+<label class="switch">
+
+
+<input type="checkbox" id="module-status" checked>
+
+
+<span></span>
+
+
+</label>
+
+
+</div>
+
+
+
+
+
+<hr style="margin-bottom:15px;">
+
+
+
+
+
+<!-- Banner -->
+
+<div id="banner-editor" class="dynamic-box">
+
+
+<h4>
+Banner设置
+</h4>
+
+
+
+<label>
+选择图片
+</label>
+
+
+
+<div class="image-buttons">
+
+
+<input 
+type="file" 
+id="banner-upload"
+accept="image/*">
+
+
+
+<button 
+class="btn primary"
+id="open-decoration-library">
+
+从图片库选择
+
+</button>
+
+
+</div>
+
+
+
+
+<input 
+type="hidden"
+id="banner-image">
+
+
+
+
+
+<div id="banner-preview" class="image-preview">
+
+
+</div>
+
+
+
+
+
+<div class="form-group">
+
+
+<label>
+跳转链接
+</label>
+
+
+<input 
+id="banner-url"
+placeholder="商品链接">
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<!-- 商品 -->
+
+
+<div id="product-editor" class="dynamic-box">
+
+
+<h4>
+推荐商品
+</h4>
+
+
+
+<button 
+class="btn primary"
+id="open-product-select">
+
+选择商品
+
+</button>
+
+
+
+<div 
+id="selected-products"
+class="selected-products">
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+<!-- 公告 -->
+
+
+<div id="notice-editor" class="dynamic-box">
+
+
+<h4>
+公告内容
+</h4>
+
+
+<textarea 
+id="notice-content"
+rows="5"
+placeholder="请输入公告">
+
+</textarea>
+
+
+</div>
+
+
+
+
+
+
+
+
+<div class="editor-buttons">
+
+
+<button 
+class="btn primary"
+id="save-module-btn">
+
+保存模块
+
+</button>
+
+
+
+<button 
+class="btn danger"
+id="delete-module-btn">
+
+删除模块
+
+</button>
+
+
+</div>
+
+
+
+</div>
+
+
+
+</section>
+
+
+
+
+
+
+
+
+<section class="preview-panel">
+
+
+<div class="panel-title">
+
+
+<h3>
+首页实时预览
+</h3>
+
+
+</div>
+
+
+
+<div class="preview-browser">
+
+
+<div class="preview-header">
+
+China Direct Shop
+
+</div>
+
+
+
+<div 
+id="home-preview"
+class="home-preview">
+
+</div>
+
+
+
+</div>
+
+
+
+</section>
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+
 
 <!-- 商品选择弹窗 -->
+
+
 <div id="product-modal" class="modal">
-    <div class="modal-box">
-        <div class="modal-head">
-            <h3>选择推荐商品</h3>
-            <button id="close-product-modal" style="border:none;background:none;font-size:20px;cursor:pointer;">×</button>
-        </div>
-        <div class="modal-search">
-            <input id="product-search" placeholder="搜索商品">
-        </div>
-        <div id="product-select-list" class="product-select-list"></div>
-        <div class="modal-footer">
-            <button class="btn primary" id="confirm-product-btn">确认选择</button>
-        </div>
-    </div>
+
+
+<div class="modal-box">
+
+
+<div class="modal-head">
+
+
+<h3>
+选择推荐商品
+</h3>
+
+
+<button 
+id="close-product-modal"
+style="border:none;background:none;font-size:20px;cursor:pointer;">
+
+×
+
+
+</button>
+
+
 </div>
 
+
+
+
+<div class="modal-search">
+
+
+<input 
+id="product-search"
+placeholder="搜索商品">
+
+
+</div>
+
+
+
+
+<div 
+id="product-select-list"
+class="product-select-list">
+
+</div>
+
+
+
+
+<div class="modal-footer">
+
+
+<button 
+class="btn primary"
+id="confirm-product-btn">
+
+确认选择
+
+</button>
+
+
+</div>
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<!-- decorations 图片库弹窗 -->
+
+
+<div id="decoration-modal" class="modal">
+
+
+<div class="modal-box decoration-library">
+
+
+
+<div class="modal-head">
+
+
+<h3>
+选择装修图片
+</h3>
+
+
+
+<button 
+id="close-decoration-modal"
+style="border:none;background:none;font-size:20px;cursor:pointer;">
+
+×
+
+</button>
+
+
+</div>
+
+
+
+
+
+<div 
+id="decoration-image-list"
+class="decoration-image-list">
+
+
+加载图片中...
+
+
+</div>
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
 <script src="js/admin-decoration.js"></script>
+
+
 
 </body>
 </html>
