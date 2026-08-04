@@ -47,6 +47,7 @@ loadDecorations();
 
 
 
+
 // =====================
 // 加载装修模块
 // =====================
@@ -106,6 +107,525 @@ renderPreview();
 
 
 // =====================
+// decorations 图片库
+// =====================
+
+
+async function loadDecorationLibrary(){
+
+
+let box =
+document.getElementById(
+"decoration-image-list"
+);
+
+
+if(!box)return;
+
+
+
+box.innerHTML="加载图片中...";
+
+
+
+const {
+data,
+error
+}=await supabaseClient
+.from("decorations")
+.select("*")
+.order(
+"created_at",
+{
+ascending:false
+}
+);
+
+
+
+if(error){
+
+
+console.log(error);
+
+
+box.innerHTML="加载失败";
+
+
+return;
+
+
+}
+
+
+
+let html="";
+
+
+
+data.forEach(item=>{
+
+
+let content =
+item.content||{};
+
+
+if(typeof content==="string"){
+
+
+try{
+
+content=JSON.parse(content);
+
+}
+catch{
+
+content={};
+
+}
+
+}
+
+
+
+if(
+!content.image
+){
+
+return;
+
+}
+
+
+
+html+=`
+
+<div class="decoration-image-item"
+onclick="chooseDecorationImage('${content.image}')">
+
+
+<img src="${content.image}">
+
+
+</div>
+
+`;
+
+
+
+});
+
+
+
+box.innerHTML =
+html || "暂无图片";
+
+
+
+}
+
+
+
+
+
+
+window.chooseDecorationImage=function(url){
+
+
+
+let input =
+document.getElementById(
+"banner-image"
+);
+
+
+
+if(input){
+
+input.value=url;
+
+}
+
+
+
+let preview =
+document.getElementById(
+"banner-preview"
+);
+
+
+
+if(preview){
+
+
+preview.innerHTML=`
+
+<img src="${url}"
+style="
+max-width:100%;
+height:120px;
+object-fit:cover;
+">
+
+`;
+
+}
+
+
+
+let modal =
+document.getElementById(
+"decoration-modal"
+);
+
+
+
+if(modal){
+
+modal.classList.remove(
+"show"
+);
+
+}
+
+
+
+};
+
+
+
+
+
+
+
+
+// =====================
+// 编辑模块
+// =====================
+
+
+function editModule(item){
+
+
+currentModule=item;
+
+
+document.getElementById(
+"module-id"
+).value=item.id;
+
+
+
+document.getElementById(
+"module-title"
+).value=item.title||"";
+
+
+
+document.getElementById(
+"module-type"
+).value=item.type||"banner";
+
+
+
+document.getElementById(
+"module-sort"
+).value=item.sort_order||0;
+
+
+
+document.getElementById(
+"module-status"
+).checked=
+item.status!==false;
+
+
+
+let content=item.content||{};
+
+
+
+if(typeof content==="string"){
+
+
+try{
+
+content=JSON.parse(content);
+
+}
+catch{
+
+content={};
+
+}
+
+}
+
+
+
+
+
+
+if(item.type==="banner"){
+
+
+
+document.getElementById(
+"banner-url"
+).value=
+content.url||"";
+
+
+
+document.getElementById(
+"banner-image"
+).value=
+content.image||"";
+
+
+
+if(content.image){
+
+
+document.getElementById(
+"banner-preview"
+).innerHTML=
+
+`
+
+<img src="${content.image}"
+style="
+max-width:100%;
+height:120px;
+object-fit:cover;
+">
+
+`;
+
+}
+
+
+}
+
+
+
+
+if(item.type==="notice"){
+
+
+document.getElementById(
+"notice-content"
+).value=
+content.text||"";
+
+
+}
+
+
+
+selectedProducts=
+content.product_ids||[];
+
+
+
+showEditor(item.type);
+
+
+renderSelectedProducts();
+
+
+renderModuleList();
+
+
+}
+
+
+
+
+
+
+// =====================
+// 保存模块
+// =====================
+
+
+async function saveModule(){
+
+
+if(!currentModule){
+
+alert("请选择模块");
+
+return;
+
+}
+
+
+
+let type =
+document.getElementById(
+"module-type"
+).value;
+
+
+
+let content={};
+
+
+
+if(type==="banner"){
+
+
+content={
+
+
+image:
+document.getElementById(
+"banner-image"
+).value ||
+"",
+
+
+
+url:
+document.getElementById(
+"banner-url"
+).value ||
+""
+
+
+
+};
+
+
+
+}
+
+
+
+
+
+if(type==="notice"){
+
+
+content={
+
+text:
+document.getElementById(
+"notice-content"
+).value||""
+
+};
+
+
+}
+
+
+
+
+if(type==="products"){
+
+
+content={
+
+product_ids:
+selectedProducts
+
+};
+
+
+}
+
+
+
+
+
+let update={
+
+
+title:
+document.getElementById(
+"module-title"
+).value,
+
+
+type:type,
+
+
+content:content,
+
+
+sort_order:
+Number(
+document.getElementById(
+"module-sort"
+).value
+),
+
+
+
+status:
+document.getElementById(
+"module-status"
+).checked,
+
+
+
+updated_at:
+new Date().toISOString()
+
+
+
+};
+
+
+
+
+
+const {
+error
+}=await supabaseClient
+.from("decorations")
+.update(update)
+.eq(
+"id",
+currentModule.id
+);
+
+
+
+if(error){
+
+alert(
+error.message
+);
+
+return;
+
+}
+
+
+
+Object.assign(
+currentModule,
+update
+);
+
+
+
+renderModuleList();
+
+renderPreview();
+
+
+
+alert(
+"保存成功"
+);
+
+
+}
+// =====================
 // 渲染模块列表
 // =====================
 
@@ -124,7 +644,6 @@ if(!box)return;
 
 
 box.innerHTML="";
-
 
 
 
@@ -156,8 +675,7 @@ div.classList.add(
 
 
 
-div.dataset.id =
-item.id;
+div.dataset.id=item.id;
 
 
 
@@ -166,21 +684,14 @@ div.innerHTML=
 `
 
 <div>
-
 ${item.title||"未命名模块"}
-
 </div>
 
-
 <span>
-
 ${item.type||"banner"}
-
 </span>
 
 `;
-
-
 
 
 
@@ -189,7 +700,6 @@ div.onclick=()=>{
 editModule(item);
 
 };
-
 
 
 
@@ -212,244 +722,11 @@ initDrag();
 
 
 
-
-
-
-
-// =====================
-// 编辑模块
-// =====================
-
-function editModule(item){
-
-
-currentModule=item;
-
-
-
-let id =
-document.getElementById(
-"module-id"
-);
-
-
-
-if(id){
-
-id.value=item.id;
-
-}
-
-
-
-
-let title =
-document.getElementById(
-"module-title"
-);
-
-
-
-if(title){
-
-title.value=
-item.title||"";
-
-}
-
-
-
-
-let type =
-document.getElementById(
-"module-type"
-);
-
-
-
-if(type){
-
-type.value=
-item.type||"banner";
-
-}
-
-
-
-
-let sort =
-document.getElementById(
-"module-sort"
-);
-
-
-
-if(sort){
-
-sort.value=
-item.sort_order||0;
-
-}
-
-
-
-
-let status =
-document.getElementById(
-"module-status"
-);
-
-
-
-if(status){
-
-status.checked=
-item.status!==false;
-
-}
-
-
-
-
-
-let content =
-item.content||{};
-
-
-
-if(typeof content==="string"){
-
-
-try{
-
-content=
-JSON.parse(content);
-
-}
-catch{
-
-content={};
-
-}
-
-}
-
-
-
-
-
-
-
-// Banner链接
-
-let url =
-document.getElementById(
-"banner-url"
-);
-
-
-
-if(url){
-
-url.value=
-content.url||"";
-
-}
-
-
-
-
-
-
-
-// Banner图片预览
-
-let preview =
-document.getElementById(
-"banner-preview"
-);
-
-
-
-if(
-preview &&
-content.image
-){
-
-
-preview.innerHTML=
-
-`
-
-<img 
-src="${content.image}"
-style="
-max-width:100%;
-height:120px;
-object-fit:cover;
-">
-
-`;
-
-
-
-}
-
-
-
-
-
-// 公告
-
-let notice =
-document.getElementById(
-"notice-content"
-);
-
-
-
-if(notice){
-
-notice.value=
-content.text||"";
-
-}
-
-
-
-
-selectedProducts =
-content.product_ids||[];
-
-
-
-
-showEditor(
-item.type
-);
-
-
-
-renderSelectedProducts();
-
-
-
-}
-
-
-
-
-
-
-
-
-
 // =====================
 // 显示编辑区域
 // =====================
 
 function showEditor(type){
-
 
 
 let banner =
@@ -458,12 +735,10 @@ document.getElementById(
 );
 
 
-
 let products =
 document.getElementById(
 "product-editor"
 );
-
 
 
 let notice =
@@ -473,11 +748,9 @@ document.getElementById(
 
 
 
-
-
 if(banner){
 
-banner.style.display =
+banner.style.display=
 type==="banner"
 ?
 "block"
@@ -490,7 +763,7 @@ type==="banner"
 
 if(products){
 
-products.style.display =
+products.style.display=
 type==="products"
 ?
 "block"
@@ -503,7 +776,7 @@ type==="products"
 
 if(notice){
 
-notice.style.display =
+notice.style.display=
 type==="notice"
 ?
 "block"
@@ -524,7 +797,6 @@ type==="notice"
 
 
 
-
 // =====================
 // 新增模块
 // =====================
@@ -532,44 +804,35 @@ type==="notice"
 async function addModule(){
 
 
-
 let module={
 
 
-page_name:
-"home",
+page_name:"home",
 
 
-title:
-"新模块",
+title:"新模块",
 
 
-type:
-"banner",
+type:"banner",
 
 
-content:
-{},
+content:{},
 
 
-config:
-{},
+config:{},
 
 
 sort_order:
 decorations.length,
 
 
-status:
-true,
+status:true,
 
 
-is_published:
-false
+is_published:false
 
 
 };
-
 
 
 
@@ -585,8 +848,6 @@ error
 
 
 
-
-
 if(error){
 
 
@@ -599,8 +860,8 @@ error.message
 
 return;
 
-}
 
+}
 
 
 
@@ -617,239 +878,6 @@ editModule(data);
 
 
 }
-// =====================
-// 保存模块
-// =====================
-
-async function saveModule(){
-
-
-if(!currentModule){
-
-alert(
-"请选择模块"
-);
-
-return;
-
-}
-
-
-
-let type =
-document.getElementById(
-"module-type"
-).value;
-
-
-
-let content={};
-
-
-
-
-
-// Banner
-
-if(type==="banner"){
-
-
-let old =
-currentModule.content||{};
-
-
-
-if(typeof old==="string"){
-
-
-try{
-
-old=
-JSON.parse(old);
-
-}
-catch{
-
-old={};
-
-}
-
-}
-
-
-
-
-content={
-
-image:
-old.image||"",
-
-
-url:
-document.getElementById(
-"banner-url"
-).value||""
-
-};
-
-
-
-}
-
-
-
-
-
-// 公告
-
-if(type==="notice"){
-
-
-content={
-
-text:
-document.getElementById(
-"notice-content"
-).value||""
-
-};
-
-
-}
-
-
-
-
-
-// 推荐商品
-
-if(type==="products"){
-
-
-content={
-
-product_ids:
-selectedProducts
-
-};
-
-
-}
-
-
-
-
-
-
-
-let update={
-
-
-title:
-document.getElementById(
-"module-title"
-).value,
-
-
-type:type,
-
-
-content:content,
-
-
-config:
-currentModule.config||{},
-
-
-
-sort_order:
-Number(
-document.getElementById(
-"module-sort"
-).value
-),
-
-
-
-status:
-document.getElementById(
-"module-status"
-).checked,
-
-
-
-updated_at:
-new Date().toISOString()
-
-
-
-};
-
-
-
-
-
-
-
-const {
-error
-}=await supabaseClient
-.from("decorations")
-.update(update)
-.eq(
-"id",
-currentModule.id
-);
-
-
-
-
-
-
-if(error){
-
-
-alert(
-"保存失败:"
-+
-error.message
-);
-
-
-return;
-
-
-}
-
-
-
-
-
-
-
-Object.assign(
-currentModule,
-update
-);
-
-
-
-renderModuleList();
-
-
-renderPreview();
-
-
-
-alert(
-"保存成功"
-);
-
-
-
-}
-
-
 
 
 
@@ -866,13 +894,11 @@ alert(
 async function deleteModule(){
 
 
-
 if(!currentModule){
 
 return;
 
 }
-
 
 
 
@@ -888,8 +914,6 @@ return;
 
 
 
-
-
 const {
 error
 }=await supabaseClient
@@ -902,14 +926,10 @@ currentModule.id
 
 
 
-
-
 if(error){
 
 
-alert(
-error.message
-);
+alert(error.message);
 
 
 return;
@@ -919,21 +939,15 @@ return;
 
 
 
-
-
-
-
 decorations =
 decorations.filter(
-item=>
-item.id!==currentModule.id
+x=>
+x.id!==currentModule.id
 );
 
 
 
-
 currentModule=null;
-
 
 
 renderModuleList();
@@ -953,8 +967,6 @@ renderPreview();
 
 
 
-
-
 // =====================
 // Banner上传
 // =====================
@@ -962,28 +974,13 @@ renderPreview();
 async function uploadBanner(file){
 
 
-if(!file){
-
-return;
-
-}
+if(!file)return;
 
 
 
-
-console.log(
-"开始上传:",
-file.name
-);
-
-
-
-
-
-let filename =
+let filename=
 
 "banner_"
-
 +
 Date.now()
 +
@@ -994,41 +991,23 @@ file.name;
 
 
 
-
-
 const {
-data,
 error
 }=await supabaseClient
 .storage
-.from(
-"decorations"
-)
+.from("decorations")
 .upload(
 filename,
 file,
 {
-
 cacheControl:"3600",
-
 upsert:true
-
 }
 );
 
 
 
-
-
-
 if(error){
-
-
-console.error(
-"上传失败:",
-error
-);
-
 
 
 alert(
@@ -1045,133 +1024,34 @@ return;
 
 
 
-
-
-
 const {
-data:urlData
-}
-=
-supabaseClient
+data
+}=supabaseClient
 .storage
-.from(
-"decorations"
-)
+.from("decorations")
 .getPublicUrl(
 filename
 );
 
 
 
+let imageUrl=data.publicUrl;
 
 
 
-let imageUrl =
-urlData.publicUrl;
+document.getElementById(
+"banner-image"
+).value=imageUrl;
 
 
 
-
-
-
-console.log(
-"图片地址:",
-imageUrl
-);
-
-
-
-
-
-
-
-if(currentModule){
-
-
-let content =
-currentModule.content||{};
-
-
-
-if(typeof content==="string"){
-
-
-try{
-
-content=
-JSON.parse(content);
-
-}
-catch{
-
-content={};
-
-}
-
-}
-
-
-
-
-
-content.image =
-imageUrl;
-
-
-
-
-
-await supabaseClient
-.from("decorations")
-.update({
-
-content:content,
-
-
-updated_at:
-new Date().toISOString()
-
-})
-.eq(
-"id",
-currentModule.id
-);
-
-
-
-
-
-currentModule.content =
-content;
-
-
-
-}
-
-
-
-
-
-
-
-
-let preview =
 document.getElementById(
 "banner-preview"
-);
-
-
-
-
-if(preview){
-
-
-preview.innerHTML=
+).innerHTML=
 
 `
 
-<img
-src="${imageUrl}"
+<img src="${imageUrl}"
 style="
 max-width:100%;
 height:120px;
@@ -1183,18 +1063,6 @@ object-fit:cover;
 
 
 }
-
-
-
-
-
-renderPreview();
-
-
-
-}
-
-
 
 
 
@@ -1229,30 +1097,17 @@ ascending:false
 
 
 
-
-
 if(error){
 
-
-console.error(
-"商品读取失败:",
-error
-);
-
+console.log(error);
 
 return;
-
 
 }
 
 
 
-
-
-allProducts =
-data||[];
-
-
+allProducts=data||[];
 
 
 renderProductList(
@@ -1270,16 +1125,11 @@ allProducts
 
 
 
-
-
-
-
 // =====================
-// 商品选择列表
+// 商品选择
 // =====================
 
 function renderProductList(list){
-
 
 
 let box =
@@ -1297,10 +1147,7 @@ box.innerHTML="";
 
 
 
-
-
 list.forEach(product=>{
-
 
 
 let div =
@@ -1310,9 +1157,8 @@ document.createElement(
 
 
 
-div.className =
+div.className=
 "product-card";
-
 
 
 
@@ -1327,7 +1173,6 @@ div.classList.add(
 );
 
 }
-
 
 
 
@@ -1347,10 +1192,7 @@ ${product.name||""}
 $${product.price||0}
 </div>
 
-
 `;
-
-
 
 
 
@@ -1364,10 +1206,9 @@ product.id
 ){
 
 
-selectedProducts =
+selectedProducts=
 selectedProducts.filter(
-id=>
-id!==product.id
+id=>id!==product.id
 );
 
 
@@ -1377,9 +1218,7 @@ div.classList.remove(
 );
 
 
-
-}
-else{
+}else{
 
 
 selectedProducts.push(
@@ -1393,13 +1232,11 @@ div.classList.add(
 );
 
 
-
 }
 
 
+
 };
-
-
 
 
 
@@ -1410,7 +1247,6 @@ box.appendChild(div);
 });
 
 
-
 }
 
 
@@ -1421,14 +1257,7 @@ box.appendChild(div);
 
 
 
-
-
-// =====================
-// 已选择商品
-// =====================
-
 function renderSelectedProducts(){
-
 
 
 let box =
@@ -1446,46 +1275,33 @@ box.innerHTML="";
 
 
 
-
-
 selectedProducts.forEach(id=>{
 
 
-
-let product =
+let p =
 allProducts.find(
-x=>
-x.id==id
+x=>x.id==id
 );
 
 
 
-
-if(!product)return;
-
+if(!p)return;
 
 
 
-
-box.innerHTML+=
-
-`
+box.innerHTML+=`
 
 <div class="selected-product">
 
-
-<img src="${product.image||''}">
-
+<img src="${p.image||''}">
 
 <span>
-${product.name}
+${p.name}
 </span>
-
 
 </div>
 
 `;
-
 
 
 });
@@ -1493,8 +1309,17 @@ ${product.name}
 
 
 }
+
+
+
+
+
+
+
+
+
 // =====================
-// 首页实时预览
+// 首页预览
 // =====================
 
 function renderPreview(){
@@ -1515,12 +1340,9 @@ box.innerHTML="";
 
 
 
-
-
 decorations
 .filter(
-item=>
-item.status===true
+x=>x.status===true
 )
 .sort(
 (a,b)=>
@@ -1529,9 +1351,7 @@ a.sort_order-b.sort_order
 .forEach(item=>{
 
 
-
-let content =
-item.content||{};
+let content=item.content||{};
 
 
 
@@ -1540,8 +1360,7 @@ if(typeof content==="string"){
 
 try{
 
-content=
-JSON.parse(content);
+content=JSON.parse(content);
 
 }
 catch{
@@ -1555,144 +1374,76 @@ content={};
 
 
 
-
-
-
-// Banner
-
 if(
-item.type==="banner"
+item.type==="banner" &&
+content.image
 ){
 
 
-
-if(content.image){
-
-
-
-box.innerHTML+=
-
-`
+box.innerHTML+=`
 
 <div class="preview-banner">
 
-
-<img
-src="${content.image}"
+<img src="${content.image}"
 style="
 width:100%;
 max-height:220px;
 object-fit:cover;
 ">
 
-
 </div>
-
 
 `;
 
-
-
 }
 
 
 
-}
-
-
-
-
-
-
-
-
-
-// 公告
 
 if(
 item.type==="notice"
 ){
 
 
-
-box.innerHTML+=
-
-`
+box.innerHTML+=`
 
 <div class="preview-notice">
 
-
 ${content.text||""}
-
 
 </div>
 
-
 `;
-
-
 
 }
 
 
-
-
-
-
-
-
-
-// 推荐商品
 
 if(
 item.type==="products"
 ){
 
 
-
-box.innerHTML+=
-
-`
+box.innerHTML+=`
 
 <div class="preview-products">
 
-
 推荐商品：
-
 ${content.product_ids?.length||0}
-
 个
-
 
 </div>
 
-
 `;
 
-
-
 }
-
-
 
 
 
 });
 
 
-
 }
-
-
-
-
-
-
-
-
-
-
-
 // =====================
 // 拖拽排序
 // =====================
@@ -1700,9 +1451,7 @@ ${content.product_ids?.length||0}
 function initDrag(){
 
 
-
 let dragId=null;
-
 
 
 
@@ -1713,24 +1462,17 @@ document
 .forEach(item=>{
 
 
-
 item.draggable=true;
-
-
 
 
 
 item.ondragstart=()=>{
 
 
-dragId =
-item.dataset.id;
+dragId=item.dataset.id;
 
 
 };
-
-
-
 
 
 
@@ -1747,26 +1489,20 @@ e.preventDefault();
 
 
 
-
-
 item.ondrop=async()=>{
 
 
 let oldIndex =
 decorations.findIndex(
-x=>
-x.id==dragId
+x=>x.id==dragId
 );
 
 
 
 let newIndex =
 decorations.findIndex(
-x=>
-x.id==item.dataset.id
+x=>x.id==item.dataset.id
 );
-
-
 
 
 
@@ -1781,15 +1517,11 @@ return;
 
 
 
-
-
 let move =
 decorations.splice(
 oldIndex,
 1
 )[0];
-
-
 
 
 
@@ -1802,14 +1534,11 @@ move
 
 
 
-
-
 for(
 let i=0;
 i<decorations.length;
 i++
 ){
-
 
 
 decorations[i].sort_order=i;
@@ -1834,9 +1563,6 @@ decorations[i].id
 
 
 
-
-
-
 renderModuleList();
 
 
@@ -1848,9 +1574,7 @@ renderPreview();
 
 
 
-
 });
-
 
 
 }
@@ -1875,6 +1599,7 @@ function bindEvents(){
 
 
 
+
 // 新增模块
 
 let addBtn =
@@ -1886,10 +1611,8 @@ document.getElementById(
 
 if(addBtn){
 
-
-addBtn.onclick =
+addBtn.onclick=
 addModule;
-
 
 }
 
@@ -1899,8 +1622,7 @@ addModule;
 
 
 
-
-// 保存
+// 保存模块
 
 let saveBtn =
 document.getElementById(
@@ -1911,10 +1633,8 @@ document.getElementById(
 
 if(saveBtn){
 
-
-saveBtn.onclick =
+saveBtn.onclick=
 saveModule;
-
 
 }
 
@@ -1924,8 +1644,7 @@ saveModule;
 
 
 
-
-// 删除
+// 删除模块
 
 let deleteBtn =
 document.getElementById(
@@ -1936,10 +1655,8 @@ document.getElementById(
 
 if(deleteBtn){
 
-
-deleteBtn.onclick =
+deleteBtn.onclick=
 deleteModule;
-
 
 }
 
@@ -1972,6 +1689,7 @@ e.target.value
 );
 
 
+
 };
 
 
@@ -1986,7 +1704,10 @@ e.target.value
 
 
 
+// =====================
 // Banner上传
+// =====================
+
 
 let upload =
 document.getElementById(
@@ -2007,6 +1728,62 @@ e.target.files[0]
 );
 
 
+};
+
+
+
+}
+
+
+
+
+
+
+
+
+
+// =====================
+// 打开装修图片库
+// =====================
+
+
+let libraryBtn =
+document.getElementById(
+"open-decoration-library"
+);
+
+
+
+if(libraryBtn){
+
+
+
+libraryBtn.onclick=()=>{
+
+
+let modal =
+document.getElementById(
+"decoration-modal"
+);
+
+
+
+if(modal){
+
+
+modal.classList.add(
+"show"
+);
+
+
+}
+
+
+
+
+loadDecorationLibrary();
+
+
 
 };
 
@@ -2022,7 +1799,59 @@ e.target.files[0]
 
 
 
-// 打开商品选择
+// 关闭装修图片库
+
+
+let closeLibrary =
+document.getElementById(
+"close-decoration-modal"
+);
+
+
+
+if(closeLibrary){
+
+
+closeLibrary.onclick=()=>{
+
+
+let modal =
+document.getElementById(
+"decoration-modal"
+);
+
+
+
+if(modal){
+
+
+modal.classList.remove(
+"show"
+);
+
+
+}
+
+
+
+};
+
+
+
+}
+
+
+
+
+
+
+
+
+
+// =====================
+// 商品选择
+// =====================
+
 
 let productBtn =
 document.getElementById(
@@ -2075,20 +1904,21 @@ loadProducts();
 
 
 
-// 关闭商品选择
+// 关闭商品弹窗
 
-let closeBtn =
+
+let closeProduct =
 document.getElementById(
 "close-product-modal"
 );
 
 
 
-if(closeBtn){
+if(closeProduct){
 
 
 
-closeBtn.onclick=()=>{
+closeProduct.onclick=()=>{
 
 
 let modal =
@@ -2126,18 +1956,19 @@ modal.classList.remove(
 
 // 确认商品
 
-let confirmBtn =
+
+let confirmProduct =
 document.getElementById(
 "confirm-product-btn"
 );
 
 
 
-if(confirmBtn){
+if(confirmProduct){
 
 
 
-confirmBtn.onclick=()=>{
+confirmProduct.onclick=()=>{
 
 
 renderSelectedProducts();
