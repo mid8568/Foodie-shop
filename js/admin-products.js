@@ -313,6 +313,9 @@ ${url1688?`<a href="${url1688}" target="_blank">1688链接</a>`:""}
 $${item.price||getSalePrice(item)}
 </td>
 
+<td>
+${item.sales_count||0}
+</td>
 
 <td>
 <input type="number" value="${item.stock_quantity||0}" id="stock-${item.id}" class="edit-stock" onblur="updateProductField('${item.id}')">
