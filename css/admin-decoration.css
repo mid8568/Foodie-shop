@@ -161,3 +161,59 @@ body {
 .product-card p { font-size: 12px; margin-top: 6px; }
 .modal-footer { margin-top: 20px; text-align: right; }
 .empty { text-align: center; padding: 40px; color: #999; }
+.image-buttons{
+
+display:flex;
+gap:10px;
+align-items:center;
+
+}
+
+
+
+.decoration-library{
+
+width:900px;
+
+}
+
+
+
+.decoration-image-list{
+
+display:grid;
+grid-template-columns:repeat(5,1fr);
+gap:15px;
+
+}
+
+
+
+.decoration-image-item img{
+
+width:100%;
+height:120px;
+object-fit:cover;
+cursor:pointer;
+border:2px solid transparent;
+
+}
+
+
+
+.decoration-image-item img:hover{
+
+border-color:#1677ff;
+
+}
+
+
+
+#banner-preview img{
+
+width:300px;
+height:150px;
+object-fit:cover;
+margin-top:10px;
+
+}
