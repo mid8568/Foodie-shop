@@ -36,26 +36,31 @@ function escapeHtml(str){
 
 function getSalePrice(item){
 
-    if(item.sale_price){
-        return Number(item.sale_price).toFixed(2);
+    if(item.price){
+        return Number(item.price).toFixed(2);
     }
-
 
     if(item.cost_price){
 
         let rate=7.2;
-        let profit=50;
+        let shipping=3;
+        let platform=0.15;
+        let profit=0.3;
 
-        let usd=item.cost_price/rate;
+        let costUsd=item.cost_price/rate;
 
-        return (usd*(1+profit/100)).toFixed(2);
+        let total=costUsd+shipping;
+
+        let fee=total/(1-platform);
+
+        let sale=fee*(1+profit);
+
+        return sale.toFixed(2);
 
     }
 
-
     return "0.00";
 }
-
 
 
 
