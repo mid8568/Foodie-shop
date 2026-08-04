@@ -1,12 +1,20 @@
 console.log("admin-decoration.js启动");
 
-const SUPABASE_URL="https://ukxxmxnubxjezkwbbxdr.supabase.co";
-const SUPABASE_KEY="sb_publishable_2IFHfms3ombozpvZCvaeEg_2VZ2z5hJ";
 
-const supabaseClient=supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
+const SUPABASE_URL=
+"https://ukxxmxnubxjezkwbbxdr.supabase.co";
+
+
+const SUPABASE_KEY=
+"sb_publishable_2IFHfms3ombozpvZCvaeEg_2VZ2z5h";
+
+
+const supabaseClient=
+supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
 );
+
 
 
 let decorations=[];
@@ -16,67 +24,62 @@ let allProducts=[];
 
 
 
-document.addEventListener("DOMContentLoaded",()=>{
+document.addEventListener(
+"DOMContentLoaded",
+()=>{
 
-    console.log("装修页面初始化");
+console.log("装修后台初始化");
 
-    bindEvents();
+bindEvents();
 
-    loadDecorations();
+loadDecorations();
 
 });
 
 
 
+
 // =====================
-// 加载装修模块
+// 加载装修
 // =====================
 
 async function loadDecorations(){
 
-    console.log("读取decorations");
+
+const {
+data,
+error
+}=await supabaseClient
+.from("decorations")
+.select("*")
+.order(
+"sort_order",
+{
+ascending:true
+}
+);
 
 
-    const {
-        data,
-        error
-    }=await supabaseClient
-        .from("decorations")
-        .select("*")
-        .order("id",{ascending:true});
 
+if(error){
 
+console.error(error);
 
-    if(error){
-
-        console.error(error);
-
-        document.getElementById("module-list").innerHTML=
-        `
-        <div class="empty">
-        数据库错误:
-        ${error.message}
-        </div>
-        `;
-
-        return;
-    }
-
-
-    decorations=data||[];
-
-
-    console.log(
-        "装修数据:",
-        decorations
-    );
-
-
-    renderModuleList();
-
-    renderPreview();
+return;
 
 }
+
+
+decorations=data||[];
+
+
+renderModuleList();
+
+renderPreview();
+
+
+}
+
 
 
 
@@ -88,85 +91,69 @@ async function loadDecorations(){
 
 function renderModuleList(){
 
-    const box=document.getElementById("module-list");
 
-    if(!box)return;
-
-
-    box.innerHTML="";
-
-
-    if(!decorations.length){
-
-        box.innerHTML=
-        `
-        <div class="empty">
-        暂无模块
-        </div>
-        `;
-
-        return;
-    }
+const box=
+document.getElementById(
+"module-list"
+);
 
 
-
-    decorations.forEach(item=>{
-
-
-        let div=document.createElement("div");
-
-        div.className="module-item";
-
-        div.draggable=true;
-
-        div.dataset.id=item.id;
+if(!box)return;
 
 
-
-        if(
-            currentModule &&
-            currentModule.id===item.id
-        ){
-
-            div.classList.add("active");
-
-        }
+box.innerHTML="";
 
 
-
-        div.innerHTML=
-        `
-        <div class="title">
-        ${item.title||"未命名模块"}
-        <span class="drag-icon">
-        ☰
-        </span>
-        </div>
-
-        <div class="type">
-        ${item.type||"未知"}
-        </div>
-        `;
+decorations.forEach(item=>{
 
 
-
-        div.onclick=()=>{
-
-            editModule(item);
-
-        };
+let div=
+document.createElement("div");
 
 
-
-        box.appendChild(div);
-
-
-    });
+div.className=
+"module-item";
 
 
-    initDrag();
+if(
+currentModule &&
+currentModule.id===item.id
+){
+
+div.classList.add("active");
 
 }
+
+
+div.innerHTML=`
+
+<div>
+${item.title||"未命名"}
+</div>
+
+<small>
+${item.type}
+</small>
+
+`;
+
+
+div.onclick=()=>{
+
+editModule(item);
+
+};
+
+
+box.appendChild(div);
+
+
+});
+
+
+}
+
+
 
 
 
@@ -178,61 +165,79 @@ function renderModuleList(){
 
 function editModule(item){
 
-    currentModule=item;
+
+currentModule=item;
 
 
-    document.getElementById("module-id").value=item.id;
-
-    document.getElementById("module-title").value=item.title||"";
-
-    document.getElementById("module-type").value=item.type||"banner";
-
-    document.getElementById("module-sort").value=item.sort_order||0;
-
-    document.getElementById("module-status").checked=
-    item.status!==false;
+document.getElementById(
+"module-id"
+).value=item.id;
 
 
-
-    let content=item.content||{};
-
-
-    if(typeof content==="string"){
-
-        try{
-
-            content=JSON.parse(content);
-
-        }catch{
-
-            content={};
-
-        }
-
-    }
+document.getElementById(
+"module-title"
+).value=
+item.title||"";
 
 
+document.getElementById(
+"module-type"
+).value=
+item.type||"banner";
 
-    document.getElementById("banner-url").value=
-    content.url||"";
+
+document.getElementById(
+"module-sort"
+).value=
+item.sort_order||0;
 
 
-    document.getElementById("notice-content").value=
-    content.text||"";
+document.getElementById(
+"module-status"
+).checked=
+item.status!==false;
 
 
 
-    selectedProducts=
-    content.product_ids||[];
+let content=
+item.content||{};
 
 
 
-    showEditor(
-        item.type
-    );
+if(typeof content==="string"){
+
+try{
+
+content=JSON.parse(content);
+
+}
+catch{
+
+content={};
+
+}
+
+}
 
 
-    renderSelectedProducts();
+
+document.getElementById(
+"banner-url"
+).value=
+content.url||"";
+
+
+
+document.getElementById(
+"notice-content"
+).value=
+content.text||"";
+
+
+
+showEditor(
+item.type
+);
 
 
 }
@@ -241,29 +246,60 @@ function editModule(item){
 
 
 
+// =====================
+// 显示编辑器
+// =====================
+
 function showEditor(type){
 
-    let banner=document.getElementById("banner-editor");
 
-    let product=document.getElementById("product-editor");
-
-    let notice=document.getElementById("notice-editor");
-
-
-
-    if(banner)
-    banner.style.display=
-    type==="banner"?"block":"none";
+let banner=
+document.getElementById(
+"banner-editor"
+);
 
 
-    if(product)
-    product.style.display=
-    type==="products"?"block":"none";
+let product=
+document.getElementById(
+"product-editor"
+);
 
 
-    if(notice)
-    notice.style.display=
-    type==="notice"?"block":"none";
+let notice=
+document.getElementById(
+"notice-editor"
+);
+
+
+
+if(banner)
+banner.style.display=
+type==="banner"
+?
+"block"
+:
+"none";
+
+
+
+if(product)
+product.style.display=
+type==="products"
+?
+"block"
+:
+"none";
+
+
+
+if(notice)
+notice.style.display=
+type==="notice"
+?
+"block"
+:
+"none";
+
 
 }
 
@@ -280,55 +316,69 @@ function showEditor(type){
 async function addModule(){
 
 
-    const module={
-
-        title:"新模块",
-
-        type:"banner",
-
-        content:{},
-
-        sort_order:decorations.length,
-
-        status:true
-
-    };
+let module={
 
 
-
-    const {
-        data,
-        error
-    }=await supabaseClient
-        .from("decorations")
-        .insert(module)
-        .select()
-        .single();
+page_name:"home",
 
 
+title:"新模块",
 
-    if(error){
 
-        alert(error.message);
+type:"banner",
 
-        return;
 
-    }
+content:{},
+
+
+config:{},
+
+
+sort_order:
+decorations.length,
+
+
+status:true,
+
+
+is_published:false
+
+
+};
 
 
 
-    decorations.push(data);
+const {
+data,
+error
+}=await supabaseClient
+.from("decorations")
+.insert(module)
+.select()
+.single();
 
 
-    renderModuleList();
 
+if(error){
 
-    editModule(data);
+alert(error.message);
 
+return;
 
 }
 
 
+
+decorations.push(data);
+
+
+renderModuleList();
+
+
+editModule(data);
+
+
+}
 
 
 
@@ -343,122 +393,82 @@ async function addModule(){
 async function saveModule(){
 
 
-    if(!currentModule){
+if(!currentModule){
 
-        alert("请选择模块");
+alert("请选择模块");
 
-        return;
+return;
 
-    }
-
-
-
-    let type=
-    document.getElementById("module-type").value;
+}
 
 
 
-    let content={};
+let type=
+document.getElementById(
+"module-type"
+).value;
 
 
 
-    if(type==="banner"){
-
-        content={
-
-            image:
-            currentModule.content?.image||"",
-
-            url:
-            document.getElementById("banner-url").value
-
-        };
-
-    }
+let content={};
 
 
 
-    if(type==="products"){
-
-        content={
-
-            product_ids:selectedProducts
-
-        };
-
-    }
+if(type==="banner"){
 
 
+content={
 
-    if(type==="notice"){
 
-        content={
+image:
+currentModule.content?.image||"",
 
-            text:
-            document.getElementById("notice-content").value
 
-        };
+url:
+document.getElementById(
+"banner-url"
+).value
 
-    }
+
+};
+
+
+}
 
 
 
-    const update={
+
+if(type==="notice"){
 
 
-        title:
-        document.getElementById("module-title").value,
+content={
 
 
-        type:type,
+text:
+document.getElementById(
+"notice-content"
+).value
 
 
-        content:content,
+};
 
 
-        sort_order:
-        Number(
-            document.getElementById("module-sort").value
-        ),
-
-
-        status:
-        document.getElementById("module-status").checked
-
-    };
+}
 
 
 
-    const {
-        error
-    }=await supabaseClient
-        .from("decorations")
-        .update(update)
-        .eq("id",currentModule.id);
+
+if(type==="products"){
 
 
-
-    if(error){
-
-        alert(error.message);
-
-        return;
-
-    }
+content={
 
 
-    Object.assign(
-        currentModule,
-        update
-    );
+product_ids:
+selectedProducts
 
 
-    renderModuleList();
-
-    renderPreview();
-
-
-    alert("保存成功");
+};
 
 
 }
@@ -467,53 +477,129 @@ async function saveModule(){
 
 
 
+let update={
 
 
+title:
+document.getElementById(
+"module-title"
+).value,
+
+
+type:type,
+
+
+content:content,
+
+
+sort_order:
+Number(
+document.getElementById(
+"module-sort"
+).value
+),
+
+
+status:
+document.getElementById(
+"module-status"
+).checked
+
+
+
+};
+
+
+
+const {
+error
+}=await supabaseClient
+.from("decorations")
+.update(update)
+.eq(
+"id",
+currentModule.id
+);
+
+
+
+if(error){
+
+alert(error.message);
+
+return;
+
+}
+
+
+
+Object.assign(
+currentModule,
+update
+);
+
+
+renderModuleList();
+
+renderPreview();
+
+
+alert(
+"保存成功"
+);
+
+
+}
 // =====================
-// 删除
+// 删除模块
 // =====================
 
 async function deleteModule(){
 
-
-    if(!currentModule)return;
-
-
-    if(!confirm("删除模块?"))return;
+if(!currentModule)return;
 
 
-
-    const {
-        error
-    }=await supabaseClient
-        .from("decorations")
-        .delete()
-        .eq("id",currentModule.id);
+if(!confirm("确定删除这个模块?"))
+return;
 
 
 
-    if(error){
-
-        alert(error.message);
-
-        return;
-
-    }
-
-
-
-    decorations=
-    decorations.filter(
-        x=>x.id!==currentModule.id
-    );
+const {
+error
+}=await supabaseClient
+.from("decorations")
+.delete()
+.eq(
+"id",
+currentModule.id
+);
 
 
-    currentModule=null;
+
+if(error){
+
+alert(error.message);
+
+return;
+
+}
 
 
-    renderModuleList();
 
-    renderPreview();
+decorations=
+decorations.filter(
+x=>x.id!==currentModule.id
+);
+
+
+
+currentModule=null;
+
+
+renderModuleList();
+
+renderPreview();
+
 
 }
 
@@ -525,68 +611,147 @@ async function deleteModule(){
 
 
 // =====================
-// Banner上传
+// 上传Banner图片
 // =====================
 
 async function uploadBanner(file){
 
 
-    if(!file)return;
-
-
-    let name=
-    "banner_"+Date.now()+"_"+file.name;
+if(!file)
+return;
 
 
 
-    const {
-        error
-    }=await supabaseClient
-        .storage
-        .from("decorations")
-        .upload(
-            name,
-            file
-        );
+let filename=
+"banner/"
++
+Date.now()
++
+"_"
++
+file.name;
 
 
 
-    if(error){
-
-        alert(error.message);
-
-        return;
-
-    }
-
-
-
-    const {
-        data
-    }=supabaseClient
-        .storage
-        .from("decorations")
-        .getPublicUrl(name);
+const {
+error
+}=await supabaseClient
+.storage
+.from("decorations")
+.upload(
+filename,
+file,
+{
+cacheControl:"3600",
+upsert:false
+}
+);
 
 
 
-    if(currentModule){
+if(error){
 
-        currentModule.content=
-        currentModule.content||{};
+alert(
+"上传失败:"
++
+error.message
+);
+
+return;
+
+}
 
 
-        currentModule.content.image=
-        data.publicUrl;
-
-    }
 
 
 
-    document.getElementById("banner-preview").innerHTML=
-    `
-    <img src="${data.publicUrl}">
-    `;
+const {
+data:urlData
+}=supabaseClient
+.storage
+.from("decorations")
+.getPublicUrl(
+filename
+);
+
+
+
+let imageUrl=
+urlData.publicUrl;
+
+
+
+if(currentModule){
+
+
+let content=
+currentModule.content||{};
+
+
+
+if(typeof content==="string"){
+
+try{
+
+content=JSON.parse(content);
+
+}
+catch{
+
+content={};
+
+}
+
+}
+
+
+
+content.image=imageUrl;
+
+
+
+currentModule.content=content;
+
+
+
+await supabaseClient
+.from("decorations")
+.update({
+
+content:content
+
+})
+.eq(
+"id",
+currentModule.id
+);
+
+
+
+}
+
+
+
+
+let preview=
+document.getElementById(
+"banner-preview"
+);
+
+
+
+if(preview){
+
+preview.innerHTML=
+`
+<img src="${imageUrl}">
+`;
+
+}
+
+
+
+renderPreview();
 
 
 }
@@ -598,42 +763,56 @@ async function uploadBanner(file){
 
 
 
+
+
+
 // =====================
-// 商品
+// 加载商品
 // =====================
 
 
 async function loadProducts(){
 
 
-    const {
-        data,
-        error
-    }=await supabaseClient
-        .from("products")
-        .select("id,name,image,price")
-        .order("id",{ascending:false});
+const {
+data,
+error
+}=await supabaseClient
+.from("products")
+.select(
+"id,name,image,price"
+)
+.order(
+"id",
+{
+ascending:false
+}
+);
 
 
 
-    if(error){
+if(error){
 
-        console.error(error);
+console.error(error);
 
-        return;
-
-    }
-
-
-
-    allProducts=data||[];
-
-
-    renderProductList(
-        allProducts
-    );
+return;
 
 }
+
+
+
+allProducts=data||[];
+
+
+renderProductList(
+allProducts
+);
+
+
+}
+
+
+
 
 
 
@@ -641,73 +820,117 @@ async function loadProducts(){
 function renderProductList(list){
 
 
-    let box=document.getElementById(
-        "product-select-list"
-    );
-
-
-    if(!box)return;
-
-
-    box.innerHTML="";
-
-
-    list.forEach(p=>{
-
-
-        let div=document.createElement("div");
-
-        div.className="product-card";
-
-
-        if(selectedProducts.includes(p.id))
-        div.classList.add("active");
+let box=
+document.getElementById(
+"product-select-list"
+);
 
 
 
-        div.innerHTML=
-        `
-        <img src="${p.image||''}">
-        <p>${p.name}</p>
-        <p>$${p.price||0}</p>
-        `;
+if(!box)return;
 
 
 
-        div.onclick=()=>{
+box.innerHTML="";
 
 
-            if(selectedProducts.includes(p.id)){
 
-                selectedProducts=
-                selectedProducts.filter(
-                    id=>id!==p.id
-                );
+list.forEach(p=>{
 
 
-                div.classList.remove("active");
+let div=
+document.createElement(
+"div"
+);
 
 
-            }else{
+
+div.className=
+"product-card";
 
 
-                selectedProducts.push(p.id);
 
-                div.classList.add("active");
+if(
+selectedProducts.includes(p.id)
+){
 
-            }
+div.classList.add(
+"active"
+);
+
+}
 
 
-        };
+
+div.innerHTML=
+`
+
+<img src="${p.image||''}">
+
+<p>
+${p.name}
+</p>
+
+<p>
+$${p.price||0}
+</p>
+
+`;
 
 
-        box.appendChild(div);
+
+div.onclick=()=>{
 
 
-    });
+if(
+selectedProducts.includes(p.id)
+){
+
+
+selectedProducts=
+selectedProducts.filter(
+id=>id!==p.id
+);
+
+
+div.classList.remove(
+"active"
+);
+
+
+
+}else{
+
+
+selectedProducts.push(
+p.id
+);
+
+
+div.classList.add(
+"active"
+);
 
 
 }
+
+
+
+};
+
+
+
+box.appendChild(div);
+
+
+
+});
+
+
+
+}
+
+
 
 
 
@@ -717,39 +940,55 @@ function renderProductList(list){
 
 function renderSelectedProducts(){
 
-    let box=document.getElementById(
-        "selected-products"
-    );
+
+let box=
+document.getElementById(
+"selected-products"
+);
 
 
-    if(!box)return;
+
+if(!box)return;
 
 
-    box.innerHTML="";
+
+box.innerHTML="";
 
 
-    selectedProducts.forEach(id=>{
+
+selectedProducts.forEach(id=>{
 
 
-        let p=
-        allProducts.find(
-            x=>x.id==id
-        );
+let p=
+allProducts.find(
+x=>x.id==id
+);
 
 
-        if(!p)return;
+
+if(!p)return;
 
 
-        box.innerHTML+=
-        `
-        <div class="selected-product">
-        <img src="${p.image}">
-        <p>${p.name}</p>
-        </div>
-        `;
+
+box.innerHTML+=
+`
+
+<div class="selected-product">
+
+<img src="${p.image}">
+
+<span>
+${p.name}
+</span>
+
+</div>
+
+`;
 
 
-    });
+
+});
+
 
 
 }
@@ -761,62 +1000,128 @@ function renderSelectedProducts(){
 
 
 
+
+
+
 // =====================
-// 首页预览
+// 首页实时预览
 // =====================
 
 function renderPreview(){
 
 
-    let box=document.getElementById(
-        "home-preview"
-    );
-
-
-    if(!box)return;
-
-
-    box.innerHTML="";
-
-
-    decorations
-    .filter(x=>x.status)
-    .forEach(item=>{
-
-
-        let content=item.content||{};
-
-
-        if(item.type==="banner"){
-
-
-            box.innerHTML+=
-            `
-            <div class="preview-banner">
-            <img src="${content.image||''}">
-            </div>
-            `;
-
-
-        }
-
-
-        if(item.type==="notice"){
-
-
-            box.innerHTML+=
-            `
-            <div class="preview-notice">
-            ${content.text||""}
-            </div>
-            `;
-
-
-        }
+let box=
+document.getElementById(
+"home-preview"
+);
 
 
 
-    });
+if(!box)return;
+
+
+
+box.innerHTML="";
+
+
+
+decorations
+.filter(
+item=>
+item.status &&
+item.is_published!==false
+)
+.forEach(item=>{
+
+
+
+let content=
+item.content||{};
+
+
+
+if(typeof content==="string"){
+
+try{
+
+content=JSON.parse(content);
+
+}
+catch{
+
+content={};
+
+}
+
+}
+
+
+
+
+
+if(item.type==="banner"){
+
+
+box.innerHTML+=
+`
+
+<div class="preview-banner">
+
+<img src="${content.image||''}">
+
+</div>
+
+`;
+
+
+
+}
+
+
+
+if(item.type==="notice"){
+
+
+box.innerHTML+=
+`
+
+<div class="preview-notice">
+
+${content.text||""}
+
+</div>
+
+`;
+
+
+
+}
+
+
+
+if(item.type==="products"){
+
+
+box.innerHTML+=
+`
+
+<div class="preview-products">
+
+推荐商品数量：
+${content.product_ids?.length||0}
+
+</div>
+
+`;
+
+
+
+}
+
+
+
+});
+
 
 
 }
@@ -829,25 +1134,38 @@ function renderPreview(){
 
 
 
+
+
 // =====================
-// 拖拽
+// 拖拽排序
 // =====================
 
 function initDrag(){
 
 
-let drag=null;
+let dragId=null;
 
 
-document.querySelectorAll(".module-item")
+
+document
+.querySelectorAll(".module-item")
 .forEach(item=>{
+
+
+
+item.draggable=true;
+
 
 
 item.ondragstart=()=>{
 
-drag=item.dataset.id;
+
+dragId=
+item.dataset.id;
+
 
 };
+
 
 
 item.ondragover=e=>{
@@ -857,30 +1175,70 @@ e.preventDefault();
 };
 
 
-item.ondrop=()=>{
+
+item.ondrop=async()=>{
 
 
-let a=
+let oldIndex=
 decorations.findIndex(
-x=>x.id==drag
+x=>x.id==dragId
 );
 
 
-let b=
+
+let newIndex=
 decorations.findIndex(
 x=>x.id==item.dataset.id
 );
 
 
+
 let move=
-decorations.splice(a,1)[0];
+decorations.splice(
+oldIndex,
+1
+)[0];
 
 
-decorations.splice(b,0,move);
+
+decorations.splice(
+newIndex,
+0,
+move
+);
+
+
+
+for(
+let i=0;
+i<decorations.length;
+i++
+){
+
+
+decorations[i].sort_order=i;
+
+
+
+await supabaseClient
+.from("decorations")
+.update({
+
+sort_order:i
+
+})
+.eq(
+"id",
+decorations[i].id
+);
+
+
+
+}
+
 
 
 renderModuleList();
-
 
 renderPreview();
 
@@ -892,6 +1250,7 @@ renderPreview();
 });
 
 
+
 }
 
 
@@ -902,77 +1261,201 @@ renderPreview();
 
 
 
+
+
 // =====================
-// 事件
+// 事件绑定
 // =====================
 
 function bindEvents(){
 
 
-document.getElementById("add-module-btn")
-.onclick=addModule;
+
+let add=
+document.getElementById(
+"add-module-btn"
+);
 
 
-document.getElementById("save-module-btn")
-.onclick=saveModule;
-
-
-document.getElementById("delete-module-btn")
-.onclick=deleteModule;
-
-
-
-document.getElementById("module-type")
-.onchange=e=>
-showEditor(e.target.value);
+if(add)
+add.onclick=
+addModule;
 
 
 
-document.getElementById("banner-upload")
-.onchange=e=>
-uploadBanner(e.target.files[0]);
+
+
+let save=
+document.getElementById(
+"save-module-btn"
+);
+
+
+if(save)
+save.onclick=
+saveModule;
 
 
 
-document.getElementById("open-product-select")
-.onclick=()=>{
 
 
-document.getElementById("product-modal")
-.classList.add("show");
+let del=
+document.getElementById(
+"delete-module-btn"
+);
+
+
+if(del)
+del.onclick=
+deleteModule;
+
+
+
+
+
+let type=
+document.getElementById(
+"module-type"
+);
+
+
+
+if(type){
+
+type.onchange=
+e=>
+showEditor(
+e.target.value
+);
+
+}
+
+
+
+
+
+
+let upload=
+document.getElementById(
+"banner-upload"
+);
+
+
+
+if(upload){
+
+upload.onchange=
+e=>
+uploadBanner(
+e.target.files[0]
+);
+
+}
+
+
+
+
+
+
+
+let open=
+document.getElementById(
+"open-product-select"
+);
+
+
+
+if(open){
+
+open.onclick=()=>{
+
+
+document
+.getElementById(
+"product-modal"
+)
+.classList
+.add(
+"show"
+);
+
 
 
 loadProducts();
 
 
-};
-
-
-
-document.getElementById("close-product-modal")
-.onclick=()=>{
-
-document.getElementById("product-modal")
-.classList.remove("show");
 
 };
 
+}
 
 
-document.getElementById("confirm-product-btn")
-.onclick=()=>{
+
+
+
+let close=
+document.getElementById(
+"close-product-modal"
+);
+
+
+
+if(close){
+
+close.onclick=()=>{
+
+
+document
+.getElementById(
+"product-modal"
+)
+.classList
+.remove(
+"show"
+);
+
+
+
+};
+
+}
+
+
+
+
+
+
+let confirm=
+document.getElementById(
+"confirm-product-btn"
+);
+
+
+
+if(confirm){
+
+confirm.onclick=()=>{
 
 
 renderSelectedProducts();
 
 
-document.getElementById("product-modal")
-.classList.remove("show");
+
+document
+.getElementById(
+"product-modal"
+)
+.classList
+.remove(
+"show"
+);
+
 
 
 };
 
+}
+
 
 
 }
-
