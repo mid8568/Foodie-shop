@@ -93,7 +93,11 @@ decorations = data || [];
 
 window.decorations = decorations;
 
+if(window.parent){
+
 window.parent.decorations = decorations;
+
+}
 
 await loadProducts();
 
@@ -1320,7 +1324,7 @@ box.innerHTML="";
 
 decorations
 .filter(
-x=>x.status===true
+x=>x.status!==false
 )
 .sort(
 (a,b)=>
@@ -2207,9 +2211,4 @@ modal.classList.remove(
 
 }
 window.renderPreview = renderPreview;
-
-window.decorations = decorations;
-
-window.parent.decorations = decorations;
-
-window.parent.loadDecorations = loadDecorations;
+window.loadDecorations = loadDecorations;
