@@ -123,6 +123,7 @@ async function fetchDecorations(){
     await supabaseClient
     .from("decorations")
     .select("*")
+    .eq("page_name","home")
     .eq("status",true)
     .order(
         "sort_order",
@@ -282,6 +283,7 @@ function createSectionNode(
         img.src =
         content.image;
 
+        img.className="home-banner-image";
 
         img.alt =
         item.title || "Banner";
