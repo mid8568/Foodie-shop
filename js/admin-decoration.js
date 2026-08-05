@@ -993,7 +993,19 @@ currentModule.content={
 image:imageUrl,
 url:""
 };
-
+await supabaseClient
+.from("decorations")
+.update({
+content:{
+image:imageUrl,
+url:""
+},
+updated_at:new Date().toISOString()
+})
+.eq(
+"id",
+currentModule.id
+);
 
 let index =
 decorations.findIndex(
