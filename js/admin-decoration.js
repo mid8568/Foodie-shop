@@ -1019,7 +1019,17 @@ border-radius:8px;
 
 `;
 
+if(currentModule){
 
+currentModule.content =
+{
+image:imageUrl,
+url:""
+};
+
+renderPreview();
+
+}
 
 alert(
 "Banner上传成功"
