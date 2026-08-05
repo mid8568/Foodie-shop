@@ -6,7 +6,7 @@ const SUPABASE_URL =
 
 
 const SUPABASE_KEY =
-"sb_publishable_2IFHfms3ombozpvZCvaeEg_2VZ2z5hJ";
+"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVreHhteG51YnhqZXprd2JieGRyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ2NTQzMDQsImV4cCI6MjEwMDIzMDMwNH0.dGtGmntrqNyMc15wDZuIQBm99jn7n60qjinUvIEPrs0";
 
 
 const supabaseClient =
