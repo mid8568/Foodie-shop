@@ -1,5 +1,6 @@
 console.log("admin-decoration.js启动");
 
+let decorations=[];
 
 const SUPABASE_URL =
 "https://ukxxmxnubxjezkwbbxdr.supabase.co";
@@ -17,8 +18,6 @@ SUPABASE_KEY
 
 window.supabaseClient = supabaseClient;
 
-let decorations=[];
-window.decorations = decorations;
 let currentModule=null;
 
 let selectedProducts=[];
