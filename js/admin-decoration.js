@@ -32,16 +32,17 @@ document.addEventListener(
 "DOMContentLoaded",
 ()=>{
 
+
 console.log("装修后台加载");
 
 
 bindEvents();
 
+
 loadDecorations();
 
 
 });
-
 
 
 
@@ -58,7 +59,9 @@ async function loadDecorations(){
 const {
 data,
 error
-}=await supabaseClient
+}
+=
+await supabaseClient
 .from("decorations")
 .select("*")
 .eq(
@@ -76,12 +79,15 @@ ascending:true
 
 if(error){
 
+
 console.error(
 "读取装修失败:",
 error
 );
 
+
 return;
+
 
 }
 
@@ -92,154 +98,11 @@ decorations=data||[];
 
 renderModuleList();
 
-// 首页实时预览
 
-function renderHomePreview(){
-
-
-const preview =
-document.getElementById(
-"home-preview"
-);
-
-
-if(!preview)
-return;
-
-
-
-preview.innerHTML="";
-
-
-
-const modules =
-window.decorationModules || [];
-
-
-
-if(modules.length===0){
-
-preview.innerHTML=
-`
-<div class="empty">
-暂无预览内容
-</div>
-`;
-
-return;
-
-}
-
-
-
-modules.forEach(item=>{
-
-
-let content =
-item.content || {};
-
-
-
-if(typeof content==="string"){
-
-try{
-
-content=
-JSON.parse(content);
-
-}catch(e){
-
-content={};
-
-}
-
-}
-
-
-
-
-
-// Banner
-
-if(item.type==="banner"){
-
-
-if(content.image){
-
-
-preview.innerHTML +=
-`
-
-<div class="preview-banner">
-
-<img src="${content.image}">
-
-</div>
-
-`;
-
-}
+renderPreview();
 
 
 }
-
-
-
-
-
-
-// 商品推荐
-
-if(item.type==="products"){
-
-
-
-preview.innerHTML +=
-`
-
-<h3>
-${item.title || ""}
-</h3>
-
-<div class="preview-products">
-
-推荐商品模块
-
-</div>
-
-`;
-
-}
-
-
-
-
-
-// 公告
-
-if(item.type==="notice"){
-
-
-preview.innerHTML +=
-`
-
-<div class="preview-notice">
-
-${content.text || ""}
-
-</div>
-
-`;
-
-}
-
-
-
-});
-
-
-}
-
 
 
 
@@ -247,7 +110,7 @@ ${content.text || ""}
 
 
 // =====================
-// decorations 图片库
+// 图片库
 // =====================
 
 
@@ -260,18 +123,22 @@ document.getElementById(
 );
 
 
+
 if(!box)return;
 
 
 
-box.innerHTML="加载图片中...";
+box.innerHTML=
+"加载图片中...";
 
 
 
 const {
 data,
 error
-}=await supabaseClient
+}
+=
+await supabaseClient
 .from("decorations")
 .select("*")
 .order(
@@ -286,10 +153,8 @@ ascending:false
 if(error){
 
 
-console.log(error);
-
-
-box.innerHTML="加载失败";
+box.innerHTML=
+"加载失败";
 
 
 return;
@@ -310,15 +175,17 @@ let content =
 item.content||{};
 
 
+
 if(typeof content==="string"){
 
 
 try{
 
-content=JSON.parse(content);
+content=
+JSON.parse(content);
 
-}
-catch{
+
+}catch{
 
 content={};
 
@@ -328,17 +195,14 @@ content={};
 
 
 
-if(
-!content.image
-){
-
+if(!content.image)
 return;
 
-}
 
 
+html +=
 
-html+=`
+`
 
 <div class="decoration-image-item"
 onclick="chooseDecorationImage('${content.image}')">
@@ -361,9 +225,7 @@ box.innerHTML =
 html || "暂无图片";
 
 
-
 }
-
 
 
 
@@ -398,7 +260,9 @@ document.getElementById(
 if(preview){
 
 
-preview.innerHTML=`
+preview.innerHTML=
+
+`
 
 <img src="${url}"
 style="
@@ -438,7 +302,6 @@ modal.classList.remove(
 
 
 
-
 // =====================
 // 编辑模块
 // =====================
@@ -450,6 +313,7 @@ function editModule(item){
 currentModule=item;
 
 
+
 document.getElementById(
 "module-id"
 ).value=item.id;
@@ -458,19 +322,22 @@ document.getElementById(
 
 document.getElementById(
 "module-title"
-).value=item.title||"";
+).value=
+item.title||"";
 
 
 
 document.getElementById(
 "module-type"
-).value=item.type||"banner";
+).value=
+item.type||"banner";
 
 
 
 document.getElementById(
 "module-sort"
-).value=item.sort_order||0;
+).value=
+item.sort_order||0;
 
 
 
@@ -481,7 +348,9 @@ item.status!==false;
 
 
 
-let content=item.content||{};
+
+let content =
+item.content||{};
 
 
 
@@ -490,10 +359,11 @@ if(typeof content==="string"){
 
 try{
 
-content=JSON.parse(content);
+content=
+JSON.parse(content);
 
-}
-catch{
+
+}catch{
 
 content={};
 
@@ -505,22 +375,19 @@ content={};
 
 
 
-
 if(item.type==="banner"){
-
-
-
-document.getElementById(
-"banner-url"
-).value=
-content.url||"";
-
 
 
 document.getElementById(
 "banner-image"
 ).value=
 content.image||"";
+
+
+document.getElementById(
+"banner-url"
+).value=
+content.url||"";
 
 
 
@@ -563,12 +430,15 @@ content.text||"";
 
 
 
-selectedProducts=
-content.product_ids||[];
+
+selectedProducts =
+content.product_ids || [];
 
 
 
-showEditor(item.type);
+showEditor(
+item.type
+);
 
 
 renderSelectedProducts();
@@ -578,12 +448,6 @@ renderModuleList();
 
 
 }
-
-
-
-
-
-
 // =====================
 // 保存模块
 // =====================
@@ -613,30 +477,25 @@ let content={};
 
 
 
+
+
 if(type==="banner"){
 
 
 content={
 
-
 image:
 document.getElementById(
 "banner-image"
-).value ||
-"",
-
+).value || "",
 
 
 url:
 document.getElementById(
 "banner-url"
-).value ||
-""
-
-
+).value || ""
 
 };
-
 
 
 }
@@ -653,12 +512,13 @@ content={
 text:
 document.getElementById(
 "notice-content"
-).value||""
+).value || ""
 
 };
 
 
 }
+
 
 
 
@@ -680,6 +540,7 @@ selectedProducts
 
 
 
+
 let update={
 
 
@@ -689,10 +550,13 @@ document.getElementById(
 ).value,
 
 
+
 type:type,
 
 
+
 content:content,
+
 
 
 sort_order:
@@ -715,7 +579,6 @@ updated_at:
 new Date().toISOString()
 
 
-
 };
 
 
@@ -724,7 +587,9 @@ new Date().toISOString()
 
 const {
 error
-}=await supabaseClient
+}
+=
+await supabaseClient
 .from("decorations")
 .update(update)
 .eq(
@@ -734,15 +599,22 @@ currentModule.id
 
 
 
+
+
 if(error){
+
 
 alert(
 error.message
 );
 
+
 return;
 
+
 }
+
+
 
 
 
@@ -755,6 +627,7 @@ update
 
 renderModuleList();
 
+
 renderPreview();
 
 
@@ -764,171 +637,8 @@ alert(
 );
 
 
-}
-// =====================
-// 渲染模块列表
-// =====================
-
-function renderModuleList(){
-
-
-let box =
-document.getElementById(
-"module-list"
-);
-
-
-
-if(!box)return;
-
-
-
-box.innerHTML="";
-
-
-
-decorations.forEach(item=>{
-
-
-let div =
-document.createElement(
-"div"
-);
-
-
-
-div.className =
-"module-item";
-
-
-
-if(
-currentModule &&
-currentModule.id===item.id
-){
-
-div.classList.add(
-"active"
-);
 
 }
-
-
-
-div.dataset.id=item.id;
-
-
-
-div.innerHTML=
-
-`
-
-<div>
-${item.title||"未命名模块"}
-</div>
-
-<span>
-${item.type||"banner"}
-</span>
-
-`;
-
-
-
-div.onclick=()=>{
-
-editModule(item);
-
-};
-
-
-
-box.appendChild(div);
-
-
-
-});
-
-
-
-initDrag();
-
-
-}
-
-
-
-
-
-
-
-// =====================
-// 显示编辑区域
-// =====================
-
-function showEditor(type){
-
-
-let banner =
-document.getElementById(
-"banner-editor"
-);
-
-
-let products =
-document.getElementById(
-"product-editor"
-);
-
-
-let notice =
-document.getElementById(
-"notice-editor"
-);
-
-
-
-if(banner){
-
-banner.style.display=
-type==="banner"
-?
-"block"
-:
-"none";
-
-}
-
-
-
-if(products){
-
-products.style.display=
-type==="products"
-?
-"block"
-:
-"none";
-
-}
-
-
-
-if(notice){
-
-notice.style.display=
-type==="notice"
-?
-"block"
-:
-"none";
-
-}
-
-
-
-}
-
 
 
 
@@ -940,6 +650,7 @@ type==="notice"
 // =====================
 // 新增模块
 // =====================
+
 
 async function addModule(){
 
@@ -977,14 +688,19 @@ is_published:false
 
 
 
+
 const {
 data,
 error
-}=await supabaseClient
+}
+=
+await supabaseClient
 .from("decorations")
 .insert(module)
 .select()
 .single();
+
+
 
 
 
@@ -1006,14 +722,22 @@ return;
 
 
 
-decorations.push(data);
+
+decorations.push(
+data
+);
 
 
 
 renderModuleList();
 
 
-editModule(data);
+renderPreview();
+
+
+editModule(
+data
+);
 
 
 
@@ -1031,14 +755,13 @@ editModule(data);
 // 删除模块
 // =====================
 
+
 async function deleteModule(){
 
 
-if(!currentModule){
-
+if(!currentModule)
 return;
 
-}
 
 
 
@@ -1046,17 +769,18 @@ if(
 !confirm(
 "确定删除这个模块?"
 )
-){
-
+)
 return;
 
-}
+
 
 
 
 const {
 error
-}=await supabaseClient
+}
+=
+await supabaseClient
 .from("decorations")
 .delete()
 .eq(
@@ -1066,16 +790,23 @@ currentModule.id
 
 
 
+
+
 if(error){
 
 
-alert(error.message);
+alert(
+error.message
+);
 
 
 return;
 
 
 }
+
+
+
 
 
 
@@ -1087,7 +818,10 @@ x.id!==currentModule.id
 
 
 
+
+
 currentModule=null;
+
 
 
 renderModuleList();
@@ -1111,14 +845,18 @@ renderPreview();
 // Banner上传
 // =====================
 
+
 async function uploadBanner(file){
 
 
-if(!file)return;
+if(!file)
+return;
 
 
 
-let filename=
+
+
+let filename =
 
 "banner_"
 +
@@ -1131,9 +869,13 @@ file.name;
 
 
 
+
+
 const {
 error
-}=await supabaseClient
+}
+=
+await supabaseClient
 .storage
 .from("decorations")
 .upload(
@@ -1144,6 +886,8 @@ cacheControl:"3600",
 upsert:true
 }
 );
+
+
 
 
 
@@ -1164,9 +908,15 @@ return;
 
 
 
+
+
+
+
 const {
 data
-}=supabaseClient
+}
+=
+supabaseClient
 .storage
 .from("decorations")
 .getPublicUrl(
@@ -1175,13 +925,21 @@ filename
 
 
 
-let imageUrl=data.publicUrl;
+
+
+let imageUrl =
+data.publicUrl;
+
+
+
 
 
 
 document.getElementById(
 "banner-image"
 ).value=imageUrl;
+
+
 
 
 
@@ -1202,6 +960,7 @@ object-fit:cover;
 
 
 
+
 }
 
 
@@ -1216,6 +975,7 @@ object-fit:cover;
 // 商品加载
 // =====================
 
+
 async function loadProducts(){
 
 
@@ -1223,10 +983,12 @@ async function loadProducts(){
 const {
 data,
 error
-}=await supabaseClient
+}
+=
+await supabaseClient
 .from("products")
 .select(
-"id,name,image,price"
+"id,name,image,price,sale_price"
 )
 .order(
 "id",
@@ -1237,17 +999,26 @@ ascending:false
 
 
 
+
+
 if(error){
+
 
 console.log(error);
 
+
 return;
+
 
 }
 
 
 
+
+
 allProducts=data||[];
+
+
 
 
 renderProductList(
@@ -1265,9 +1036,11 @@ allProducts
 
 
 
+
 // =====================
-// 商品选择
+// 商品选择列表
 // =====================
+
 
 function renderProductList(list){
 
@@ -1279,11 +1052,17 @@ document.getElementById(
 
 
 
-if(!box)return;
+
+if(!box)
+return;
+
+
 
 
 
 box.innerHTML="";
+
+
 
 
 
@@ -1297,8 +1076,11 @@ document.createElement(
 
 
 
-div.className=
+
+div.className =
 "product-card";
+
+
 
 
 
@@ -1308,11 +1090,17 @@ product.id
 )
 ){
 
+
 div.classList.add(
 "active"
 );
 
+
 }
+
+
+
+
 
 
 
@@ -1324,19 +1112,29 @@ div.innerHTML=
 
 
 <div>
+
 ${product.name||""}
+
 </div>
 
 
 <div>
-$${product.price||0}
+
+$${product.sale_price || product.price || 0}
+
 </div>
 
 `;
 
 
 
+
+
+
+
+
 div.onclick=()=>{
+
 
 
 if(
@@ -1346,9 +1144,10 @@ product.id
 ){
 
 
-selectedProducts=
+selectedProducts =
 selectedProducts.filter(
-id=>id!==product.id
+id=>
+id!==product.id
 );
 
 
@@ -1358,7 +1157,9 @@ div.classList.remove(
 );
 
 
+
 }else{
+
 
 
 selectedProducts.push(
@@ -1372,6 +1173,7 @@ div.classList.add(
 );
 
 
+
 }
 
 
@@ -1380,11 +1182,16 @@ div.classList.add(
 
 
 
-box.appendChild(div);
+
+
+box.appendChild(
+div
+);
 
 
 
 });
+
 
 
 }
@@ -1395,6 +1202,9 @@ box.appendChild(div);
 
 
 
+// =====================
+// 已选择商品显示
+// =====================
 
 
 function renderSelectedProducts(){
@@ -1407,7 +1217,9 @@ document.getElementById(
 
 
 
-if(!box)return;
+if(!box)
+return;
+
 
 
 
@@ -1415,33 +1227,50 @@ box.innerHTML="";
 
 
 
+
+
 selectedProducts.forEach(id=>{
+
 
 
 let p =
 allProducts.find(
-x=>x.id==id
+x=>
+x.id==id
 );
 
 
 
-if(!p)return;
+
+
+if(!p)
+return;
 
 
 
-box.innerHTML+=`
+
+
+box.innerHTML +=
+
+`
 
 <div class="selected-product">
 
+
 <img src="${p.image||''}">
 
+
 <span>
+
 ${p.name}
+
 </span>
+
 
 </div>
 
 `;
+
 
 
 });
@@ -1449,18 +1278,10 @@ ${p.name}
 
 
 }
-
-
-
-
-
-
-
-
-
 // =====================
-// 首页预览
+// 首页实时预览
 // =====================
+
 
 function renderPreview(){
 
@@ -1472,11 +1293,14 @@ document.getElementById(
 
 
 
-if(!box)return;
+if(!box)
+return;
 
 
 
 box.innerHTML="";
+
+
 
 
 
@@ -1491,7 +1315,10 @@ a.sort_order-b.sort_order
 .forEach(item=>{
 
 
-let content=item.content||{};
+
+let content =
+item.content||{};
+
 
 
 
@@ -1500,44 +1327,72 @@ if(typeof content==="string"){
 
 try{
 
-content=JSON.parse(content);
 
-}
-catch{
+content=
+JSON.parse(content);
+
+
+}catch{
+
 
 content={};
 
-}
 
 }
 
+}
 
+
+
+
+
+
+
+// Banner
 
 
 if(
-item.type==="banner" &&
+item.type==="banner"
+&&
 content.image
 ){
 
 
-box.innerHTML+=`
+
+box.innerHTML +=
+
+`
 
 <div class="preview-banner">
 
-<img src="${content.image}"
+
+<img 
+src="${content.image}"
 style="
 width:100%;
-max-height:220px;
+height:220px;
 object-fit:cover;
+border-radius:8px;
 ">
+
 
 </div>
 
 `;
 
+
+
 }
 
 
+
+
+
+
+
+
+
+// 公告
 
 
 if(
@@ -1545,18 +1400,34 @@ item.type==="notice"
 ){
 
 
-box.innerHTML+=`
+
+box.innerHTML +=
+
+`
 
 <div class="preview-notice">
 
+
 ${content.text||""}
+
 
 </div>
 
+
 `;
+
+
 
 }
 
+
+
+
+
+
+
+
+// 推荐商品
 
 
 if(
@@ -1564,17 +1435,73 @@ item.type==="products"
 ){
 
 
-box.innerHTML+=`
 
-<div class="preview-products">
+let html =
 
-推荐商品：
-${content.product_ids?.length||0}
-个
+`
+
+<div class="preview-title">
+
+${item.title||"推荐商品"}
 
 </div>
 
+
+
+<div class="preview-product-grid">
+
 `;
+
+
+
+
+
+(content.product_ids||[])
+.forEach(id=>{
+
+
+let product =
+allProducts.find(
+p=>p.id==id
+);
+
+
+
+
+if(product){
+
+
+
+html +=
+
+`
+
+<div class="preview-product-card">
+
+
+<img src="${product.image||''}">
+
+
+<div class="name">
+
+${product.name||""}
+
+</div>
+
+
+<div class="price">
+
+$${product.sale_price || product.price || 0}
+
+</div>
+
+
+</div>
+
+
+`;
+
+
 
 }
 
@@ -1583,15 +1510,263 @@ ${content.product_ids?.length||0}
 });
 
 
+
+
+
+
+html +=
+
+`
+
+</div>
+
+`;
+
+
+
+box.innerHTML += html;
+
+
+
 }
+
+
+
+
+});
+
+
+
+}
+
+
+
+
+
+
+
+
+// =====================
+// 模块列表
+// =====================
+
+
+function renderModuleList(){
+
+
+
+let box =
+document.getElementById(
+"module-list"
+);
+
+
+
+if(!box)
+return;
+
+
+
+box.innerHTML="";
+
+
+
+
+
+decorations.forEach(item=>{
+
+
+
+let div =
+document.createElement(
+"div"
+);
+
+
+
+div.className =
+"module-item";
+
+
+
+
+
+if(
+currentModule &&
+currentModule.id===item.id
+){
+
+
+div.classList.add(
+"active"
+);
+
+
+}
+
+
+
+
+
+div.dataset.id =
+item.id;
+
+
+
+
+
+div.innerHTML=
+
+`
+
+<div>
+
+${item.title||"未命名模块"}
+
+</div>
+
+
+<span>
+
+${item.type||"banner"}
+
+</span>
+
+`;
+
+
+
+
+
+div.onclick=()=>{
+
+
+editModule(
+item
+);
+
+
+};
+
+
+
+
+
+box.appendChild(
+div
+);
+
+
+
+});
+
+
+
+initDrag();
+
+
+
+}
+
+
+
+
+
+
+
+
+
+// =====================
+// 显示编辑器
+// =====================
+
+
+function showEditor(type){
+
+
+
+let banner =
+document.getElementById(
+"banner-editor"
+);
+
+
+
+let products =
+document.getElementById(
+"product-editor"
+);
+
+
+
+let notice =
+document.getElementById(
+"notice-editor"
+);
+
+
+
+
+if(banner){
+
+banner.style.display =
+type==="banner"
+?
+"block"
+:
+"none";
+
+}
+
+
+
+if(products){
+
+products.style.display =
+type==="products"
+?
+"block"
+:
+"none";
+
+}
+
+
+
+if(notice){
+
+notice.style.display =
+type==="notice"
+?
+"block"
+:
+"none";
+
+}
+
+
+
+}
+
+
+
+
+
+
+
+
+
 // =====================
 // 拖拽排序
 // =====================
 
+
 function initDrag(){
 
 
+
 let dragId=null;
+
 
 
 
@@ -1602,17 +1777,23 @@ document
 .forEach(item=>{
 
 
+
 item.draggable=true;
+
+
 
 
 
 item.ondragstart=()=>{
 
 
-dragId=item.dataset.id;
+dragId =
+item.dataset.id;
 
 
 };
+
+
 
 
 
@@ -1629,31 +1810,39 @@ e.preventDefault();
 
 
 
+
+
 item.ondrop=async()=>{
+
 
 
 let oldIndex =
 decorations.findIndex(
-x=>x.id==dragId
+x=>
+x.id==dragId
 );
+
 
 
 
 let newIndex =
 decorations.findIndex(
-x=>x.id==item.dataset.id
+x=>
+x.id==item.dataset.id
 );
+
+
 
 
 
 if(
 oldIndex<0 ||
 newIndex<0
-){
-
+)
 return;
 
-}
+
+
 
 
 
@@ -1662,6 +1851,8 @@ decorations.splice(
 oldIndex,
 1
 )[0];
+
+
 
 
 
@@ -1674,6 +1865,8 @@ move
 
 
 
+
+
 for(
 let i=0;
 i<decorations.length;
@@ -1681,7 +1874,9 @@ i++
 ){
 
 
+
 decorations[i].sort_order=i;
+
 
 
 
@@ -1703,6 +1898,9 @@ decorations[i].id
 
 
 
+
+
+
 renderModuleList();
 
 
@@ -1714,7 +1912,9 @@ renderPreview();
 
 
 
+
 });
+
 
 
 }
@@ -1733,6 +1933,7 @@ renderPreview();
 // 事件绑定
 // =====================
 
+
 function bindEvents(){
 
 
@@ -1741,6 +1942,7 @@ function bindEvents(){
 
 
 // 新增模块
+
 
 let addBtn =
 document.getElementById(
@@ -1751,8 +1953,9 @@ document.getElementById(
 
 if(addBtn){
 
-addBtn.onclick=
+addBtn.onclick =
 addModule;
+
 
 }
 
@@ -1762,7 +1965,10 @@ addModule;
 
 
 
+
+
 // 保存模块
+
 
 let saveBtn =
 document.getElementById(
@@ -1773,8 +1979,10 @@ document.getElementById(
 
 if(saveBtn){
 
-saveBtn.onclick=
+
+saveBtn.onclick =
 saveModule;
+
 
 }
 
@@ -1784,7 +1992,10 @@ saveModule;
 
 
 
+
+
 // 删除模块
+
 
 let deleteBtn =
 document.getElementById(
@@ -1795,8 +2006,10 @@ document.getElementById(
 
 if(deleteBtn){
 
-deleteBtn.onclick=
+
+deleteBtn.onclick =
 deleteModule;
+
 
 }
 
@@ -1809,6 +2022,7 @@ deleteModule;
 
 
 // 类型切换
+
 
 let typeSelect =
 document.getElementById(
@@ -1844,9 +2058,7 @@ e.target.value
 
 
 
-// =====================
 // Banner上传
-// =====================
 
 
 let upload =
@@ -1859,13 +2071,13 @@ document.getElementById(
 if(upload){
 
 
-
 upload.onchange=e=>{
 
 
 uploadBanner(
 e.target.files[0]
 );
+
 
 
 };
@@ -1882,9 +2094,7 @@ e.target.files[0]
 
 
 
-// =====================
-// 打开装修图片库
-// =====================
+// 打开图片库
 
 
 let libraryBtn =
@@ -1897,8 +2107,8 @@ document.getElementById(
 if(libraryBtn){
 
 
-
 libraryBtn.onclick=()=>{
+
 
 
 let modal =
@@ -1910,14 +2120,11 @@ document.getElementById(
 
 if(modal){
 
-
 modal.classList.add(
 "show"
 );
 
-
 }
-
 
 
 
@@ -1939,7 +2146,7 @@ loadDecorationLibrary();
 
 
 
-// 关闭装修图片库
+// 关闭图片库
 
 
 let closeLibrary =
@@ -1950,6 +2157,7 @@ document.getElementById(
 
 
 if(closeLibrary){
+
 
 
 closeLibrary.onclick=()=>{
@@ -1964,11 +2172,9 @@ document.getElementById(
 
 if(modal){
 
-
 modal.classList.remove(
 "show"
 );
-
 
 }
 
@@ -1988,9 +2194,7 @@ modal.classList.remove(
 
 
 
-// =====================
-// 商品选择
-// =====================
+// 打开商品选择
 
 
 let productBtn =
@@ -2016,11 +2220,9 @@ document.getElementById(
 
 if(modal){
 
-
 modal.classList.add(
 "show"
 );
-
 
 }
 
@@ -2070,11 +2272,9 @@ document.getElementById(
 
 if(modal){
 
-
 modal.classList.remove(
 "show"
 );
-
 
 }
 
@@ -2097,18 +2297,18 @@ modal.classList.remove(
 // 确认商品
 
 
-let confirmProduct =
+let confirmBtn =
 document.getElementById(
 "confirm-product-btn"
 );
 
 
 
-if(confirmProduct){
+if(confirmBtn){
 
 
 
-confirmProduct.onclick=()=>{
+confirmBtn.onclick=()=>{
 
 
 renderSelectedProducts();
@@ -2124,11 +2324,9 @@ document.getElementById(
 
 if(modal){
 
-
 modal.classList.remove(
 "show"
 );
-
 
 }
 
@@ -2139,8 +2337,6 @@ modal.classList.remove(
 
 
 }
-
-
 
 
 
