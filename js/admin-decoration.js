@@ -929,7 +929,12 @@ filename
 
 let imageUrl =
 data.publicUrl;
-
+  
+imageUrl =
+imageUrl.replace(
+"/object/",
+"/object/public/"
+);
 
 
 
