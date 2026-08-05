@@ -89,10 +89,11 @@ return;
 
 
 
-decorations =
-data || [];
+decorations = data || [];
 
 window.decorations = decorations;
+
+window.parent.decorations = decorations;
 
 await loadProducts();
 
@@ -2206,5 +2207,9 @@ modal.classList.remove(
 
 }
 window.renderPreview = renderPreview;
+
 window.decorations = decorations;
-window.loadDecorations = loadDecorations;
+
+window.parent.decorations = decorations;
+
+window.parent.loadDecorations = loadDecorations;
