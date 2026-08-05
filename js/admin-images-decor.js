@@ -1,6 +1,6 @@
 console.log("admin-images-decor.js启动");
 
-
+let selectedImages=[];
 const SUPABASE_URL =
 "https://ukxxmxnubxjezkwbbxdr.supabase.co";
 
@@ -83,33 +83,55 @@ return;
 
 
 
-let url =
+const {
+data:urlData
+}
+=
 supabaseClient
 .storage
 .from("decorations")
 .getPublicUrl(
 item.name
-)
-.data.publicUrl;
+);
+
+
+
+let url =
+urlData.publicUrl;
 
 
 
 box.innerHTML +=
+
+
 `
 
 <div class="image-card">
 
+
+<input 
+type="checkbox"
+class="image-check"
+value="${item.name}"
+>
+
+
 <img src="${url}">
 
+
 <p>${item.name}</p>
+
 
 <button onclick="deleteImage('${item.name}')">
 删除
 </button>
 
+
 </div>
 
 `;
+
+
 
 });
 
@@ -157,3 +179,116 @@ window.deleteImage=deleteImage;
 
 
 loadImages();
+// =======================
+// 全选图片
+// =======================
+
+window.selectAllImages=function(){
+
+
+document
+.querySelectorAll(
+".image-check"
+)
+.forEach(cb=>{
+
+
+cb.checked=true;
+
+
+});
+
+
+};
+
+
+
+// =======================
+// 批量删除
+// =======================
+
+window.deleteSelectedImages=async function(){
+
+
+let files=[];
+
+
+
+document
+.querySelectorAll(
+".image-check:checked"
+)
+.forEach(cb=>{
+
+
+files.push(
+cb.value
+);
+
+
+});
+
+
+
+if(files.length===0){
+
+alert(
+"请选择要删除的图片"
+);
+
+return;
+
+}
+
+
+
+if(
+!confirm(
+"确定删除选中的 "
++
+files.length
++
+" 张图片?"
+)
+)
+return;
+
+
+
+const {
+error
+}
+=
+await supabaseClient
+.storage
+.from("decorations")
+.remove(
+files
+);
+
+
+
+if(error){
+
+alert(
+"删除失败:"
++
+error.message
+);
+
+return;
+
+}
+
+
+
+alert(
+"删除成功"
+);
+
+
+
+loadImages();
+
+
+};
