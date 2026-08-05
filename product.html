@@ -1,88 +1,201 @@
 <!DOCTYPE html>
-
-<html lang="en">
-
+<html lang="zh-CN">
 
 <head>
 
 <meta charset="UTF-8">
 
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-
-
-<!-- 动态SEO标题 -->
-
-<title>
-China Direct Shop
-</title>
-
-
-<!-- Facebook分享信息 -->
-
-<meta property="og:title" content="China Direct Shop">
-
-
-<meta property="og:description" content="Authentic Chinese Products">
-
-
-<meta property="og:image" content="">
-
-
-<meta property="og:type" content="product">
-
-
+<title>Product Details | China Direct Shop</title>
 
 <link rel="stylesheet" href="css/style.css">
 
+<style>
+
+.product-page{
+max-width:1200px;
+margin:30px auto;
+padding:20px;
+}
+
+
+.product-main{
+display:flex;
+gap:40px;
+}
+
+
+.product-images{
+width:45%;
+}
+
+
+.product-images img{
+width:100%;
+border-radius:10px;
+}
+
+
+.thumb-list{
+display:flex;
+gap:10px;
+margin-top:15px;
+}
+
+
+.thumb-list img{
+
+width:80px;
+height:80px;
+object-fit:cover;
+cursor:pointer;
+border-radius:6px;
+
+}
+
+
+.product-info{
+
+flex:1;
+
+}
+
+
+.product-info h1{
+
+font-size:28px;
+
+}
+
+
+.price{
+
+font-size:30px;
+
+color:#e60000;
+
+font-weight:bold;
+
+margin:20px 0;
+
+}
+
+
+.description{
+
+line-height:1.8;
+
+}
+
+
+.buy-btn{
+
+margin-top:30px;
+
+background:#ff6600;
+
+color:white;
+
+border:none;
+
+padding:15px 40px;
+
+font-size:18px;
+
+border-radius:8px;
+
+cursor:pointer;
+
+}
+
+
+.spec-box{
+
+margin-top:30px;
+
+padding:20px;
+
+background:#f5f5f5;
+
+border-radius:8px;
+
+}
+
+
+
+@media(max-width:768px){
+
+.product-main{
+
+flex-direction:column;
+
+}
+
+
+.product-images{
+
+width:100%;
+
+}
+
+
+.product-info h1{
+
+font-size:22px;
+
+}
+
+}
+
+
+</style>
 
 </head>
-
 
 
 <body>
 
 
+<!-- Header -->
 
-<header class="h5-header">
+<header>
 
+<div class="logo">
 
-<div class="h5-logo">
-
-🇨🇳 China Direct Shop
+China Direct Shop
 
 </div>
-
 
 </header>
 
 
 
+<div class="product-page">
+
+
+<div id="product-container">
+
+
+正在加载商品...
 
 
 
-<section id="product-detail">
-
-
-Loading...
-
-</section>
+</div>
 
 
 
-
+</div>
 
 
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-
+<script src="js/supabase.js"></script>
 
 <script src="js/product.js"></script>
 
 
-
 </body>
-
 
 </html>
