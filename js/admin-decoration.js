@@ -878,14 +878,37 @@ error
 await supabaseClient
 .storage
 .from("decorations")
+const {
+data,
+error
+}=await supabaseClient
+.storage
+.from("decorations")
 .upload(
 filename,
 file,
 {
 cacheControl:"3600",
-upsert:true
+upsert:false,
+contentType:file.type
 }
 );
+
+
+if(error){
+
+console.error(
+"上传错误:",
+error
+);
+
+alert(
+error.message
+);
+
+return;
+
+}
 
 
 
