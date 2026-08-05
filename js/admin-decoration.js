@@ -92,13 +92,153 @@ decorations=data||[];
 
 renderModuleList();
 
-renderPreview();
+// 首页实时预览
 
+function renderHomePreview(){
+
+
+const preview =
+document.getElementById(
+"home-preview"
+);
+
+
+if(!preview)
+return;
+
+
+
+preview.innerHTML="";
+
+
+
+const modules =
+window.decorationModules || [];
+
+
+
+if(modules.length===0){
+
+preview.innerHTML=
+`
+<div class="empty">
+暂无预览内容
+</div>
+`;
+
+return;
+
+}
+
+
+
+modules.forEach(item=>{
+
+
+let content =
+item.content || {};
+
+
+
+if(typeof content==="string"){
+
+try{
+
+content=
+JSON.parse(content);
+
+}catch(e){
+
+content={};
+
+}
+
+}
+
+
+
+
+
+// Banner
+
+if(item.type==="banner"){
+
+
+if(content.image){
+
+
+preview.innerHTML +=
+`
+
+<div class="preview-banner">
+
+<img src="${content.image}">
+
+</div>
+
+`;
+
+}
 
 
 }
 
 
+
+
+
+
+// 商品推荐
+
+if(item.type==="products"){
+
+
+
+preview.innerHTML +=
+`
+
+<h3>
+${item.title || ""}
+</h3>
+
+<div class="preview-products">
+
+推荐商品模块
+
+</div>
+
+`;
+
+}
+
+
+
+
+
+// 公告
+
+if(item.type==="notice"){
+
+
+preview.innerHTML +=
+`
+
+<div class="preview-notice">
+
+${content.text || ""}
+
+</div>
+
+`;
+
+}
+
+
+
+});
+
+
+}
 
 
 
