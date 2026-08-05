@@ -203,16 +203,6 @@ let url =
 urlData.publicUrl;
 
 
-
-url =
-url.replace(
-"/object/",
-"/object/public/"
-);
-
-
-
-
 html +=
 
 `
@@ -245,15 +235,6 @@ html || "暂无图片";
 
 
 window.chooseDecorationImage=function(url){
-
-
-
-url =
-url.replace(
-"/object/",
-"/object/public/"
-);
-
 
 
 let input =
@@ -967,21 +948,8 @@ filename
 );
 
 
-
-
 let imageUrl =
 urlData.publicUrl;
-
-
-
-
-imageUrl =
-imageUrl.replace(
-"/object/",
-"/object/public/"
-);
-
-
 
 
 
