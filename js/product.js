@@ -1,26 +1,5 @@
-// =========================
-// Supabase配置
-// =========================
+console.log("product.js启动");
 
-const SUPABASE_URL =
-"https://ukxxmxnubxjezkwbbxdr.supabase.co";
-
-
-const SUPABASE_KEY =
-"sb_publishable_2IFHfms3ombozpvZCvaeEg_2VZ2z5hJ";
-
-
-const client =
-supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-);
-
-
-
-// =========================
-// 商品ID
-// =========================
 
 const params =
 new URLSearchParams(
@@ -32,67 +11,47 @@ const productId =
 params.get("id");
 
 
+console.log("商品ID:",productId);
 
-
-// =========================
-// 加载商品
-// =========================
 
 
 async function loadProduct(){
 
 
-const box =
-document.getElementById(
-"product-detail"
-);
-
-
-
 if(!productId){
 
-box.innerHTML=
-"Product not found";
+document.getElementById(
+"product-container"
+).innerHTML=
+"商品不存在";
 
 return;
 
 }
-
 
 
 
 const {
-
 data,
-
 error
-
-}=await client
-
+}
+=
+await supabase
 .from("products")
-
 .select("*")
-
-.eq(
-"id",
-productId
-)
-
+.eq("id",productId)
 .single();
 
 
 
-
-
-if(error || !data){
-
+if(error){
 
 console.log(error);
 
-
-box.innerHTML=
-"Product loading failed";
-
+document.getElementById(
+"product-container"
+).innerHTML=
+"商品加载失败";
 
 return;
 
@@ -100,390 +59,158 @@ return;
 
 
 
-
-
-console.log(
-"商品数据:",
-data
-);
+console.log(data);
 
 
 
-
-// =========================
-// 主图
-// =========================
+let images=[];
 
 
-let images=[
+if(data.image)
+images.push(data.image);
 
 
-data.image,
-
-data.image2,
-
-data.image3,
-
-data.image4
+if(data.image2)
+images.push(data.image2);
 
 
-]
-.filter(
-x=>x && x.trim()
-);
+if(data.image3)
+images.push(data.image3);
+
+
+if(data.image4)
+images.push(data.image4);
 
 
 
+if(data.detail_images){
 
 
-// 没有图片
-
-if(images.length===0){
+try{
 
 
-images=[
-"https://via.placeholder.com/600"
-];
-
-
-}
-
-
-
-
-
-
-
-// =========================
-// 详情图片
-// =========================
-
-
-let detailImages=[];
-
-
-
-if(
-Array.isArray(data.detail_images)
-){
-
-
-detailImages =
+let detail=
+typeof data.detail_images==="string"
+?
+JSON.parse(data.detail_images)
+:
 data.detail_images;
 
 
+images=[
+...images,
+...detail
+];
+
+
+}catch(e){}
+
+
+
 }
 
 
 
+let html=`
 
-// 去除重复
 
-detailImages =
-[...new Set(detailImages)]
+<div class="product-main">
 
-.filter(img=>{
 
+<div class="product-images">
 
-if(!img)
-return false;
 
-
-let x =
-img.toLowerCase();
-
-
-
-return !(
-
-x.includes("icon")
-
-||
-
-x.includes("logo")
-
-||
-
-x.includes("160x160")
-
-||
-
-x.includes("80x80")
-
-||
-
-x.includes("50x50")
-
-);
-
-
-});
-
-
-
-
-
-
-
-console.log(
-"详情:",
-detailImages
-);
-
-
-
-
-
-
-
-// =========================
-// 规格
-// =========================
-
-
-let specifications =
-data.specifications || {};
-
-
-
-
-
-let specsHtml="";
-
-
-
-Object.entries(
-specifications
-)
-.forEach(([k,v])=>{
-
-
-specsHtml += `
-
-<tr>
-
-<td>${k}</td>
-
-<td>${v}</td>
-
-</tr>
-
-`;
-
-
-});
-
-
-
-
-
-
-
-
-// =========================
-// 缩略图
-// =========================
-
-
-let thumbs="";
-
-
-
-images.forEach(img=>{
-
-
-thumbs +=`
-
-<img
-
-src="${img}"
-
-class="thumb"
-
-onclick="changeImage('${img}')"
-
->
-
-`;
-
-
-});
-
-
-
-
-
-
-
-
-// =========================
-// 详情HTML
-// =========================
-
-
-let detailHtml="";
-
-
-
-detailImages.forEach(img=>{
-
-
-detailHtml +=`
-
-<img
-
-src="${img}"
-
-class="detail-img"
-
-loading="lazy"
-
->
-
-`;
-
-
-});
-
-
-
-
-
-
-
-
-
-// =========================
-// 页面
-// =========================
-
-
-box.innerHTML=`
-
-
-<div class="product-box">
-
-
-
-<div class="gallery">
-
-
-<img
-
-id="main-image"
-
-src="${images[0]}"
-
-class="main-image"
-
-
->
-
+<img id="main-image"
+src="${images[0]||''}">
 
 
 <div class="thumb-list">
 
-${thumbs}
+${images.map(
+img=>`
+
+<img src="${img}"
+onclick="changeImage('${img}')">
+
+`
+).join("")}
+
+
+</div>
+
 
 </div>
 
 
 
-</div>
-
-
-
-
-
-
-<div class="info">
+<div class="product-info">
 
 
 <h1>
 
-${data.name || ""}
+${data.name||""}
 
 </h1>
 
 
+<h2>
 
-<p>
-
-${data.category || "Chinese Products"}
-
-</p>
-
-
-
-<h2 class="price">
-
-$${data.sale_price || 0}
+${data.name_en||""}
 
 </h2>
 
 
+<div class="price">
 
-<h2>
-Description
-</h2>
+$${data.sale_price||data.price||0}
 
-
-<p>
-
-${data.description || ""}
-
-</p>
+</div>
 
 
 
+<div class="description">
 
-<h2>
+${data.description||""}
+
+</div>
+
+
+
+<div class="description">
+
+${data.description_en||""}
+
+</div>
+
+
+
+<div class="spec-box">
+
+
+<h3>
+
 Specifications
-</h2>
+
+</h3>
 
 
-<table class="spec-table">
-
-${specsHtml}
-
-</table>
+${data.specifications||""}
 
 
+</div>
 
-<a
 
-href="${data.ebay_url || '#'}"
 
-class="buy-btn"
-
->
+<button class="buy-btn">
 
 Buy Now
 
-</a>
+</button>
 
 
 
 </div>
 
-
-</div>
-
-
-
-
-
-<h2>
-
-Product Details
-
-</h2>
-
-
-
-<div class="detail-images">
-
-${detailHtml}
 
 </div>
 
@@ -492,40 +219,24 @@ ${detailHtml}
 
 
 
-
-
-document.title =
-data.name;
-
+document.getElementById(
+"product-container"
+)
+.innerHTML=html;
 
 
 }
 
 
 
+function changeImage(src){
 
-
-
-
-function changeImage(url){
-
-
-const img =
 document.getElementById(
 "main-image"
-);
-
-
-if(img){
-
-img.src=url;
+)
+.src=src;
 
 }
-
-
-}
-
-
 
 
 
