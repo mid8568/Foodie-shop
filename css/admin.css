@@ -109,3 +109,53 @@ body, html {
     height: 100%;
     border: none;
 }
+.image-grid{
+
+display:grid;
+
+grid-template-columns:
+repeat(5,1fr);
+
+gap:20px;
+
+}
+
+
+
+.image-card{
+
+background:#fff;
+
+padding:15px;
+
+border-radius:8px;
+
+border:1px solid #ddd;
+
+}
+
+
+
+.image-card img{
+
+width:100%;
+
+height:160px;
+
+object-fit:cover;
+
+border-radius:6px;
+
+}
+
+
+
+.image-name{
+
+font-size:12px;
+
+margin:10px 0;
+
+word-break:break-all;
+
+}
