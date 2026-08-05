@@ -865,11 +865,13 @@ file.name;
 
 
 
-const {
-data,
-error
-}
-=
+let result;
+
+
+try{
+
+
+result =
 await supabaseClient
 .storage
 .from("decorations")
@@ -877,15 +879,51 @@ await supabaseClient
 filename,
 file,
 {
-
 cacheControl:"3600",
-
 upsert:false,
-
 contentType:file.type
-
 }
 );
+
+
+
+console.log(
+"Storage返回:",
+result
+);
+
+
+
+}catch(e){
+
+
+console.error(
+"网络异常:",
+e
+);
+
+
+
+alert(
+"网络异常:"
++
+e.message
+);
+
+
+
+return;
+
+
+}
+
+
+const {
+data,
+error
+}
+=
+result;
 
 
 
