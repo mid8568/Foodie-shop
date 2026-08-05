@@ -27,13 +27,14 @@ let allProducts=[];
 
 
 
-
 document.addEventListener(
 "DOMContentLoaded",
 ()=>{
 
 
-console.log("装修后台加载");
+console.log(
+"装修后台加载"
+);
 
 
 bindEvents();
@@ -43,7 +44,6 @@ loadDecorations();
 
 
 });
-
 
 
 
@@ -79,21 +79,23 @@ ascending:true
 
 if(error){
 
-
 console.error(
 "读取装修失败:",
 error
 );
 
-
 return;
-
 
 }
 
 
 
-decorations=data||[];
+decorations =
+data || [];
+
+
+
+await loadProducts();
 
 
 renderModuleList();
@@ -108,9 +110,8 @@ renderPreview();
 
 
 
-
 // =====================
-// 图片库
+// Storage 图片库
 // =====================
 
 
@@ -139,18 +140,27 @@ error
 }
 =
 await supabaseClient
+.storage
 .from("decorations")
-.select("*")
-.order(
-"created_at",
+.list(
+"",
 {
-ascending:false
+limit:100,
+sortBy:{
+column:"created_at",
+order:"desc"
+}
 }
 );
 
 
 
 if(error){
+
+
+console.error(
+error
+);
 
 
 box.innerHTML=
@@ -171,32 +181,35 @@ let html="";
 data.forEach(item=>{
 
 
-let content =
-item.content||{};
-
-
-
-if(typeof content==="string"){
-
-
-try{
-
-content=
-JSON.parse(content);
-
-
-}catch{
-
-content={};
-
-}
-
-}
-
-
-
-if(!content.image)
+if(!item.name)
 return;
+
+
+
+const {
+data:urlData
+}
+=
+supabaseClient
+.storage
+.from("decorations")
+.getPublicUrl(
+item.name
+);
+
+
+
+let url =
+urlData.publicUrl;
+
+
+
+url =
+url.replace(
+"/object/",
+"/object/public/"
+);
+
 
 
 
@@ -205,10 +218,11 @@ html +=
 `
 
 <div class="decoration-image-item"
-onclick="chooseDecorationImage('${content.image}')">
+
+onclick="chooseDecorationImage('${url}')">
 
 
-<img src="${content.image}">
+<img src="${url}">
 
 
 </div>
@@ -230,8 +244,15 @@ html || "暂无图片";
 
 
 
-
 window.chooseDecorationImage=function(url){
+
+
+
+url =
+url.replace(
+"/object/",
+"/object/public/"
+);
 
 
 
@@ -250,6 +271,7 @@ input.value=url;
 
 
 
+
 let preview =
 document.getElementById(
 "banner-preview"
@@ -265,15 +287,18 @@ preview.innerHTML=
 `
 
 <img src="${url}"
+
 style="
-max-width:100%;
-height:120px;
+width:100%;
+height:220px;
 object-fit:cover;
+border-radius:8px;
 ">
 
 `;
 
 }
+
 
 
 
@@ -295,17 +320,9 @@ modal.classList.remove(
 
 
 };
-
-
-
-
-
-
-
 // =====================
 // 编辑模块
 // =====================
-
 
 function editModule(item){
 
@@ -322,35 +339,29 @@ document.getElementById(
 
 document.getElementById(
 "module-title"
-).value=
-item.title||"";
+).value=item.title||"";
 
 
 
 document.getElementById(
 "module-type"
-).value=
-item.type||"banner";
+).value=item.type||"banner";
 
 
 
 document.getElementById(
 "module-sort"
-).value=
-item.sort_order||0;
+).value=item.sort_order||0;
 
 
 
 document.getElementById(
 "module-status"
-).checked=
-item.status!==false;
+).checked=item.status!==false;
 
 
 
-
-let content =
-item.content||{};
+let content=item.content||{};
 
 
 
@@ -359,9 +370,7 @@ if(typeof content==="string"){
 
 try{
 
-content=
-JSON.parse(content);
-
+content=JSON.parse(content);
 
 }catch{
 
@@ -370,7 +379,6 @@ content={};
 }
 
 }
-
 
 
 
@@ -401,10 +409,12 @@ document.getElementById(
 `
 
 <img src="${content.image}"
+
 style="
-max-width:100%;
-height:120px;
+width:100%;
+height:220px;
 object-fit:cover;
+border-radius:8px;
 ">
 
 `;
@@ -413,6 +423,7 @@ object-fit:cover;
 
 
 }
+
 
 
 
@@ -431,14 +442,22 @@ content.text||"";
 
 
 
+
+if(item.type==="products"){
+
+
 selectedProducts =
 content.product_ids || [];
+
+
+}
 
 
 
 showEditor(
 item.type
 );
+
 
 
 renderSelectedProducts();
@@ -448,17 +467,24 @@ renderModuleList();
 
 
 }
+
+
+
+
+
+
 // =====================
 // 保存模块
 // =====================
-
 
 async function saveModule(){
 
 
 if(!currentModule){
 
-alert("请选择模块");
+alert(
+"请选择模块"
+);
 
 return;
 
@@ -477,8 +503,6 @@ let content={};
 
 
 
-
-
 if(type==="banner"){
 
 
@@ -487,19 +511,18 @@ content={
 image:
 document.getElementById(
 "banner-image"
-).value || "",
+).value||"",
 
 
 url:
 document.getElementById(
 "banner-url"
-).value || ""
+).value||""
 
 };
 
 
 }
-
 
 
 
@@ -512,7 +535,7 @@ content={
 text:
 document.getElementById(
 "notice-content"
-).value || ""
+).value||""
 
 };
 
@@ -535,8 +558,6 @@ selectedProducts
 
 
 }
-
-
 
 
 
@@ -584,7 +605,6 @@ new Date().toISOString()
 
 
 
-
 const {
 error
 }
@@ -599,21 +619,15 @@ currentModule.id
 
 
 
-
-
 if(error){
-
 
 alert(
 error.message
 );
 
-
 return;
 
-
 }
-
 
 
 
@@ -627,7 +641,6 @@ update
 
 renderModuleList();
 
-
 renderPreview();
 
 
@@ -637,9 +650,7 @@ alert(
 );
 
 
-
 }
-
 
 
 
@@ -651,8 +662,8 @@ alert(
 // 新增模块
 // =====================
 
-
 async function addModule(){
+
 
 
 let module={
@@ -670,9 +681,6 @@ type:"banner",
 content:{},
 
 
-config:{},
-
-
 sort_order:
 decorations.length,
 
@@ -684,7 +692,6 @@ is_published:false
 
 
 };
-
 
 
 
@@ -706,7 +713,6 @@ await supabaseClient
 
 if(error){
 
-
 alert(
 "新增失败:"
 +
@@ -716,9 +722,7 @@ error.message
 
 return;
 
-
 }
-
 
 
 
@@ -740,10 +744,7 @@ data
 );
 
 
-
 }
-
-
 
 
 
@@ -755,8 +756,8 @@ data
 // 删除模块
 // =====================
 
-
 async function deleteModule(){
+
 
 
 if(!currentModule)
@@ -791,21 +792,15 @@ currentModule.id
 
 
 
-
 if(error){
-
 
 alert(
 error.message
 );
 
-
 return;
 
-
 }
-
-
 
 
 
@@ -815,8 +810,6 @@ decorations.filter(
 x=>
 x.id!==currentModule.id
 );
-
-
 
 
 
@@ -840,11 +833,9 @@ renderPreview();
 
 
 
-
 // =====================
 // Banner上传
 // =====================
-
 
 async function uploadBanner(file){
 
@@ -854,10 +845,14 @@ return;
 
 
 
+console.log(
+"开始上传:",
+file.name
+);
+
 
 
 let filename =
-
 "banner_"
 +
 Date.now()
@@ -870,51 +865,40 @@ file.name;
 
 
 
-
 const {
+data,
 error
 }
 =
 await supabaseClient
 .storage
 .from("decorations")
-const {
-data,
-error
-}=await supabaseClient
-.storage
-.from("decorations")
 .upload(
 filename,
 file,
 {
+
 cacheControl:"3600",
+
 upsert:false,
+
 contentType:file.type
+
 }
 );
 
 
+
+
+
 if(error){
 
+
 console.error(
-"上传错误:",
+"上传失败:",
 error
 );
 
-alert(
-error.message
-);
-
-return;
-
-}
-
-
-
-
-
-if(error){
 
 
 alert(
@@ -933,10 +917,8 @@ return;
 
 
 
-
-
 const {
-data
+data:urlData
 }
 =
 supabaseClient
@@ -949,14 +931,25 @@ filename
 
 
 
-
 let imageUrl =
-data.publicUrl;
-  
+urlData.publicUrl;
+
+
+
+
 imageUrl =
 imageUrl.replace(
 "/object/",
 "/object/public/"
+);
+
+
+
+
+
+console.log(
+"图片地址:",
+imageUrl
 );
 
 
@@ -978,34 +971,30 @@ document.getElementById(
 `
 
 <img src="${imageUrl}"
+
 style="
-max-width:100%;
-height:120px;
+width:100%;
+height:220px;
 object-fit:cover;
+border-radius:8px;
 ">
 
 `;
 
 
 
+alert(
+"Banner上传成功"
+);
+
+
 
 }
-
-
-
-
-
-
-
-
-
 // =====================
 // 商品加载
 // =====================
 
-
 async function loadProducts(){
-
 
 
 const {
@@ -1027,39 +1016,23 @@ ascending:false
 
 
 
-
-
 if(error){
 
-
-console.log(error);
-
+console.error(
+"商品读取失败:",
+error
+);
 
 return;
 
-
 }
 
 
 
-
-
-allProducts=data||[];
-
-
-
-
-renderProductList(
-allProducts
-);
-
-
+allProducts =
+data || [];
 
 }
-
-
-
-
 
 
 
@@ -1068,7 +1041,6 @@ allProducts
 // =====================
 // 商品选择列表
 // =====================
-
 
 function renderProductList(list){
 
@@ -1080,17 +1052,12 @@ document.getElementById(
 
 
 
-
 if(!box)
 return;
 
 
 
-
-
 box.innerHTML="";
-
-
 
 
 
@@ -1104,11 +1071,8 @@ document.createElement(
 
 
 
-
-div.className =
+div.className=
 "product-card";
-
-
 
 
 
@@ -1118,17 +1082,11 @@ product.id
 )
 ){
 
-
 div.classList.add(
 "active"
 );
 
-
 }
-
-
-
-
 
 
 
@@ -1158,11 +1116,7 @@ $${product.sale_price || product.price || 0}
 
 
 
-
-
-
 div.onclick=()=>{
-
 
 
 if(
@@ -1189,7 +1143,6 @@ div.classList.remove(
 }else{
 
 
-
 selectedProducts.push(
 product.id
 );
@@ -1201,14 +1154,11 @@ div.classList.add(
 );
 
 
-
 }
 
 
 
 };
-
-
 
 
 
@@ -1231,9 +1181,8 @@ div
 
 
 // =====================
-// 已选择商品显示
+// 已选择商品
 // =====================
-
 
 function renderSelectedProducts(){
 
@@ -1250,15 +1199,11 @@ return;
 
 
 
-
 box.innerHTML="";
 
 
 
-
-
 selectedProducts.forEach(id=>{
-
 
 
 let p =
@@ -1269,12 +1214,8 @@ x.id==id
 
 
 
-
-
 if(!p)
 return;
-
-
 
 
 
@@ -1304,12 +1245,17 @@ ${p.name}
 });
 
 
-
 }
-// =====================
-// 首页实时预览
-// =====================
 
+
+
+
+
+
+
+// =====================
+// 首页预览
+// =====================
 
 function renderPreview(){
 
@@ -1330,8 +1276,6 @@ box.innerHTML="";
 
 
 
-
-
 decorations
 .filter(
 x=>x.status===true
@@ -1343,10 +1287,8 @@ a.sort_order-b.sort_order
 .forEach(item=>{
 
 
-
 let content =
 item.content||{};
-
 
 
 
@@ -1355,28 +1297,18 @@ if(typeof content==="string"){
 
 try{
 
-
-content=
-JSON.parse(content);
-
+content=JSON.parse(content);
 
 }catch{
 
-
 content={};
 
-
 }
 
 }
 
 
 
-
-
-
-
-// Banner
 
 
 if(
@@ -1394,8 +1326,8 @@ box.innerHTML +=
 <div class="preview-banner">
 
 
-<img 
-src="${content.image}"
+<img src="${content.image}"
+
 style="
 width:100%;
 height:220px;
@@ -1418,15 +1350,9 @@ border-radius:8px;
 
 
 
-
-
-// 公告
-
-
 if(
 item.type==="notice"
 ){
-
 
 
 box.innerHTML +=
@@ -1435,12 +1361,9 @@ box.innerHTML +=
 
 <div class="preview-notice">
 
-
 ${content.text||""}
 
-
 </div>
-
 
 `;
 
@@ -1455,16 +1378,13 @@ ${content.text||""}
 
 
 
-// 推荐商品
-
-
 if(
 item.type==="products"
 ){
 
 
 
-let html =
+let html=
 
 `
 
@@ -1473,7 +1393,6 @@ let html =
 ${item.title||"推荐商品"}
 
 </div>
-
 
 
 <div class="preview-product-grid">
@@ -1490,9 +1409,9 @@ ${item.title||"推荐商品"}
 
 let product =
 allProducts.find(
-p=>p.id==id
+p=>
+p.id==id
 );
-
 
 
 
@@ -1510,14 +1429,14 @@ html +=
 <img src="${product.image||''}">
 
 
-<div class="name">
+<div>
 
 ${product.name||""}
 
 </div>
 
 
-<div class="price">
+<div>
 
 $${product.sale_price || product.price || 0}
 
@@ -1525,7 +1444,6 @@ $${product.sale_price || product.price || 0}
 
 
 </div>
-
 
 `;
 
@@ -1536,8 +1454,6 @@ $${product.sale_price || product.price || 0}
 
 
 });
-
-
 
 
 
@@ -1560,9 +1476,7 @@ box.innerHTML += html;
 
 
 
-
 });
-
 
 
 }
@@ -1578,9 +1492,7 @@ box.innerHTML += html;
 // 模块列表
 // =====================
 
-
 function renderModuleList(){
-
 
 
 let box =
@@ -1599,10 +1511,7 @@ box.innerHTML="";
 
 
 
-
-
 decorations.forEach(item=>{
-
 
 
 let div =
@@ -1612,10 +1521,8 @@ document.createElement(
 
 
 
-div.className =
+div.className=
 "module-item";
-
-
 
 
 
@@ -1624,22 +1531,17 @@ currentModule &&
 currentModule.id===item.id
 ){
 
-
 div.classList.add(
 "active"
 );
-
 
 }
 
 
 
 
-
 div.dataset.id =
 item.id;
-
-
 
 
 
@@ -1665,7 +1567,6 @@ ${item.type||"banner"}
 
 
 
-
 div.onclick=()=>{
 
 
@@ -1675,7 +1576,6 @@ item
 
 
 };
-
 
 
 
@@ -1705,9 +1605,8 @@ initDrag();
 
 
 // =====================
-// 显示编辑器
+// 编辑器显示
 // =====================
-
 
 function showEditor(type){
 
@@ -1719,18 +1618,17 @@ document.getElementById(
 );
 
 
-
 let products =
 document.getElementById(
 "product-editor"
 );
 
 
-
 let notice =
 document.getElementById(
 "notice-editor"
 );
+
 
 
 
@@ -1784,17 +1682,16 @@ type==="notice"
 
 
 
+
 // =====================
 // 拖拽排序
 // =====================
-
 
 function initDrag(){
 
 
 
 let dragId=null;
-
 
 
 
@@ -1805,10 +1702,7 @@ document
 .forEach(item=>{
 
 
-
 item.draggable=true;
-
-
 
 
 
@@ -1824,13 +1718,9 @@ item.dataset.id;
 
 
 
-
-
 item.ondragover=e=>{
 
-
 e.preventDefault();
-
 
 };
 
@@ -1838,10 +1728,7 @@ e.preventDefault();
 
 
 
-
-
 item.ondrop=async()=>{
-
 
 
 let oldIndex =
@@ -1852,14 +1739,11 @@ x.id==dragId
 
 
 
-
 let newIndex =
 decorations.findIndex(
 x=>
 x.id==item.dataset.id
 );
-
-
 
 
 
@@ -1872,15 +1756,11 @@ return;
 
 
 
-
-
 let move =
 decorations.splice(
 oldIndex,
 1
 )[0];
-
-
 
 
 
@@ -1893,8 +1773,6 @@ move
 
 
 
-
-
 for(
 let i=0;
 i<decorations.length;
@@ -1902,9 +1780,7 @@ i++
 ){
 
 
-
 decorations[i].sort_order=i;
-
 
 
 
@@ -1927,8 +1803,6 @@ decorations[i].id
 
 
 
-
-
 renderModuleList();
 
 
@@ -1937,7 +1811,6 @@ renderPreview();
 
 
 };
-
 
 
 
@@ -1953,23 +1826,12 @@ renderPreview();
 
 
 
-
-
-
-
 // =====================
 // 事件绑定
 // =====================
 
-
 function bindEvents(){
 
-
-
-
-
-
-// 新增模块
 
 
 let addBtn =
@@ -1981,21 +1843,12 @@ document.getElementById(
 
 if(addBtn){
 
-addBtn.onclick =
+addBtn.onclick=
 addModule;
-
 
 }
 
 
-
-
-
-
-
-
-
-// 保存模块
 
 
 let saveBtn =
@@ -2007,22 +1860,13 @@ document.getElementById(
 
 if(saveBtn){
 
-
-saveBtn.onclick =
+saveBtn.onclick=
 saveModule;
-
 
 }
 
 
 
-
-
-
-
-
-
-// 删除模块
 
 
 let deleteBtn =
@@ -2034,59 +1878,15 @@ document.getElementById(
 
 if(deleteBtn){
 
-
-deleteBtn.onclick =
+deleteBtn.onclick=
 deleteModule;
 
-
 }
 
 
 
 
 
-
-
-
-
-// 类型切换
-
-
-let typeSelect =
-document.getElementById(
-"module-type"
-);
-
-
-
-if(typeSelect){
-
-
-
-typeSelect.onchange=e=>{
-
-
-showEditor(
-e.target.value
-);
-
-
-
-};
-
-
-
-}
-
-
-
-
-
-
-
-
-
-// Banner上传
 
 
 let upload =
@@ -2107,9 +1907,7 @@ e.target.files[0]
 );
 
 
-
 };
-
 
 
 }
@@ -2119,10 +1917,33 @@ e.target.files[0]
 
 
 
+let typeSelect =
+document.getElementById(
+"module-type"
+);
 
 
 
-// 打开图片库
+if(typeSelect){
+
+
+typeSelect.onchange=e=>{
+
+
+showEditor(
+e.target.value
+);
+
+
+};
+
+
+}
+
+
+
+
+
 
 
 let libraryBtn =
@@ -2136,7 +1957,6 @@ if(libraryBtn){
 
 
 libraryBtn.onclick=()=>{
-
 
 
 let modal =
@@ -2172,11 +1992,6 @@ loadDecorationLibrary();
 
 
 
-
-
-// 关闭图片库
-
-
 let closeLibrary =
 document.getElementById(
 "close-decoration-modal"
@@ -2185,7 +2000,6 @@ document.getElementById(
 
 
 if(closeLibrary){
-
 
 
 closeLibrary.onclick=()=>{
@@ -2220,11 +2034,6 @@ modal.classList.remove(
 
 
 
-
-
-// 打开商品选择
-
-
 let productBtn =
 document.getElementById(
 "open-product-select"
@@ -2235,8 +2044,13 @@ document.getElementById(
 if(productBtn){
 
 
-
 productBtn.onclick=()=>{
+
+
+renderProductList(
+allProducts
+);
+
 
 
 let modal =
@@ -2256,12 +2070,7 @@ modal.classList.add(
 
 
 
-loadProducts();
-
-
-
 };
-
 
 
 }
@@ -2272,11 +2081,6 @@ loadProducts();
 
 
 
-
-
-// 关闭商品弹窗
-
-
 let closeProduct =
 document.getElementById(
 "close-product-modal"
@@ -2285,7 +2089,6 @@ document.getElementById(
 
 
 if(closeProduct){
-
 
 
 closeProduct.onclick=()=>{
@@ -2311,18 +2114,12 @@ modal.classList.remove(
 };
 
 
-
 }
 
 
 
 
 
-
-
-
-
-// 确认商品
 
 
 let confirmBtn =
@@ -2333,7 +2130,6 @@ document.getElementById(
 
 
 if(confirmBtn){
-
 
 
 confirmBtn.onclick=()=>{
@@ -2361,7 +2157,6 @@ modal.classList.remove(
 
 
 };
-
 
 
 }
