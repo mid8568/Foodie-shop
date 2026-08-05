@@ -18,7 +18,7 @@ SUPABASE_KEY
 window.supabaseClient = supabaseClient;
 
 let decorations=[];
-
+window.decorations = decorations;
 let currentModule=null;
 
 let selectedProducts=[];
@@ -93,7 +93,7 @@ return;
 decorations =
 data || [];
 
-
+window.decorations = decorations;
 
 await loadProducts();
 
