@@ -1,6 +1,23 @@
 console.log("product.js启动");
 
 
+// Supabase 初始化
+
+const SUPABASE_URL =
+"https://ukxxmxnubxjezkwbbxdr.supabase.co";
+
+
+const SUPABASE_KEY =
+"sb_publishable_2IFHfms3ombozpvZCvaeEg_2VZ2z5hJ";
+
+
+const supabaseClient =
+supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
+
+
 const params =
 new URLSearchParams(
 window.location.search
@@ -36,7 +53,7 @@ data,
 error
 }
 =
-await supabase
+await supabaseClient
 .from("products")
 .select("*")
 .eq("id",productId)
