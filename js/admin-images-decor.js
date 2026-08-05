@@ -142,12 +142,12 @@ value="${item.name}"
 
 async function deleteImage(name){
 
-
 if(!confirm("确定删除?"))
 return;
 
 
 const {
+data,
 error
 }
 =
@@ -159,6 +159,8 @@ name
 ]);
 
 
+console.log("删除返回:",data,error);
+
 
 if(error){
 
@@ -168,8 +170,10 @@ return;
 }
 
 
-loadImages();
+alert("删除成功");
 
+
+await loadImages();
 
 }
 
