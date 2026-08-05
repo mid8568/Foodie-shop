@@ -2206,3 +2206,6 @@ modal.classList.remove(
 
 
 }
+window.renderPreview = renderPreview;
+window.decorations = decorations;
+window.loadDecorations = loadDecorations;
