@@ -1,7 +1,4 @@
-console.log(
-"admin-decoration-images启动"
-);
-
+console.log("admin-images-decor.js启动");
 
 
 const SUPABASE_URL =
@@ -23,16 +20,13 @@ SUPABASE_KEY
 async function loadImages(){
 
 
+console.log("开始读取装修图片");
+
+
 let box =
 document.getElementById(
 "image-list"
 );
-
-
-
-box.innerHTML=
-"加载中...";
-
 
 
 const {
@@ -56,12 +50,20 @@ order:"desc"
 
 
 
+console.log(
+"Storage数据:",
+data
+);
+
+
+
 if(error){
 
-box.innerHTML=
-"加载失败";
+console.error(
+error
+);
 
-console.error(error);
+box.innerHTML="加载失败";
 
 return;
 
@@ -81,55 +83,33 @@ return;
 
 
 
-const {
-data:urlData
-}
-=
+let url =
 supabaseClient
 .storage
 .from("decorations")
 .getPublicUrl(
 item.name
-);
-
-
-
-let url =
-urlData.publicUrl;
+)
+.data.publicUrl;
 
 
 
 box.innerHTML +=
-
-
 `
 
 <div class="image-card">
 
-
 <img src="${url}">
 
+<p>${item.name}</p>
 
-<div class="image-name">
-
-${item.name}
-
-</div>
-
-
-<button
-onclick="deleteImage('${item.name}')">
-
+<button onclick="deleteImage('${item.name}')">
 删除
-
 </button>
-
 
 </div>
 
 `;
-
-
 
 });
 
@@ -138,17 +118,11 @@ onclick="deleteImage('${item.name}')">
 
 
 
-
 async function deleteImage(name){
 
 
-if(
-!confirm(
-"确定删除这张装修图片?"
-)
-)
+if(!confirm("确定删除?"))
 return;
-
 
 
 const {
@@ -166,36 +140,20 @@ name
 
 if(error){
 
-alert(
-"删除失败:"
-+
-error.message
-);
-
+alert(error.message);
 return;
 
 }
 
 
-
-alert(
-"删除成功"
-);
-
-
-
 loadImages();
-
 
 
 }
 
 
 
-
-window.deleteImage =
-deleteImage;
-
+window.deleteImage=deleteImage;
 
 
 loadImages();
