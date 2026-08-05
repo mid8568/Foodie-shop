@@ -15,7 +15,7 @@ SUPABASE_URL,
 SUPABASE_KEY
 );
 
-
+window.supabaseClient = supabaseClient;
 
 let decorations=[];
 
