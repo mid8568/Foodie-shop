@@ -1021,11 +1021,25 @@ border-radius:8px;
 
 if(currentModule){
 
-currentModule.content =
-{
+currentModule.content={
 image:imageUrl,
 url:""
 };
+
+
+let index =
+decorations.findIndex(
+x=>x.id===currentModule.id
+);
+
+
+if(index>-1){
+
+decorations[index].content =
+currentModule.content;
+
+}
+
 
 renderPreview();
 
