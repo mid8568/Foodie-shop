@@ -1,8 +1,6 @@
 console.log("product.js启动");
 
 
-// Supabase 初始化
-
 const SUPABASE_URL =
 "https://ukxxmxnubxjezkwbbxdr.supabase.co";
 
@@ -18,6 +16,7 @@ SUPABASE_KEY
 );
 
 
+
 const params =
 new URLSearchParams(
 window.location.search
@@ -28,7 +27,13 @@ const productId =
 params.get("id");
 
 
-console.log("商品ID:",productId);
+
+console.log(
+"商品ID:",
+productId
+);
+
+
 
 
 
@@ -39,12 +44,12 @@ if(!productId){
 
 document.getElementById(
 "product-container"
-).innerHTML=
-"商品不存在";
+).innerHTML="商品不存在";
 
 return;
 
 }
+
 
 
 
@@ -61,14 +66,15 @@ await supabaseClient
 
 
 
+
+
 if(error){
 
-console.log(error);
+console.error(error);
 
 document.getElementById(
 "product-container"
-).innerHTML=
-"商品加载失败";
+).innerHTML="商品加载失败";
 
 return;
 
@@ -76,9 +82,18 @@ return;
 
 
 
-console.log(data);
+
+console.log(
+"商品数据:",
+data
+);
 
 
+
+
+// =================
+// 商品图片
+// =================
 
 let images=[];
 
@@ -100,13 +115,57 @@ images.push(data.image4);
 
 
 
+
+// =================
+// 规格处理
+// =================
+
+let specs="";
+
+
+if(data.specifications){
+
+
+let obj =
+typeof data.specifications==="string"
+?
+JSON.parse(data.specifications)
+:
+data.specifications;
+
+
+
+Object.entries(obj)
+.forEach(([key,value])=>{
+
+
+specs +=
+`
+<div>
+<b>${key}</b> : ${value}
+</div>
+`;
+
+});
+
+
+}
+
+
+
+
+// =================
+// 详情图片
+// =================
+
+
+let detailImages="";
+
+
 if(data.detail_images){
 
 
-try{
-
-
-let detail=
+let detail =
 typeof data.detail_images==="string"
 ?
 JSON.parse(data.detail_images)
@@ -114,49 +173,69 @@ JSON.parse(data.detail_images)
 data.detail_images;
 
 
-images=[
-...images,
-...detail
-];
+
+detail.forEach(img=>{
 
 
-}catch(e){}
+detailImages +=
 
+`
+
+<img 
+src="${img}"
+class="detail-img"
+>
+
+`;
+
+
+
+});
 
 
 }
 
 
 
-let html=`
+
+
+
+let html = `
+
 
 
 <div class="product-main">
 
 
+
 <div class="product-images">
 
 
-<img id="main-image"
-src="${images[0]||''}">
+<img 
+id="main-image"
+src="${images[0]||''}"
+>
 
 
 <div class="thumb-list">
 
-${images.map(
-img=>`
+${images.map(img=>`
 
-<img src="${img}"
-onclick="changeImage('${img}')">
+<img 
+src="${img}"
+onclick="changeImage('${img}')"
+>
 
-`
-).join("")}
+`).join("")}
+
+
+</div>
 
 
 </div>
 
 
-</div>
+
 
 
 
@@ -164,24 +243,78 @@ onclick="changeImage('${img}')">
 
 
 <h1>
-
 ${data.name||""}
-
 </h1>
 
 
+
 <h2>
-
 ${data.name_en||""}
-
 </h2>
+
+
+
 
 
 <div class="price">
 
-$${data.sale_price||data.price||0}
+$${data.sale_price || data.price || 0}
 
 </div>
+
+
+
+
+
+<div class="sales">
+
+🔥 Sold:
+${data.sales_count || 0}
+
+</div>
+
+
+
+
+
+<div class="stock">
+
+Stock:
+${data.stock_quantity || 0}
+
+</div>
+
+
+
+
+
+<div class="quantity">
+
+
+数量：
+
+<button onclick="changeQty(-1)">
+-
+</button>
+
+
+<input 
+id="qty"
+value="1"
+readonly
+>
+
+
+<button onclick="changeQty(1)">
++
+</button>
+
+
+</div>
+
+
+
+
 
 
 
@@ -201,20 +334,26 @@ ${data.description_en||""}
 
 
 
+
+
+
+
 <div class="spec-box">
 
 
 <h3>
-
 Specifications
-
 </h3>
 
 
-${data.specifications||""}
+${specs}
 
 
 </div>
+
+
+
+
 
 
 
@@ -226,13 +365,35 @@ Buy Now
 
 
 
+
 </div>
 
 
+
 </div>
+
+
+
+
+
+<div class="product-detail">
+
+
+<h2>
+Product Details
+</h2>
+
+
+${detailImages}
+
+
+</div>
+
 
 
 `;
+
+
 
 
 
@@ -242,7 +403,10 @@ document.getElementById(
 .innerHTML=html;
 
 
+
 }
+
+
 
 
 
@@ -250,8 +414,30 @@ function changeImage(src){
 
 document.getElementById(
 "main-image"
-)
-.src=src;
+).src=src;
+
+}
+
+
+
+
+function changeQty(num){
+
+
+let input =
+document.getElementById("qty");
+
+
+let value =
+Number(input.value)+num;
+
+
+if(value<1)
+value=1;
+
+
+input.value=value;
+
 
 }
 
