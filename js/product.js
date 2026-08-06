@@ -587,7 +587,9 @@ let btn=document.createElement(
 
 btn.className="sku-btn";
 
-
+btn.style.display="inline-block";
+btn.style.margin="5px";
+btn.style.padding="10px";
 
 btn.innerHTML=
 
