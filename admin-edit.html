@@ -2,33 +2,25 @@
 
 <html lang="zh-CN">
 
-
 <head>
 
 <meta charset="UTF-8">
 
-
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-
 
 <title>
 商品编辑
 </title>
 
-
 <link rel="stylesheet" href="css/admin-edit.css">
 
-
 </head>
-
 
 
 <body>
 
 
-
 <div class="edit-page">
-
 
 
 <h1>
@@ -37,10 +29,7 @@
 
 
 
-
 <div class="edit-container">
-
-
 
 
 
@@ -54,7 +43,6 @@
 </h2>
 
 
-
 <div class="form-group">
 
 <label>
@@ -64,8 +52,6 @@
 <input id="name">
 
 </div>
-
-
 
 
 
@@ -81,8 +67,6 @@
 
 
 
-
-
 <div class="row">
 
 
@@ -95,8 +79,6 @@
 <input id="category">
 
 </div>
-
-
 
 
 
@@ -141,20 +123,15 @@
 </h2>
 
 
-
 <div class="form-group">
 
 <label>
 1688商品链接
 </label>
 
-
 <input id="1688_url">
 
-
 </div>
-
-
 
 
 
@@ -167,13 +144,9 @@
 供应商
 </label>
 
-
 <input id="supplier">
 
-
 </div>
-
-
 
 
 
@@ -183,16 +156,12 @@
 供应商链接
 </label>
 
-
 <input id="supplier_url">
 
-
 </div>
 
 
 </div>
-
-
 
 
 
@@ -202,15 +171,9 @@
 供应商联系方式
 </label>
 
-
 <input id="supplier_contact">
 
-
 </div>
-
-
-
-
 
 
 
@@ -236,7 +199,6 @@ class="image-manager">
 
 <div class="upload-box">
 
-
 <input
 
 type="file"
@@ -245,11 +207,7 @@ id="main-image-upload"
 
 multiple>
 
-
 </div>
-
-
-
 
 
 
@@ -270,8 +228,6 @@ class="image-manager">
 
 
 
-
-
 <div class="upload-box">
 
 
@@ -285,9 +241,6 @@ multiple>
 
 
 </div>
-
-
-
 
 
 
@@ -320,7 +273,6 @@ id="description">
 
 
 
-
 <div class="form-group">
 
 
@@ -339,27 +291,96 @@ id="description_en">
 
 
 <!-- ======================
-规格
+SKU管理
 ====================== -->
 
 
 <h2>
-商品规格
+SKU管理
 </h2>
 
 
 
-<div class="form-group">
+<div class="sku-box">
 
 
-<textarea
 
-id="specifications">
+<button
 
-</textarea>
+type="button"
+
+id="addSkuBtn">
+
++ 添加SKU
+
+</button>
+
+
+
+
+<table class="sku-table">
+
+
+<thead>
+
+<tr>
+
+<th>
+SKU编码
+</th>
+
+
+<th>
+SKU名称
+</th>
+
+
+<th>
+规格属性
+</th>
+
+
+<th>
+采购成本
+</th>
+
+
+<th>
+销售价格
+</th>
+
+
+<th>
+库存
+</th>
+
+
+<th>
+操作
+</th>
+
+
+</tr>
+
+</thead>
+
+
+
+<tbody id="skuList">
+
+
+</tbody>
+
+
+</table>
+
 
 
 </div>
+
+
+
+
 
 
 
@@ -386,8 +407,6 @@ onclick="saveProduct()">
 
 
 
-
-
 <button
 
 class="back-btn"
@@ -407,13 +426,10 @@ onclick="backList()">
 
 
 
-
 </div>
 
 
 </div>
-
-
 
 
 
@@ -432,6 +448,5 @@ onclick="backList()">
 
 
 </body>
-
 
 </html>
