@@ -34,6 +34,13 @@ let productSkus=[];
 let selectedSku=null;
 
 
+let selectedColor="";
+
+
+let selectedSize="";
+
+
+
 
 
 
@@ -100,6 +107,7 @@ return;
 
 
 
+
 console.log(
 "商品数据:",
 data
@@ -119,13 +127,13 @@ data.product_skus || [];
 
 
 
+
 // =================
 // 图片
 // =================
 
 
 let images=[];
-
 
 
 [
@@ -138,13 +146,16 @@ data.image4
 .forEach(
 img=>{
 
+
 if(img){
 
 images.push(img);
 
 }
 
+
 });
+
 
 
 
@@ -160,11 +171,11 @@ images.push(img);
 let detailImages="";
 
 
-
 if(data.detail_images){
 
 
 let detail=
+
 
 typeof data.detail_images==="string"
 
@@ -178,10 +189,11 @@ data.detail_images;
 
 
 
+
 detail.forEach(img=>{
 
 
-detailImages +=`
+detailImages+=`
 
 <img
 
@@ -203,26 +215,10 @@ class="detail-img">
 
 
 
-// 默认价格
-
-
-let defaultPrice=
-
-data.sale_price ||
-
-data.price ||
-
-0;
-
-
+// 默认SKU
 
 
 if(productSkus.length){
-
-
-defaultPrice=
-
-productSkus[0].sale_price;
 
 
 selectedSku=
@@ -238,10 +234,26 @@ productSkus[0];
 
 
 
+let defaultPrice =
+
+
+selectedSku
+
+?
+
+selectedSku.sale_price
+
+:
+
+data.sale_price || 0;
+
+
+
+
+
 
 
 let html=`
-
 
 
 <div class="product-main">
@@ -266,13 +278,11 @@ ${
 
 images.map(img=>`
 
-
 <img
 
 src="${img}"
 
 onclick="changeImage('${img}')">
-
 
 `).join("")
 
@@ -288,12 +298,7 @@ onclick="changeImage('${img}')">
 
 
 
-
-
-
-
 <div class="product-info">
-
 
 
 <h1>
@@ -301,8 +306,6 @@ onclick="changeImage('${img}')">
 ${data.name||""}
 
 </h1>
-
-
 
 
 <h2>
@@ -315,27 +318,11 @@ ${data.name_en||""}
 
 
 
-
 <div class="price"
 
 id="price">
 
-
 $${defaultPrice}
-
-
-</div>
-
-
-
-
-
-
-<div class="sales">
-
-🔥 Sold:
-
-${data.sales_count||0}
 
 </div>
 
@@ -371,9 +358,6 @@ data.stock_quantity||0
 
 
 
-
-
-
 <div class="spec-box">
 
 
@@ -398,15 +382,10 @@ Select Options
 
 
 
-
-
-
-
 <div class="quantity">
 
 
-数量：
-
+数量:
 
 
 <button onclick="changeQty(-1)">
@@ -414,8 +393,6 @@ Select Options
 -
 
 </button>
-
-
 
 
 <input
@@ -441,8 +418,6 @@ readonly>
 
 
 
-
-
 <div class="description">
 
 
@@ -450,22 +425,6 @@ ${data.description||""}
 
 
 </div>
-
-
-
-
-
-<div class="description">
-
-
-${data.description_en||""}
-
-
-</div>
-
-
-
-
 
 
 
@@ -483,16 +442,10 @@ Buy Now
 
 
 
-
-
 </div>
 
 
-
-
 </div>
-
-
 
 
 
@@ -511,13 +464,10 @@ Product Details
 ${detailImages}
 
 
-
 </div>
 
 
-
 `;
-
 
 
 
@@ -539,17 +489,7 @@ renderSku();
 
 
 
-
 }
-
-
-
-
-
-
-
-
-
 // =================
 // SKU显示
 // =================
@@ -558,8 +498,7 @@ renderSku();
 function renderSku(){
 
 
-
-let box=
+let box =
 
 document.getElementById(
 "sku-options"
@@ -571,44 +510,36 @@ if(!box)return;
 
 
 
-box.innerHTML="";
+let colors=new Set();
+
+let sizes=new Set();
 
 
 
-productSkus.forEach(
-(sku,index)=>{
 
 
-let btn=document.createElement(
-"button"
-);
+productSkus.forEach(sku=>{
 
 
+let attr =
 
-btn.className="sku-btn";
-
-btn.style.display="inline-block";
-btn.style.margin="5px";
-btn.style.padding="10px";
-
-btn.innerHTML=
-
-sku.sku_name;
+sku.attributes || {};
 
 
 
-btn.onclick=()=>{
+if(attr.颜色){
 
+colors.add(attr.颜色);
 
-selectSku(index);
-
-
-
-};
+}
 
 
 
-box.appendChild(btn);
+if(attr.尺码){
+
+sizes.add(attr.尺码);
+
+}
 
 
 
@@ -618,6 +549,109 @@ box.appendChild(btn);
 
 
 
+
+box.innerHTML=`
+
+
+
+<div class="sku-group">
+
+
+<h4>
+
+颜色
+
+</h4>
+
+
+<div>
+
+
+${
+
+[...colors].map(c=>`
+
+
+<button
+
+class="sku-btn color-btn"
+
+onclick="selectColor('${c}')">
+
+
+${c}
+
+
+</button>
+
+
+`).join("")
+
+
+}
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+
+<div class="sku-group">
+
+
+<h4>
+
+尺码
+
+</h4>
+
+
+
+<div>
+
+
+${
+
+[...sizes].map(s=>`
+
+
+<button
+
+class="sku-btn size-btn"
+
+onclick="selectSize('${s}')">
+
+
+${s}
+
+
+</button>
+
+
+`).join("")
+
+
+}
+
+
+</div>
+
+
+</div>
+
+
+
+`;
+
+
+
 }
 
 
@@ -629,27 +663,179 @@ box.appendChild(btn);
 
 
 // =================
-// SKU切换
+// 选择颜色
 // =================
 
 
-function selectSku(index){
+function selectColor(color){
+
+
+selectedColor=color;
 
 
 
-selectedSku=
+document.querySelectorAll(
+".color-btn"
+)
 
-productSkus[index];
+.forEach(btn=>{
+
+
+btn.classList.remove(
+"active"
+);
+
+
+
+if(btn.innerText==color){
+
+
+btn.classList.add(
+"active"
+);
+
+
+}
+
+
+
+});
+
+
+
+updateSku();
+
+
+
+}
+
+
+
+
+
+
+
+
+
+// =================
+// 选择尺码
+// =================
+
+
+function selectSize(size){
+
+
+selectedSize=size;
+
+
+
+document.querySelectorAll(
+".size-btn"
+)
+
+.forEach(btn=>{
+
+
+btn.classList.remove(
+"active"
+);
+
+
+
+if(btn.innerText==size){
+
+
+btn.classList.add(
+"active"
+);
+
+
+}
+
+
+
+});
+
+
+
+updateSku();
+
+
+}
+
+
+
+
+
+
+
+
+
+// =================
+// 匹配SKU
+// =================
+
+
+function updateSku(){
+
+
+
+let sku =
+
+
+productSkus.find(s=>{
+
+
+let attr =
+
+s.attributes || {};
+
+
+
+return (
+
+attr.颜色==selectedColor
+
+&&
+
+attr.尺码==selectedSize
+
+);
+
+
+});
+
+
+
+
+
+
+if(!sku){
+
+
+return;
+
+
+}
+
+
+
+
+selectedSku=sku;
+
 
 
 
 
 document.getElementById(
 "price"
-).innerHTML=
+)
+
+.innerHTML=
 
 
-"$"+selectedSku.sale_price;
+"$"+sku.sale_price;
+
 
 
 
@@ -657,49 +843,16 @@ document.getElementById(
 
 document.getElementById(
 "stock"
-).innerHTML=
+)
+
+.innerHTML=
 
 
 "Stock: "
 
 +
 
-selectedSku.stock_quantity;
-
-
-
-
-
-let buttons=
-
-document.querySelectorAll(
-".sku-btn"
-);
-
-
-
-buttons.forEach(
-btn=>
-
-btn.classList.remove(
-"active"
-)
-
-);
-
-
-
-if(buttons[index]){
-
-
-buttons[index]
-
-.classList.add(
-"active"
-);
-
-
-}
+sku.stock_quantity;
 
 
 
@@ -710,6 +863,12 @@ buttons[index]
 
 
 
+
+
+
+// =================
+// 图片切换
+// =================
 
 
 function changeImage(src){
@@ -717,7 +876,9 @@ function changeImage(src){
 
 document.getElementById(
 "main-image"
-).src=src;
+)
+
+.src=src;
 
 
 }
@@ -727,6 +888,12 @@ document.getElementById(
 
 
 
+
+
+
+// =================
+// 数量
+// =================
 
 
 function changeQty(num){
@@ -747,9 +914,11 @@ Number(input.value)+num;
 
 
 
-if(value<1)
+if(value<1){
 
 value=1;
+
+}
 
 
 
@@ -765,6 +934,12 @@ input.value=value;
 
 
 
+
+// =================
+// 购买
+// =================
+
+
 function buyNow(){
 
 
@@ -775,22 +950,34 @@ selectedSku
 
 
 
+
+if(!selectedSku){
+
+
+alert(
+"请选择颜色和尺码"
+);
+
+
+return;
+
+
+}
+
+
+
 alert(
 
-selectedSku
+"购买："+
 
-?
-
-"购买："+selectedSku.sku_name
-
-:
-
-"请选择规格"
+selectedSku.sku_name
 
 );
 
 
+
 }
+
 
 
 
