@@ -30,34 +30,21 @@ params.get("id");
 
 let productSkus=[];
 
-
 let selectedSku=null;
 
+let selectedAttr1="";
 
-let selectedColor="";
-
-
-let selectedSize="";
+let selectedAttr2="";
 
 
 
 
+// =======================
+// 加载商品
+// =======================
 
 
 async function loadProduct(){
-
-
-if(!productId){
-
-document.getElementById(
-"product-container"
-).innerHTML="商品不存在";
-
-return;
-
-}
-
-
 
 
 const {
@@ -87,18 +74,9 @@ productId
 
 
 
-
-
-
 if(error){
 
 console.error(error);
-
-
-document.getElementById(
-"product-container"
-).innerHTML="商品加载失败";
-
 
 return;
 
@@ -106,148 +84,33 @@ return;
 
 
 
-
-
 console.log(
-"商品数据:",
+"商品:",
 data
 );
 
 
 
-
-
 productSkus =
-
 data.product_skus || [];
 
 
 
 
-
-
-
-
-// =================
 // 图片
-// =================
 
 
-let images=[];
+let images=[
 
-
-[
 data.image,
+
 data.image2,
+
 data.image3,
+
 data.image4
 
-]
-.forEach(
-img=>{
-
-
-if(img){
-
-images.push(img);
-
-}
-
-
-});
-
-
-
-
-
-
-
-
-// =================
-// 详情图片
-// =================
-
-
-let detailImages="";
-
-
-if(data.detail_images){
-
-
-let detail=
-
-
-typeof data.detail_images==="string"
-
-?
-
-JSON.parse(data.detail_images)
-
-:
-
-data.detail_images;
-
-
-
-
-detail.forEach(img=>{
-
-
-detailImages+=`
-
-<img
-
-src="${img}"
-
-class="detail-img">
-
-`;
-
-
-});
-
-
-}
-
-
-
-
-
-
-
-// 默认SKU
-
-
-if(productSkus.length){
-
-
-selectedSku=
-
-productSkus[0];
-
-
-}
-
-
-
-
-
-
-
-let defaultPrice =
-
-
-selectedSku
-
-?
-
-selectedSku.sale_price
-
-:
-
-data.sale_price || 0;
-
-
+].filter(Boolean);
 
 
 
@@ -259,7 +122,6 @@ let html=`
 <div class="product-main">
 
 
-
 <div class="product-images">
 
 
@@ -267,25 +129,26 @@ let html=`
 
 id="main-image"
 
-src="${images[0]||''}">
+src="${images[0]||''}"
 
+>
 
 
 <div class="thumb-list">
 
 
 ${
-
 images.map(img=>`
 
 <img
 
 src="${img}"
 
-onclick="changeImage('${img}')">
+onclick="changeImage('${img}')"
+
+>
 
 `).join("")
-
 }
 
 
@@ -293,7 +156,6 @@ onclick="changeImage('${img}')">
 
 
 </div>
-
 
 
 
@@ -303,141 +165,55 @@ onclick="changeImage('${img}')">
 
 <h1>
 
-${data.name||""}
+${data.name}
 
 </h1>
 
 
-<h2>
 
-${data.name_en||""}
+<div
 
-</h2>
-
-
-
-
-
-<div class="price"
+class="price"
 
 id="price">
 
-$${defaultPrice}
-
-</div>
-
-
-
-
-
-<div class="stock"
-
-id="stock">
-
-
-Stock:
-
-${
-
-selectedSku
-
+$${productSkus.length
 ?
-
-selectedSku.stock_quantity
-
+productSkus[0].sale_price
 :
-
-data.stock_quantity||0
-
-}
-
+data.sale_price}
 
 </div>
 
 
 
 
+<div id="stock">
 
-<div class="spec-box">
+库存:
 
+${productSkus.length
+?
+productSkus[0].stock_quantity
+:
+0}
 
-<h3>
+</div>
 
-Select Options
-
-</h3>
 
 
 
 <div id="sku-options">
 
-
-</div>
-
-
-
 </div>
 
 
 
 
-
-<div class="quantity">
-
-
-数量:
-
-
-<button onclick="changeQty(-1)">
-
--
-
-</button>
-
-
-<input
-
-id="qty"
-
-value="1"
-
-readonly>
-
-
-<button onclick="changeQty(1)">
-
-+
-
-</button>
-
-
-
-</div>
-
-
-
-
-
-<div class="description">
-
-
-${data.description||""}
-
-
-</div>
-
-
-
-<button
-
-class="buy-btn"
-
-onclick="buyNow()">
-
+<button onclick="buyNow()">
 
 Buy Now
 
-
 </button>
 
 
@@ -446,8 +222,6 @@ Buy Now
 
 
 </div>
-
-
 
 
 
@@ -461,14 +235,21 @@ Product Details
 </h2>
 
 
-${detailImages}
+${
+(data.detail_images||[])
+.map(i=>`
+
+<img class="detail-img" src="${i}">
+
+`).join("")
+}
 
 
 </div>
 
 
-`;
 
+`;
 
 
 
@@ -483,36 +264,37 @@ document.getElementById(
 
 
 
-
 renderSku();
 
 
-
-
 }
-// =================
+
+
+
+
+
+
+
+
+// =======================
 // SKU显示
-// =================
+// =======================
 
 
 function renderSku(){
 
 
-let box =
 
+let box =
 document.getElementById(
 "sku-options"
 );
 
 
 
-if(!box)return;
+let attr1=new Set();
 
-
-
-let colors=new Set();
-
-let sizes=new Set();
+let attr2=new Set();
 
 
 
@@ -521,25 +303,20 @@ let sizes=new Set();
 productSkus.forEach(sku=>{
 
 
-let attr =
-
+let a =
 sku.attributes || {};
 
 
 
-if(attr.颜色){
+if(a.参数1)
 
-colors.add(attr.颜色);
-
-}
+attr1.add(a.参数1);
 
 
 
-if(attr.尺码){
+if(a.参数2)
 
-sizes.add(attr.尺码);
-
-}
+attr2.add(a.参数2);
 
 
 
@@ -550,102 +327,82 @@ sizes.add(attr.尺码);
 
 
 
+
 box.innerHTML=`
 
 
 
-<div class="sku-group">
-
-
-<h4>
-
-颜色
-
-</h4>
-
-
 <div>
 
 
+<h3>
+
+参数1
+
+</h3>
+
+
+
 ${
-
-[...colors].map(c=>`
-
+[...attr1].map(x=>`
 
 <button
 
-class="sku-btn color-btn"
+class="attr1"
 
-onclick="selectColor('${c}')">
+onclick="selectAttr1('${x}')"
 
+>
 
-${c}
-
+${x}
 
 </button>
 
 
 `).join("")
-
-
 }
 
 
-</div>
-
-
 
 </div>
 
 
-
-
-
-
-
-<div class="sku-group">
-
-
-<h4>
-
-尺码
-
-</h4>
 
 
 
 <div>
 
 
+<h3>
+
+参数2
+
+</h3>
+
+
+
 ${
-
-[...sizes].map(s=>`
-
+[...attr2].map(x=>`
 
 <button
 
-class="sku-btn size-btn"
+class="attr2"
 
-onclick="selectSize('${s}')">
+onclick="selectAttr2('${x}')"
 
+>
 
-${s}
-
+${x}
 
 </button>
 
 
 `).join("")
-
-
 }
 
 
-</div>
-
 
 </div>
-
 
 
 `;
@@ -661,52 +418,20 @@ ${s}
 
 
 
-
-// =================
-// 选择颜色
-// =================
-
-
-function selectColor(color){
+// =======================
+// 选择参数1
+// =======================
 
 
-selectedColor=color;
+function selectAttr1(v){
 
 
-
-document.querySelectorAll(
-".color-btn"
-)
-
-.forEach(btn=>{
-
-
-btn.classList.remove(
-"active"
-);
-
-
-
-if(btn.innerText==color){
-
-
-btn.classList.add(
-"active"
-);
-
-
-}
-
-
-
-});
-
+selectedAttr1=v;
 
 
 updateSku();
 
 
-
 }
 
 
@@ -715,47 +440,15 @@ updateSku();
 
 
 
+// =======================
+// 选择参数2
+// =======================
 
 
-// =================
-// 选择尺码
-// =================
+function selectAttr2(v){
 
 
-function selectSize(size){
-
-
-selectedSize=size;
-
-
-
-document.querySelectorAll(
-".size-btn"
-)
-
-.forEach(btn=>{
-
-
-btn.classList.remove(
-"active"
-);
-
-
-
-if(btn.innerText==size){
-
-
-btn.classList.add(
-"active"
-);
-
-
-}
-
-
-
-});
-
+selectedAttr2=v;
 
 
 updateSku();
@@ -770,10 +463,9 @@ updateSku();
 
 
 
-
-// =================
+// =======================
 // 匹配SKU
-// =================
+// =======================
 
 
 function updateSku(){
@@ -782,23 +474,21 @@ function updateSku(){
 
 let sku =
 
-
 productSkus.find(s=>{
 
 
-let attr =
-
+let a =
 s.attributes || {};
 
 
 
 return (
 
-attr.颜色==selectedColor
+a.参数1==selectedAttr1
 
 &&
 
-attr.尺码==selectedSize
+a.参数2==selectedAttr2
 
 );
 
@@ -808,22 +498,13 @@ attr.尺码==selectedSize
 
 
 
-
-
-if(!sku){
-
+if(!sku)
 
 return;
 
 
-}
-
-
-
 
 selectedSku=sku;
-
-
 
 
 
@@ -833,10 +514,7 @@ document.getElementById(
 
 .innerHTML=
 
-
 "$"+sku.sale_price;
-
-
 
 
 
@@ -847,12 +525,9 @@ document.getElementById(
 
 .innerHTML=
 
+"库存: "
 
-"Stock: "
-
-+
-
-sku.stock_quantity;
++sku.stock_quantity;
 
 
 
@@ -863,12 +538,6 @@ sku.stock_quantity;
 
 
 
-
-
-
-// =================
-// 图片切换
-// =================
 
 
 function changeImage(src){
@@ -889,65 +558,7 @@ document.getElementById(
 
 
 
-
-
-// =================
-// 数量
-// =================
-
-
-function changeQty(num){
-
-
-
-let input=
-
-document.getElementById(
-"qty"
-);
-
-
-
-let value=
-
-Number(input.value)+num;
-
-
-
-if(value<1){
-
-value=1;
-
-}
-
-
-
-input.value=value;
-
-
-}
-
-
-
-
-
-
-
-
-
-// =================
-// 购买
-// =================
-
-
 function buyNow(){
-
-
-console.log(
-"购买SKU:",
-selectedSku
-);
-
 
 
 
@@ -955,7 +566,7 @@ if(!selectedSku){
 
 
 alert(
-"请选择颜色和尺码"
+"请选择规格"
 );
 
 
@@ -966,9 +577,17 @@ return;
 
 
 
+console.log(
+selectedSku
+);
+
+
+
 alert(
 
-"购买："+
+"购买: "
+
++
 
 selectedSku.sku_name
 
@@ -977,7 +596,6 @@ selectedSku.sku_name
 
 
 }
-
 
 
 
