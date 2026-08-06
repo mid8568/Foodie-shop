@@ -342,11 +342,14 @@ ${data.description_en||""}
 
 
 <h3>
-Specifications
+Select Options
 </h3>
 
 
-${specs}
+<div id="sku-options">
+
+
+</div>
 
 
 </div>
