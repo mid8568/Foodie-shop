@@ -28,10 +28,10 @@ params.get("id");
 
 
 
-console.log(
-"商品ID:",
-productId
-);
+let productSkus=[];
+
+
+let selectedSku=null;
 
 
 
@@ -54,15 +54,30 @@ return;
 
 
 const {
+
 data,
+
 error
-}
-=
-await supabaseClient
+
+}=await supabaseClient
+
 .from("products")
-.select("*")
-.eq("id",productId)
+
+.select(`
+
+*,
+
+product_skus(*)
+
+`)
+
+.eq(
+"id",
+productId
+)
+
 .single();
+
 
 
 
@@ -72,9 +87,11 @@ if(error){
 
 console.error(error);
 
+
 document.getElementById(
 "product-container"
 ).innerHTML="商品加载失败";
+
 
 return;
 
@@ -91,65 +108,46 @@ data
 
 
 
+
+productSkus =
+
+data.product_skus || [];
+
+
+
+
+
+
+
 // =================
-// 商品图片
+// 图片
 // =================
+
 
 let images=[];
 
 
-if(data.image)
-images.push(data.image);
 
+[
+data.image,
+data.image2,
+data.image3,
+data.image4
 
-if(data.image2)
-images.push(data.image2);
+]
+.forEach(
+img=>{
 
+if(img){
 
-if(data.image3)
-images.push(data.image3);
+images.push(img);
 
-
-if(data.image4)
-images.push(data.image4);
-
-
-
-
-// =================
-// 规格处理
-// =================
-
-let specs="";
-
-
-if(data.specifications){
-
-
-let obj =
-typeof data.specifications==="string"
-?
-JSON.parse(data.specifications)
-:
-data.specifications;
-
-
-
-Object.entries(obj)
-.forEach(([key,value])=>{
-
-
-specs +=
-`
-<div>
-<b>${key}</b> : ${value}
-</div>
-`;
+}
 
 });
 
 
-}
+
 
 
 
@@ -162,14 +160,20 @@ specs +=
 let detailImages="";
 
 
+
 if(data.detail_images){
 
 
-let detail =
+let detail=
+
 typeof data.detail_images==="string"
+
 ?
+
 JSON.parse(data.detail_images)
+
 :
+
 data.detail_images;
 
 
@@ -177,17 +181,15 @@ data.detail_images;
 detail.forEach(img=>{
 
 
-detailImages +=
+detailImages +=`
 
-`
+<img
 
-<img 
 src="${img}"
-class="detail-img"
->
+
+class="detail-img">
 
 `;
-
 
 
 });
@@ -200,7 +202,45 @@ class="detail-img"
 
 
 
-let html = `
+
+// 默认价格
+
+
+let defaultPrice=
+
+data.sale_price ||
+
+data.price ||
+
+0;
+
+
+
+
+if(productSkus.length){
+
+
+defaultPrice=
+
+productSkus[0].sale_price;
+
+
+selectedSku=
+
+productSkus[0];
+
+
+}
+
+
+
+
+
+
+
+
+
+let html=`
 
 
 
@@ -211,28 +251,41 @@ let html = `
 <div class="product-images">
 
 
-<img 
+<img
+
 id="main-image"
-src="${images[0]||''}"
->
+
+src="${images[0]||''}">
+
 
 
 <div class="thumb-list">
 
-${images.map(img=>`
 
-<img 
+${
+
+images.map(img=>`
+
+
+<img
+
 src="${img}"
-onclick="changeImage('${img}')"
->
 
-`).join("")}
+onclick="changeImage('${img}')">
+
+
+`).join("")
+
+}
 
 
 </div>
 
 
 </div>
+
+
+
 
 
 
@@ -242,25 +295,37 @@ onclick="changeImage('${img}')"
 <div class="product-info">
 
 
+
 <h1>
+
 ${data.name||""}
+
 </h1>
 
 
 
+
 <h2>
+
 ${data.name_en||""}
+
 </h2>
 
 
 
 
 
-<div class="price">
 
-$${data.sale_price || data.price || 0}
+<div class="price"
+
+id="price">
+
+
+$${defaultPrice}
+
 
 </div>
+
 
 
 
@@ -269,7 +334,8 @@ $${data.sale_price || data.price || 0}
 <div class="sales">
 
 🔥 Sold:
-${data.sales_count || 0}
+
+${data.sales_count||0}
 
 </div>
 
@@ -277,60 +343,30 @@ ${data.sales_count || 0}
 
 
 
-<div class="stock">
+<div class="stock"
+
+id="stock">
+
 
 Stock:
-${data.stock_quantity || 0}
 
-</div>
+${
 
+selectedSku
 
+?
 
+selectedSku.stock_quantity
 
+:
 
-<div class="quantity">
+data.stock_quantity||0
 
-
-数量：
-
-<button onclick="changeQty(-1)">
--
-</button>
-
-
-<input 
-id="qty"
-value="1"
-readonly
->
-
-
-<button onclick="changeQty(1)">
-+
-</button>
+}
 
 
 </div>
 
-
-
-
-
-
-
-<div class="description">
-
-${data.description||""}
-
-</div>
-
-
-
-<div class="description">
-
-${data.description_en||""}
-
-</div>
 
 
 
@@ -342,8 +378,11 @@ ${data.description_en||""}
 
 
 <h3>
+
 Select Options
+
 </h3>
+
 
 
 <div id="sku-options">
@@ -352,6 +391,7 @@ Select Options
 </div>
 
 
+
 </div>
 
 
@@ -360,20 +400,99 @@ Select Options
 
 
 
-<button class="buy-btn">
 
-Buy Now
+
+<div class="quantity">
+
+
+数量：
+
+
+
+<button onclick="changeQty(-1)">
+
+-
 
 </button>
 
 
 
 
-</div>
+<input
+
+id="qty"
+
+value="1"
+
+readonly>
+
+
+<button onclick="changeQty(1)">
+
++
+
+</button>
 
 
 
 </div>
+
+
+
+
+
+
+
+<div class="description">
+
+
+${data.description||""}
+
+
+</div>
+
+
+
+
+
+<div class="description">
+
+
+${data.description_en||""}
+
+
+</div>
+
+
+
+
+
+
+
+<button
+
+class="buy-btn"
+
+onclick="buyNow()">
+
+
+Buy Now
+
+
+</button>
+
+
+
+
+
+</div>
+
+
+
+
+</div>
+
+
 
 
 
@@ -383,11 +502,14 @@ Buy Now
 
 
 <h2>
+
 Product Details
+
 </h2>
 
 
 ${detailImages}
+
 
 
 </div>
@@ -400,14 +522,189 @@ ${detailImages}
 
 
 
+
+
 document.getElementById(
 "product-container"
 )
+
 .innerHTML=html;
 
 
 
+
+
+renderSku();
+
+
+
+
+
 }
+
+
+
+
+
+
+
+
+
+// =================
+// SKU显示
+// =================
+
+
+function renderSku(){
+
+
+
+let box=
+
+document.getElementById(
+"sku-options"
+);
+
+
+
+if(!box)return;
+
+
+
+box.innerHTML="";
+
+
+
+productSkus.forEach(
+(sku,index)=>{
+
+
+let btn=document.createElement(
+"button"
+);
+
+
+
+btn.className="sku-btn";
+
+
+
+btn.innerHTML=
+
+sku.sku_name;
+
+
+
+btn.onclick=()=>{
+
+
+selectSku(index);
+
+
+
+};
+
+
+
+box.appendChild(btn);
+
+
+
+});
+
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+// =================
+// SKU切换
+// =================
+
+
+function selectSku(index){
+
+
+
+selectedSku=
+
+productSkus[index];
+
+
+
+
+document.getElementById(
+"price"
+).innerHTML=
+
+
+"$"+selectedSku.sale_price;
+
+
+
+
+
+document.getElementById(
+"stock"
+).innerHTML=
+
+
+"Stock: "
+
++
+
+selectedSku.stock_quantity;
+
+
+
+
+
+let buttons=
+
+document.querySelectorAll(
+".sku-btn"
+);
+
+
+
+buttons.forEach(
+btn=>
+
+btn.classList.remove(
+"active"
+)
+
+);
+
+
+
+if(buttons[index]){
+
+
+buttons[index]
+
+.classList.add(
+"active"
+);
+
+
+}
+
+
+
+}
+
+
+
 
 
 
@@ -415,11 +712,17 @@ document.getElementById(
 
 function changeImage(src){
 
+
 document.getElementById(
 "main-image"
 ).src=src;
 
+
 }
+
+
+
+
 
 
 
@@ -427,22 +730,68 @@ document.getElementById(
 function changeQty(num){
 
 
-let input =
-document.getElementById("qty");
+
+let input=
+
+document.getElementById(
+"qty"
+);
 
 
-let value =
+
+let value=
+
 Number(input.value)+num;
 
 
+
 if(value<1)
+
 value=1;
+
 
 
 input.value=value;
 
 
 }
+
+
+
+
+
+
+
+
+function buyNow(){
+
+
+console.log(
+"购买SKU:",
+selectedSku
+);
+
+
+
+alert(
+
+selectedSku
+
+?
+
+"购买："+selectedSku.sku_name
+
+:
+
+"请选择规格"
+
+);
+
+
+}
+
+
+
 
 
 
