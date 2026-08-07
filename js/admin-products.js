@@ -788,7 +788,21 @@ ${skuPrice}
 
 <td>
 
-${item.sales_count||0}
+<input
+
+type="number"
+
+value="${item.sales_count||0}"
+
+id="sales-${item.id}"
+
+class="edit-sales"
+
+onblur="updateSales('${item.id}')"
+
+style="width:70px"
+
+>
 
 </td>
 
@@ -1114,7 +1128,73 @@ id
 }
 
 
+async function updateSales(id){
 
+
+let input =
+document.getElementById(
+"sales-"+id
+);
+
+
+if(!input)return;
+
+
+let sales =
+Number(input.value);
+
+
+
+const {
+
+error
+
+}=await supabaseClient
+
+
+.from("products")
+
+
+.update({
+
+sales_count:sales
+
+})
+
+
+.eq(
+"id",
+id
+);
+
+
+
+if(error){
+
+console.error(
+"销量修改失败:",
+error
+);
+
+
+alert(
+"销量修改失败"
+);
+
+
+return;
+
+}
+
+
+
+console.log(
+"销量修改成功:",
+sales
+);
+
+
+}
 
 
 
@@ -1651,7 +1731,8 @@ toggleStatus;
 window.updateProductField=
 updateProductField;
 
-
+window.updateSales=
+updateSales;
 
 window.changePage=
 changePage;
