@@ -918,7 +918,25 @@ filename
 
 
 
-return data.publicUrl;
+let url=data.publicUrl;
+
+
+
+await supabaseClient
+
+.from("images")
+
+.insert({
+
+url:url,
+
+type:"product"
+
+});
+
+
+
+return url;
 
 
 }
