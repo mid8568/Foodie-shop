@@ -300,6 +300,15 @@ let attr2=new Set();
 
 
 
+let selectedAttr1="";
+
+let selectedAttr2="";
+
+let option1Name="";
+
+let option2Name="";
+
+
 productSkus.forEach(sku=>{
 
 
@@ -307,21 +316,29 @@ let a =
 sku.attributes || {};
 
 
-
-if(a.参数1)
-
-attr1.add(a.参数1);
+let keys =
+Object.keys(a);
 
 
+if(keys[0]){
 
-if(a.参数2)
+option1Name=keys[0];
 
-attr2.add(a.参数2);
+attr1.add(a[keys[0]]);
 
+}
+
+
+if(keys[1]){
+
+option2Name=keys[1];
+
+attr2.add(a[keys[1]]);
+
+}
 
 
 });
-
 
 
 
@@ -336,9 +353,7 @@ box.innerHTML=`
 
 
 <h3>
-
-参数1
-
+${option1Name}
 </h3>
 
 
@@ -374,9 +389,7 @@ ${x}
 
 
 <h3>
-
-参数2
-
+${option2Name}
 </h3>
 
 
@@ -484,11 +497,11 @@ s.attributes || {};
 
 return (
 
-a.参数1==selectedAttr1
+a[option1Name]==selectedAttr1
 
 &&
 
-a.参数2==selectedAttr2
+a[option2Name]==selectedAttr2
 
 );
 
