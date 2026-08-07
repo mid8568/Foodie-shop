@@ -662,3 +662,47 @@ font-size:40px;
 cursor:pointer;
 
 }
+.library-footer{
+
+display:flex;
+
+gap:20px;
+
+justify-content:center;
+
+margin-top:20px;
+
+}
+
+
+.library-footer button{
+
+padding:10px 20px;
+
+cursor:pointer;
+
+}
+.detail-sort-item{
+
+cursor:move;
+
+}
+
+
+.detail-sort-item:hover{
+
+opacity:0.7;
+
+}
+
+
+
+#detail-images{
+
+display:flex;
+
+flex-wrap:wrap;
+
+gap:15px;
+
+}
