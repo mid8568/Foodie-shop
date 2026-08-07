@@ -656,39 +656,10 @@ getSalePrice(item)
 // =======================
 
 
-let stock=0;
+// 商品总库存
 
-
-
-if(skuCount){
-
-
-
-stock=
-
-skus.reduce(
-(sum,sku)=>
-
-sum+
-
-Number(
-sku.stock_quantity||0
-),
-
-0
-);
-
-
-
-}else{
-
-
-stock=
-
-item.stock_quantity||0;
-
-
-}
+let stock =
+Number(item.stock_quantity || 0);
 
 
 
