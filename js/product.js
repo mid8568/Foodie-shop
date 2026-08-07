@@ -36,7 +36,9 @@ let selectedAttr1="";
 
 let selectedAttr2="";
 
+let option1Name="";
 
+let option2Name="";
 
 
 // =======================
@@ -303,17 +305,6 @@ let attr2=new Set();
 
 
 
-
-
-let selectedAttr1="";
-
-let selectedAttr2="";
-
-let option1Name="";
-
-let option2Name="";
-
-
 productSkus.forEach(sku=>{
 
 
@@ -545,7 +536,7 @@ document.getElementById(
 
 "库存: "
 
-+data.stock_quantity;
++sku.stock_quantity;
 
 
 
@@ -616,7 +607,20 @@ selectedSku.sku_name
 }
 
 
+window.selectAttr1 =
+selectAttr1;
 
+
+window.selectAttr2 =
+selectAttr2;
+
+
+window.changeImage =
+changeImage;
+
+
+window.buyNow =
+buyNow;
 
 
 
