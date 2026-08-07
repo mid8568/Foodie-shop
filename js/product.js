@@ -31,6 +31,7 @@ params.get("id");
 let productSkus=[];
 
 let selectedSku=null;
+let currentProduct=null;
 
 let selectedAttr1="";
 
@@ -91,7 +92,7 @@ console.log(
 data
 );
 
-
+currentProduct=data;
 
 productSkus =
 data.product_skus || [];
@@ -536,7 +537,7 @@ document.getElementById(
 
 "库存: "
 
-+sku.stock_quantity;
++currentProduct.stock_quantity;
 
 
 
