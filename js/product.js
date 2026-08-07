@@ -188,15 +188,20 @@ data.sale_price}
 
 
 
+<div id="sales">
+
+销量:
+
+${data.sales_count || 0}
+
+</div>
+
+
 <div id="stock">
 
 库存:
 
-${productSkus.length
-?
-productSkus[0].stock_quantity
-:
-0}
+${data.stock_quantity || 0}
 
 </div>
 
@@ -540,7 +545,7 @@ document.getElementById(
 
 "库存: "
 
-+sku.stock_quantity;
++data.stock_quantity;
 
 
 
