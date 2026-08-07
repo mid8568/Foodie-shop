@@ -189,15 +189,17 @@
 </h2>
 
 
-<div
-id="main-images"
-class="image-manager">
-
-</div>
+<div class="image-toolbar">
 
 
+<button
+type="button"
+onclick="openMainLibrary()">
 
-<div class="upload-box">
+从图片库选择主图
+
+</button>
+
 
 <input
 
@@ -206,6 +208,15 @@ type="file"
 id="main-image-upload"
 
 multiple>
+
+
+</div>
+
+
+
+<div
+id="main-images"
+class="image-manager">
 
 </div>
 
@@ -218,17 +229,17 @@ multiple>
 
 
 
-<div
-
-id="detail-images"
-
-class="image-manager">
-
-</div>
+<div class="image-toolbar">
 
 
+<button
+type="button"
+onclick="openDetailLibrary()">
 
-<div class="upload-box">
+图片库批量选择
+
+</button>
+
 
 
 <input
@@ -240,8 +251,29 @@ id="detail-image-upload"
 multiple>
 
 
+<button
+
+type="button"
+
+onclick="confirmDetailLibrary()">
+
+确认添加图片
+
+</button>
+
+
+
 </div>
 
+
+
+<div
+
+id="detail-images"
+
+class="image-manager">
+
+</div>
 
 
 
@@ -441,10 +473,15 @@ onclick="backList()">
 </script>
 
 
+<div
+id="image-library"
+class="image-library">
+
+
+</div>
 
 <script src="js/admin-edit.js">
 </script>
-
 
 
 </body>
