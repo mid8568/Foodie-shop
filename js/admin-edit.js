@@ -432,9 +432,7 @@ document.getElementById(
 );
 
 
-
 if(!box)return;
-
 
 
 box.innerHTML="";
@@ -453,9 +451,7 @@ class="image-item detail-sort-item"
 
 draggable="true"
 
-data-index="${index}"
-
->
+data-index="${index}">
 
 
 <img src="${url}">
@@ -478,8 +474,7 @@ onclick="deleteDetailImage(${index})">
 });
 
 
-initDetailSort();
-
+initDetailDrag();
 
 }
 // =======================
@@ -588,10 +583,12 @@ document.getElementById(
 if(box){
 
 
-box.innerHTML=html;
-
-
 box.style.display="block";
+
+
+document.getElementById(
+"library-content"
+).innerHTML=html;
 
 
 }
@@ -2106,7 +2103,92 @@ location.href =
 
 
 }
+function initDetailDrag(){
 
+
+let items =
+document.querySelectorAll(
+".detail-sort-item"
+);
+
+
+
+let dragIndex=null;
+
+
+
+items.forEach(item=>{
+
+
+item.addEventListener(
+"dragstart",
+()=>{
+
+
+dragIndex =
+Number(
+item.dataset.index
+);
+
+
+});
+
+
+item.addEventListener(
+"dragover",
+(e)=>{
+
+e.preventDefault();
+
+});
+
+
+
+item.addEventListener(
+"drop",
+()=>{
+
+
+let dropIndex =
+Number(
+item.dataset.index
+);
+
+
+
+if(
+dragIndex===dropIndex
+)
+return;
+
+
+
+let move =
+detailImages.splice(
+dragIndex,
+1
+)[0];
+
+
+
+detailImages.splice(
+dropIndex,
+0,
+move
+);
+
+
+
+renderDetailImages();
+
+
+});
+
+
+});
+
+
+}
 
 
 
